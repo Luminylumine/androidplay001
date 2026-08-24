@@ -1,0 +1,13 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    buildFeatures {
+        buildConfig = false
+    }
+}
+
+dependencies {
+    compileOnly 'dev.rikka.hidden:stub:3.4.3'
+}

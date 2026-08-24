@@ -1,0 +1,51 @@
+# ============== Privacy Sensitive Files ==============
+# NEVER commit real personal data
+data/dcim_latest/
+data/personal_surface/
+
+# ADB private keys (leak = full device access)
+adbkey*
+*.p12
+*.pfx
+
+# APK signing keystores (leak = forged APKs)
+*.keystore
+*.jks
+
+# ============== Toolchains (large) ==============
+tools/
+downloads/
+
+# ============== Compiled / Build Artifacts ==============
+# Java/Android builds
+**/build/
+**/gen/
+**/obj/
+**/*.dex
+**/*.apk
+**/*.apk.idsig
+**/*.so
+**/*.jar
+# SDK prebuilt jars are source deps, keep them
+!**/libs/**/*.jar
+!**/sdks/**/*.jar
+
+# .NET / WinForms
+**/bin/
+**/obj/
+*.pdb
+*.dll
+*.exe
+
+# ============== Project Specific ==============
+# ZeroScan
+scanner/app/build/
+scanner/build/
+scanner/*.apk
+
+# Compiled LPE binaries (per-device aarch64, large)
+exploits/lpe_*
+exploits/orig_poc
+exploits/lpe_diag
+exploits/diag_slab_alloc
+exploits/v10_sanity

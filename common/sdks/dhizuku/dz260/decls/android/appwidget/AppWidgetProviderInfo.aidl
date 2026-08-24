@@ -1,0 +1,1 @@
+parcelable android.appwidget.AppWidgetProviderInfo;

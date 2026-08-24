@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    defaultConfig {
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+    }
+    buildTypes {
+        debug {
+            multiDexEnabled false
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    dependenciesInfo {
+        includeInApk false
+    }
+    lint {
+        checkReleaseBuilds false
+    }
+}
+
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "shizuku-v${versionName}.apk"
+
+        def outDir = new File(rootDir, "out")
+        def mappingPath = new File(outDir, "mapping").absolutePath
+        def dexPath = "${rootProject.rootDir.path}/manager/src/main/assets"
+        variant.assembleProvider.get().doLast {
+            if (variant.getBuildType().isMinifyEnabled()) {
+                copy {
+                    from variant.mappingFileProvider.get()
+                    into mappingPath
+                    rename { String fileName ->
+                        mappingPath + File.separator + "cmd-v${variant.versionName}.txt"
+                    }
+                }
+            }
+            copy {
+                def file = zipTree(file(outputFile)).matching { include 'classes*.dex' }.singleFile
+
+                from file
+                into dexPath
+                rename { String fileName ->
+                    fileName.replace(file.getName(), "rish_shizuku.dex")
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compileOnly 'dev.rikka.hidden:stub:3.4.3'
+}

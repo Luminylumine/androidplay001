@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rosan.dhizuku.api" >
+
+    <uses-sdk android:minSdkVersion="26" />
+
+    <uses-permission android:name="com.rosan.dhizuku.permission.API" />
+
+    <queries>
+        <provider android:authorities="com.rosan.dhizuku.server.provider" />
+
+        <intent>
+            <action android:name="com.rosan.dhizuku.server.provider" />
+        </intent>
+    </queries>
+
+</manifest>
