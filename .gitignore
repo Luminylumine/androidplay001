@@ -5,7 +5,11 @@
 **/photos_extracted/
 
 # ADB private keys (leak = full device access without auth prompt)
-**/adbkey*
+# Precise patterns ON PURPOSE: the old **/adbkey* also matched the Java source
+# AdbKey.java (case-insensitive on Windows) and silently dropped it from git.
+**/adbkey
+**/adbkey.pub
+**/adbkey_b64.txt
 *.p12
 *.pfx
 
