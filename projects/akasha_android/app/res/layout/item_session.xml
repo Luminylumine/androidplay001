@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#FFFFFF"
+    android:baselineAligned="false">
+
+    <!-- main content (swipe left reveals the action panel) -->
+    <LinearLayout
+        android:id="@+id/llSessContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvSessionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/tvSessionLast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <!-- swipe-left action panel (no animation, immediate, horizontal) -->
+    <LinearLayout
+        android:id="@+id/llSessionActions"
+        android:layout_width="236dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="#FAFAFA"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnSessDelete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:minWidth="0dp"
+            android:text="删除"
+            android:textColor="#FFFFFF"
+            android:background="#D9433B"/>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#FAFAFA"/>
+
+        <Button
+            android:id="@+id/btnSessPin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:minWidth="0dp"
+            android:text="置顶"
+            android:textColor="#FFFFFF"
+            android:background="#0A66C2"/>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#FAFAFA"/>
+
+        <Button
+            android:id="@+id/btnSessUnread"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:minWidth="0dp"
+            android:text="设为未读"
+            android:textColor="#000000"
+            android:background="#FFD54F"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,28 @@
+# build outputs
+build/
+out/
+obj/
+
+# binary artifacts (regenerate: see build_clawphone.ps1 / build_dhizuku_jar.ps1 headers)
+*.jar
+*.aar
+*.apk
+*.apks
+*.zip
+
+# vendored dhizuku-api v2.6.0 build intermediates (regenerate: libs\build_dhizuku_jar.ps1 dz260)
+libs/dz260/gen/
+libs/dz260/classes/
+
+# old/intermediate fetch caches & dumps
+libs/dz24/
+libs/dz254/
+libs/*.json
+libs/dz_*.kt
+libs/dz_*.md
+libs/dz_probe.txt
+
+# logs & screenshots
+*.log
+*.txt
+*.png

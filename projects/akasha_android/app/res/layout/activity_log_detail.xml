@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- top bar: close (left) / export (right) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="#0A66C2"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/btnLogClose"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="✕ 关闭"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="日志详情"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/btnLogExport"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="导出"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="── 模型原始输出 ──"
+                android:textStyle="bold"
+                android:textColor="#0a66c2"/>
+
+            <TextView
+                android:id="@+id/tvLogRaw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="#F5F5F5"
+                android:padding="8dp"
+                android:textSize="11sp"
+                android:textColor="#333333"
+                android:fontFamily="monospace"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="── 系统原始报错/输出 ──"
+                android:textStyle="bold"
+                android:textColor="#0a66c2"/>
+
+            <TextView
+                android:id="@+id/tvLogErr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="#FFF1EF"
+                android:padding="8dp"
+                android:textSize="11sp"
+                android:textColor="#B03020"
+                android:fontFamily="monospace"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="── 系统解释/反馈 ──"
+                android:textStyle="bold"
+                android:textColor="#0a66c2"/>
+
+            <TextView
+                android:id="@+id/tvLogHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="#F0F7FF"
+                android:padding="8dp"
+                android:textSize="12sp"
+                android:textColor="#224466"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- only for errors: feed the failure back to the model (req 5) -->
+    <Button
+        android:id="@+id/btnTellModel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="14sp"
+        android:text="打断并告知模型（下次启动自动生效）"
+        android:textColor="#FFFFFF"
+        android:background="#D9433B"/>
+</LinearLayout>

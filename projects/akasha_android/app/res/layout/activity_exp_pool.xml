@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- top bar: back / title / publish -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="#0A66C2"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/btnPoolBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="‹ 返回"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/tvPoolTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="全局经验池"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/btnPoolPublish"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="发布"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+    <!-- search: title / publisher / keyword / partial -->
+    <EditText
+        android:id="@+id/etPoolSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="搜索：标题 / 发布者 / 关键字（部分匹配）"
+        android:textSize="13sp"
+        android:background="#FFFFFF"
+        android:padding="10dp"
+        android:singleLine="true"/>
+
+    <ListView
+        android:id="@+id/lvPool"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:divider="#EEEEEE"
+        android:dividerHeight="1dp"/>
+
+    <TextView
+        android:id="@+id/tvPoolEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="暂无经验 — 点右上角「发布」或让 Agent 记录"
+        android:textSize="13sp"
+        android:textColor="#AAAAAA"/>
+</LinearLayout>

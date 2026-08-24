@@ -1,0 +1,60 @@
+// OpenAkasha config for on-phone deployment (Termux, Huawei EVE-AL00 / Android 10).
+// JSON5. Validated strictly by OpenAkasha; do not add unknown keys.
+{
+  agents: {
+    defaults: {
+      workspace: "~/.openAkasha/workspace",
+      userTimezone: "Asia/Shanghai",
+      model: {
+        primary: "deepseek/deepseek-chat",
+      },
+    },
+  },
+
+  models: {
+    mode: "merge",
+    providers: {
+      // OpenAI-compatible (chat completions) provider.
+      // Replace baseUrl/apiKey/model id for other providers
+      // (DeepSeek default here; e.g. any /v1 chat-completions endpoint works).
+      deepseek: {
+        baseUrl: "https://api.deepseek.com/v1",
+        apiKey: "REPLACE_WITH_YOUR_API_KEY",
+        api: "openai-completions",
+        models: [
+          {
+            id: "deepseek-chat",
+            name: "DeepSeek Chat",
+            reasoning: false,
+            input: ["text"],
+            contextWindow: 64000,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+
+  tools: {
+    allow: ["exec", "process", "read", "write", "edit", "apply_patch"],
+    elevated: { enabled: true },
+  },
+
+  skills: {
+    load: {
+      extraDirs: ["~/.openAkasha/skills"],
+    },
+  },
+
+  gateway: {
+    mode: "local",
+    port: 18789,
+    bind: "loopback",
+    controlUi: { enabled: true },
+    auth: {
+      mode: "token",
+      // replaced with a random token by setup_phone.sh
+      token: "GATEWAY_TOKEN",
+    },
+  },
+}

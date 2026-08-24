@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pickerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- 顶栏: 取消(红) / 清空(黄) / 确定(蓝) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnPkCancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="取消"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="#D9433B"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/btnPkClear"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="清空"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:background="#FFC107"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/btnPkOk"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="确定"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="#0A66C2"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPkTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:background="#FFFFFF"
+        android:text="选择触发源"/>
+
+    <TextView
+        android:id="@+id/tvPkHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="6dp"
+        android:textSize="11sp"
+        android:textColor="#999999"
+        android:background="#FFFFFF"
+        android:text="点方框勾选/取消（取消不删除已存的触发源设置）；点设置项本身进入该项的触发源设置。可上下滑动。"/>
+
+    <ListView
+        android:id="@+id/lvPicker"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:background="#FFFFFF"
+        android:divider="#EEEEEE"
+        android:dividerHeight="1dp"/>
+</LinearLayout>

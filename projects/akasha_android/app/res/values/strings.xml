@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Akasha</string>
+    <string name="a11y_desc">Akasha 使用无障碍服务执行屏幕点击、滑动、输入文字与返回/桌面操作。</string>
+</resources>

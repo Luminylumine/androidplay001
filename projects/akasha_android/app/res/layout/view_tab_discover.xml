@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabDiscoverRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <ListView
+        android:id="@+id/lvDiscover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:divider="#EEEEEE"
+        android:dividerHeight="1dp"/>
+
+    <TextView
+        android:id="@+id/tvDiscoverEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="发现页暂无内容，点击右上角 + 创建第一个经验池"
+        android:textSize="13sp"
+        android:textColor="#AAAAAA"/>
+</FrameLayout>

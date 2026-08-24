@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/modelRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- 顶栏: 返回 / 标题 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="#0A66C2"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/btnMsBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:text="‹ 返回"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/tvMsTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="Agent"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- 索引页: 只列设置项名称 -->
+        <ScrollView
+            android:id="@+id/svIndex"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
+
+            <LinearLayout
+                android:id="@+id/llIndex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+        </ScrollView>
+
+        <!-- 子页面: 各设置区块(按 section 显示其一) -->
+        <ScrollView
+            android:id="@+id/svDetail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/llDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- ======== 基本信息 ======== -->
+                <LinearLayout
+                    android:id="@+id/llBasicBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="模型 ID（唯一标识，修改会影响会话归属）"
+                        android:textSize="12sp"
+                        android:textColor="#666666"/>
+
+                    <EditText
+                        android:id="@+id/etModelId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:enabled="false"
+                        android:textSize="13sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="显示名称（会话标题默认用它）"
+                        android:textSize="12sp"
+                        android:textColor="#666666"/>
+
+                    <EditText
+                        android:id="@+id/etModelName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbVision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="多模态（可看截图）"
+                        android:textSize="13sp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="上下文 tokens"
+                                android:textSize="12sp"
+                                android:textColor="#666666"/>
+
+                            <EditText
+                                android:id="@+id/etModelCtx"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:inputType="number"
+                                android:textSize="13sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginLeft="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="最大输出 tokens"
+                                android:textSize="12sp"
+                                android:textColor="#666666"/>
+
+                            <EditText
+                                android:id="@+id/etModelOut"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:inputType="number"
+                                android:textSize="13sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ======== API 与自启 ======== -->
+                <LinearLayout
+                    android:id="@+id/llApiBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Base URL（留空 = 沿用全局默认；填到 /v1 即可）"
+                        android:textSize="12sp"
+                        android:textColor="#666666"/>
+
+                    <EditText
+                        android:id="@+id/etAgentUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:hint="留空 = 使用全局默认"
+                        android:inputType="textUri"
+                        android:textSize="13sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="API Key（留空 = 沿用全局默认）"
+                        android:textSize="12sp"
+                        android:textColor="#666666"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/etAgentKey"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="留空 = 使用全局默认"
+                            android:inputType="textPassword"
+                            android:textSize="13sp"/>
+
+                        <Button
+                            android:id="@+id/btnAgentKeyVis"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="6dp"
+                            android:minWidth="0dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:textSize="12sp"
+                            android:text="显示"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                        android:id="@+id/cbAgentAutoStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="开机自启本 Agent（需「全局→设置」总开关已开启）"
+                        android:textSize="13sp"/>
+
+                    <Button
+                        android:id="@+id/btnModelTest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="13sp"
+                        android:text="测试连接（用本模型发一个最小请求）"/>
+                </LinearLayout>
+
+                <!-- ======== 权限管理 ======== -->
+                <LinearLayout
+                    android:id="@+id/llPermBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="以下控制本 Agent 能使用哪些能力（App 层管控；与系统级权限独立）。未勾选的工具不会提供给云端模型。"
+                        android:textSize="11sp"
+                        android:textColor="#999999"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermShell"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Shizuku Shell（shell 命令 + shell 兜底读屏/截屏）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermA11y"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="无障碍（点击/滑动/输入/按键/打开应用/读屏幕文本）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermFile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="文件（/sdcard 通用文件读写与搜索）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermPhoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="相册（Pictures/DCIM/Album）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermMedia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="媒体（Movies/Video 视频）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermMusic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="音乐（Music）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermExpWrite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="写入经验池（exp_record，出错时记录经验+截图）"
+                        android:textSize="13sp"/>
+
+                    <CheckBox
+                        android:id="@+id/cbPermExpRead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="读取经验池（exp_search，查前人经验）"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
+                <!-- ======== 所在经验池与权限 ======== -->
+                <LinearLayout
+                    android:id="@+id/llPoolBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="每行 = 一个经验池。三列勾选分别 = READ(所在组成员) / WRITE(经验写入此池) / DELETE(可删除自己写在该池的经验)。不勾选 READ 即退出该组。"
+                        android:textSize="11sp"
+                        android:textColor="#999999"/>
+
+                    <!-- 表头 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:weightSum="10">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="6"
+                            android:text="池名"
+                            android:textStyle="bold"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.33"
+                            android:gravity="center"
+                            android:text="读"
+                            android:textStyle="bold"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.33"
+                            android:gravity="center"
+                            android:text="写"
+                            android:textStyle="bold"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.33"
+                            android:gravity="center"
+                            android:text="删"
+                            android:textStyle="bold"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llPoolPerms"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
+                </LinearLayout>
+
+                <!-- ======== 自定义 Prompt ======== -->
+                <LinearLayout
+                    android:id="@+id/llPromptBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="自定义提示词（留空保存 = 恢复系统默认提示词；工具清单按权限自动附加，无需手写）。下方两段提示词长按 3 秒直接复制到剪贴板"
+                        android:textSize="11sp"
+                        android:textColor="#999999"/>
+
+                    <EditText
+                        android:id="@+id/etCustomPrompt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:minLines="4"
+                        android:gravity="top"
+                        android:hint="例如：你是一个谨慎的助手，涉及花钱操作必须先问用户…"
+                        android:textSize="13sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="系统默认提示词（参考）:"
+                        android:textSize="12sp"
+                        android:textColor="#666666"/>
+
+                    <TextView
+                        android:id="@+id/tvDefaultPrompt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:textSize="11sp"
+                        android:textColor="#777777"
+                        android:fontFamily="monospace"/>
+
+                    <TextView
+                        android:id="@+id/tvEffectivePrompt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="11sp"
+                        android:textColor="#999999"
+                        android:fontFamily="monospace"
+                        android:visibility="gone"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnModelSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:textSize="14sp"
+                    android:text="保存"/>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</LinearLayout>
