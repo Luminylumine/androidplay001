@@ -1,18 +1,19 @@
 # ============== Privacy Sensitive Files ==============
-# NEVER commit real personal data
-data/dcim_latest/
-data/personal_surface/
+# NEVER commit real personal data, device photos, SMS/accounts dumps
+**/dcim_latest/
+**/personal_surface/
+**/photos_extracted/
 
-# ADB private keys (leak = full device access)
-adbkey*
+# ADB private keys (leak = full device access without auth prompt)
+**/adbkey*
 *.p12
 *.pfx
 
-# APK signing keystores (leak = forged APKs)
+# APK signing keystores (leak = forged APKs with same signature / system perms)
 *.keystore
 *.jks
 
-# ============== Toolchains (large) ==============
+# ============== Toolchains (large non-redistributable binaries) ==============
 tools/
 downloads/
 
@@ -25,8 +26,9 @@ downloads/
 **/*.apk
 **/*.apk.idsig
 **/*.so
+
+# All .jar by default, EXCEPT source-level SDK deps under libs/ or common/sdks/
 **/*.jar
-# SDK prebuilt jars are source deps, keep them
 !**/libs/**/*.jar
 !**/sdks/**/*.jar
 
@@ -38,14 +40,18 @@ downloads/
 *.exe
 
 # ============== Project Specific ==============
-# ZeroScan
-scanner/app/build/
-scanner/build/
-scanner/*.apk
+# Compiled LPE / exploit aarch64 binaries (per-device, large, non-redistributable)
+**/exploits/lpe_*
+**/exploits/orig_poc
+**/exploits/lpe_diag
+**/exploits/diag_slab_alloc
+**/exploits/v10_sanity
+**/exploits/slab_rb_reclaim_uaf
 
-# Compiled LPE binaries (per-device aarch64, large)
-exploits/lpe_*
-exploits/orig_poc
-exploits/lpe_diag
-exploits/diag_slab_alloc
-exploits/v10_sanity
+# Misc OS / editor files
+Thumbs.db
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
