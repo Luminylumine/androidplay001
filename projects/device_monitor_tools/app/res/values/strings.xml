@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SysMon</string>
+    <string name="a11y_desc">用于检测全屏应用与截屏事件，以便悬浮窗按设置自动隐藏。</string>
+</resources>

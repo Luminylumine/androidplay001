@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f0f14"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="── 悬浮窗开关 ──"
+            android:textStyle="bold"
+            android:textColor="#4dd0e1"
+            android:textSize="14sp"
+            android:fontFamily="monospace"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="悬浮窗总开关"
+                android:textColor="#d0d0d0"
+                android:textSize="14sp"/>
+
+            <Switch
+                android:id="@+id/swOverlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnOverlayPerm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="12sp"
+            android:text="请求悬浮窗权限（SYSTEM_ALERT_WINDOW）"/>
+
+        <TextView
+            android:id="@+id/tvOverlayPermStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="11sp"
+            android:textColor="#888888"
+            android:text="悬浮窗权限: 检测中…"/>
+
+        <!-- 显示哪些信息 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="── 悬浮窗显示哪些信息 ──"
+            android:textStyle="bold"
+            android:textColor="#4dd0e1"
+            android:textSize="14sp"
+            android:fontFamily="monospace"/>
+
+        <CheckBox android:id="@+id/cbCpuTotal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="CPU 总占用" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbCpuPer" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CPU 每核占用" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbGpu" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="GPU 占用" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbMem" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="内存" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbBattTemp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="电池温度" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbBattLevel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="电池容量" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbBattVolt" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="电池电压" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbBattCurrent" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="电池电流" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbPowerIn" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="输入功率" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbPowerOut" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="输出功率" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbPowerPhone" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="整机消耗功率" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbNet" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="网络速率" android:textColor="#d0d0d0" android:textSize="13sp"/>
+        <CheckBox android:id="@+id/cbFps" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="屏幕帧率" android:textColor="#d0d0d0" android:textSize="13sp"/>
+
+        <!-- 外观 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="── 外观 ──"
+            android:textStyle="bold"
+            android:textColor="#4dd0e1"
+            android:textSize="14sp"
+            android:fontFamily="monospace"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="底色"
+            android:textColor="#d0d0d0"
+            android:textSize="13sp"/>
+
+        <LinearLayout
+            android:id="@+id/llBgColors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="字色"
+            android:textColor="#d0d0d0"
+            android:textSize="13sp"/>
+
+        <LinearLayout
+            android:id="@+id/llFgColors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="字号: "
+                android:textColor="#d0d0d0"
+                android:textSize="13sp"/>
+
+            <TextView
+                android:id="@+id/tvFontSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12sp"
+                android:textColor="#4dd0e1"
+                android:textSize="13sp"
+                android:fontFamily="monospace"/>
+
+            <Button
+                android:id="@+id/btnFontMinus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:minWidth="0dp"
+                android:textSize="14sp"
+                android:text="－"/>
+
+            <Button
+                android:id="@+id/btnFontPlus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:minWidth="0dp"
+                android:textSize="14sp"
+                android:text="＋"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="透明度: "
+                android:textColor="#d0d0d0"
+                android:textSize="13sp"/>
+
+            <TextView
+                android:id="@+id/tvAlpha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100%"
+                android:textColor="#4dd0e1"
+                android:textSize="13sp"
+                android:fontFamily="monospace"/>
+
+            <SeekBar
+                android:id="@+id/sbAlpha"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="12dp"
+                android:max="100"
+                android:progress="100"/>
+        </LinearLayout>
+
+        <!-- 行为 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="── 行为 ──"
+            android:textStyle="bold"
+            android:textColor="#4dd0e1"
+            android:textSize="14sp"
+            android:fontFamily="monospace"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="忽略点击（防误拖）"
+                android:textColor="#d0d0d0"
+                android:textSize="13sp"/>
+
+            <Switch
+                android:id="@+id/swIgnoreTouch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="全屏应用时隐藏（视频/游戏兼容）"
+                android:textColor="#d0d0d0"
+                android:textSize="13sp"/>
+
+            <Switch
+                android:id="@+id/swHideFullscreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="横屏时隐藏"
+                android:textColor="#d0d0d0"
+                android:textSize="13sp"/>
+
+            <Switch
+                android:id="@+id/swHideLandscape"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="截屏时隐藏悬浮窗"
+                android:textColor="#d0d0d0"
+                android:textSize="13sp"/>
+
+            <Switch
+                android:id="@+id/swHideScreenshot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvA11yStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="11sp"
+            android:textColor="#888888"
+            android:text="无障碍服务: 未开启（用于全屏/截屏检测，可选）"/>
+
+        <Button
+            android:id="@+id/btnA11y"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:text="开启无障碍服务"/>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:textSize="14sp"
+            android:text="保存设置"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp"/>
+    </LinearLayout>
+</ScrollView>

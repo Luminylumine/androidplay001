@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sysmon.app"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- granted by the Dhizuku app when the user whitelists us -->
+    <uses-permission android:name="com.rosan.dhizuku.permission.API"/>
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V23"/>
+
+    <application
+        android:label="@string/app_name"
+        android:allowBackup="true"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="unspecified">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ChannelActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".FpsActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".BatteryActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".CalibrationActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".DrawSettingActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".DrawDefaultsActivity"
+            android:exported="false"/>
+
+        <!-- Shizuku: binder carrier -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="com.sysmon.app.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+
+        <!-- run by Shizuku/Dhizuku inside their privileged process -->
+        <service
+            android:name=".SysShellService"
+            android:exported="true"/>
+
+        <!-- floating overlay -->
+        <service
+            android:name=".OverlayService"
+            android:exported="false"/>
+
+        <!-- accessibility: fullscreen/screenshot detection for overlay -->
+        <service
+            android:name=".SysAccessibilityService"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config"/>
+        </service>
+    </application>
+</manifest>
