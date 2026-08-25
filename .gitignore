@@ -10,6 +10,8 @@
 **/adbkey
 **/adbkey.pub
 **/adbkey_b64.txt
+# Source file embedding the test-device ADB key — kept local only, never pushed
+**/AdbKey.java
 *.p12
 *.pfx
 
