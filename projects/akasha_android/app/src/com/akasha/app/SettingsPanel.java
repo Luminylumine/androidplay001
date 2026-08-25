@@ -40,7 +40,7 @@ public class SettingsPanel {
     private Spinner spModel;
     private CheckBox cbAutoStart;
     private TextView tvShellStatus, tvDhizukuStatus, tvShizukuStatus, tvShotStatus,
-            tvA11yStatus, tvBatteryStatus, tvLogPath;
+            tvA11yStatus, tvBatteryStatus;
     private LinearLayout llSettingsToggle;
     private LinearLayout llSettingsPanel;
     private TextView tvSettingsArrow;
@@ -66,7 +66,6 @@ public class SettingsPanel {
         tvShotStatus = (TextView) root.findViewById(R.id.tvShotStatus);
         tvA11yStatus = (TextView) root.findViewById(R.id.tvA11yStatus);
         tvBatteryStatus = (TextView) root.findViewById(R.id.tvBatteryStatus);
-        tvLogPath = (TextView) root.findViewById(R.id.tvLogPath);
 
         root.findViewById(R.id.btnShellRecheck).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,9 +266,6 @@ public class SettingsPanel {
         }
         tvBatteryStatus.setText(bat);
 
-        String lp = CpLog.path();
-        tvLogPath.setText("日志文件: " + (lp == null ? "不可用（需授权存储/文件目录）" : lp)
-                + "\nShell 侧日志: /sdcard/akasha_shell.log");
     }
 
     // ---------------- fields ----------------
