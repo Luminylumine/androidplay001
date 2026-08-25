@@ -186,9 +186,6 @@ public sealed class ScrcpySession : IDisposable
     /// <summary>本会话对应的设备 ID（用于定位 scrcpy 窗口 / 发送输入等）。</summary>
     public string DeviceId => _deviceId;
 
-    /// <summary>本会话独立的 scrcpy 日志路径（多会话并存时互不串台）。</summary>
-    public string? LogPath { get; private set; }
-
     public ScrcpySession(string deviceId, ScrcpyOptions options)
     {
         _deviceId = deviceId;
@@ -236,9 +233,8 @@ public sealed class ScrcpySession : IDisposable
             catch { }
         }
 
-        // 3. 启动 scrcpy（本会话独立日志路径，多会话并存互不串台）
-        LogPath = AdbHelper.GetScrcpyLogPath(_deviceId);
-        _process = AdbHelper.StartScrcpy(_deviceId, _options, LogPath);
+        // 3. 启动 scrcpy
+        _process = AdbHelper.StartScrcpy(_deviceId, _options);
         _process.Exited += OnProcessExited;
 
         // 4. “黑屏可点亮”：

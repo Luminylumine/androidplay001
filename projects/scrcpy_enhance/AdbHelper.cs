@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 
 namespace AdbManager;
@@ -31,31 +31,6 @@ public class AdbHelper
     private static readonly string AdbPath    = FindExecutable(@"tools\android-sdk\platform-tools\adb.exe", "adb");
     private static readonly string ScrcpyPath = FindExecutable(@"common\sdks\scrcpy\scrcpy.exe",
                                 FindExecutable(@"tools\scrcpy\scrcpy.exe", "scrcpy"));
-    private static readonly string LogDir = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AdbManager", "Logs");
-
-    public static string GetScrcpyLogPath(string deviceId)
-    {
-        try
-        {
-            Directory.CreateDirectory(LogDir);
-            var safeId = SanitizeFileName(deviceId);
-            if (string.IsNullOrEmpty(safeId)) safeId = "device";
-            return Path.Combine(LogDir, $"scrcpy_{safeId}_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log");
-        }
-        catch
-        {
-            // 如果默认日志目录不可用，降级到临时目录
-            var fallbackDir = Path.GetTempPath();
-            var safeId = SanitizeFileName(deviceId) ?? "device";
-            return Path.Combine(fallbackDir, $"scrcpy_{safeId}_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log");
-        }
-    }
-
-    private static string SanitizeFileName(string name)
-    {
-        return string.Join("_", name.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
-    }
 
     public static async Task<List<DeviceInfo>> GetDevicesAsync()
     {
@@ -430,9 +405,6 @@ public class AdbHelper
     public const string ScrcpyWindowPrefix = "AdbManager_Mirror_";
     public static string ScrcpyWindowTitle(string deviceId) => ScrcpyWindowPrefix + deviceId;
 
-    /// <summary>最近一次启动的 scrcpy 日志路径（多会话下仅代表"最近启动"的那个，崩溃提示辅助用）。</summary>
-    public static string? LastScrcpyLogPath { get; private set; }
-
     private static string? _cachedScrcpyVersion;
 
     public static async Task<string?> GetScrcpyVersionAsync()
@@ -486,9 +458,7 @@ public class AdbHelper
         return _caps ?? ScrcpyCapabilities.Unknown;
     }
 
-    /// <param name="logPath">可选：日志文件路径。多会话并存时由调用方各自传入，
-    /// 避免用 static 字段导致不同会话的日志互相串台。不传则按设备自动生成。</param>
-    public static Process StartScrcpy(string deviceId, ScrcpyOptions options, string? logPath = null)
+    public static Process StartScrcpy(string deviceId, ScrcpyOptions options)
     {
         // 参数按独立 token 组织，不拼接空格，避免被 QuoteIfNeeded 错误转义
         var args = new List<string>
@@ -553,73 +523,16 @@ public class AdbHelper
 
         var arguments = string.Join(" ", args.Select(QuoteIfNeeded));
 
-        // 生成/采用日志文件路径（容错：路径生成失败则不记录日志）。
-        // 用局部变量 logPath 贯穿整个方法，多会话各自独立，互不串台。
-        try
-        {
-            logPath ??= GetScrcpyLogPath(deviceId);
-            LastScrcpyLogPath = logPath;
-
-            System.Diagnostics.Debug.WriteLine($"[Scrcpy] 启动 scrcpy: {ScrcpyPath} {arguments}");
-            System.Diagnostics.Debug.WriteLine($"[Scrcpy] 日志文件: {logPath}");
-
-            // 记录启动参数到日志
-            File.AppendAllText(logPath, $"=== scrcpy 启动 {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===\n");
-            File.AppendAllText(logPath, $"命令行: {ScrcpyPath} {arguments}\n\n");
-        }
-        catch
-        {
-            // 日志初始化失败不阻断主流程
-            logPath = null;
-            LastScrcpyLogPath = null;
-            System.Diagnostics.Debug.WriteLine("[Scrcpy] 日志文件初始化失败，继续启动");
-        }
-
         var process = new Process();
         process.StartInfo = new ProcessStartInfo
         {
             FileName = ScrcpyPath,
             Arguments = arguments,
             UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
+            CreateNoWindow = true
         };
 
-        try
-        {
-            process.Start();
-
-            // 安全的日志写入辅助方法（捕获局部 logPath，本会话独立）
-            void SafeWrite(string prefix, string? data)
-            {
-                if (data == null || logPath == null) return;
-                try
-                {
-                    File.AppendAllText(logPath, $"{prefix} {data}\n");
-                }
-                catch
-                {
-                    // 日志写入失败静默忽略，不影响主流程
-                }
-            }
-
-            // 异步读取 stdout/stderr 写入日志（带异常保护）
-            process.OutputDataReceived += (sender, e) => SafeWrite("[OUT]", e.Data);
-            process.ErrorDataReceived += (sender, e) => SafeWrite("[ERR]", e.Data);
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[Scrcpy] 启动失败: {ex.Message}");
-            if (logPath != null)
-            {
-                try { File.AppendAllText(logPath, $"启动失败: {ex}\n"); } catch { }
-            }
-            throw;
-        }
-
+        process.Start();
         return process;
     }
 

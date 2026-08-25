@@ -153,24 +153,7 @@ partial class MainForm : Form
             {
                 statusLabel.Text = "scrcpy 启动失败（进程已退出）";
 
-                // 读取“本会话”日志帮助排查（用会话自己的 LogPath，避免多会话串台）
-                var logPath = session.LogPath;
-                string logContent = "";
-                try
-                {
-                    if (!string.IsNullOrEmpty(logPath) && File.Exists(logPath))
-                        logContent = File.ReadAllText(logPath);
-                }
-                catch { }
-
-                var msg = "scrcpy 启动后立即退出。\n\n";
-                if (!string.IsNullOrEmpty(logContent))
-                {
-                    // 截取最近 20 行日志
-                    var lines = logContent.Split('\n').Where(l => !string.IsNullOrEmpty(l)).TakeLast(20).ToList();
-                    msg += $"【scrcpy 日志】\n{string.Join("\n", lines)}\n\n";
-                }
-                msg += $"日志文件: {logPath}\n\n常见原因与对策：\n" +
+                var msg = "scrcpy 启动后立即退出。\n\n常见原因与对策：\n" +
                        "· 键盘模式不兼容：较旧安卓(如 10)可能不支持 UHID，请改选“兼容模式”后重试\n" +
                        "· 设备未授权：请在手机上确认已允许 USB 调试\n" +
                        "· adb / scrcpy 未加入系统 PATH\n" +
