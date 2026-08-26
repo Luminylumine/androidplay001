@@ -337,8 +337,7 @@ partial class MainForm : Form
     private void 访问相册ToolStripMenuItem_Click(object? sender, EventArgs e)
     {
         if (_selectedDevice == null) return;
-        using var form = new FileTransferForm(_selectedDevice);
-        form.Text = "相册访问";
+        using var form = new PhotoGalleryForm(_selectedDevice);
         form.ShowDialog(this);
     }
 
@@ -386,6 +385,51 @@ partial class MainForm : Form
                 MessageBox.Show($"连接异常: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 statusLabel.Text = "连接异常";
             }
+        }
+    }
+
+    private async void 启用TCPToolStripMenuItem_Click(object? sender, EventArgs e)
+    {
+        if (_selectedDevice == null) return;
+        if (!_selectedDevice.IsUsb)
+        {
+            MessageBox.Show("仅 USB 设备可执行“启用TCP”（把设备切到 WiFi TCP 模式）。",
+                "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            this,
+            $"将把 {(_selectedDevice.Name ?? _selectedDevice.Id)} 切换到 TCP 模式：\n\n" +
+            "· 会重启 adbd 并【断开 USB】\n" +
+            "· 之后通过 WiFi(TCP) 访问，可以拔掉数据线\n" +
+            "· 需要手机已连接 WiFi\n" +
+            "· 恢复 USB：重新插拔，或以后执行 adb usb\n\n继续吗？",
+            "启用TCP(tcpip)", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+        if (confirm != DialogResult.OK) return;
+
+        statusLabel.Text = "正在启用 TCP 模式...";
+        try
+        {
+            var tcpId = await AdbHelper.EnableTcpOverUsbAsync(_selectedDevice);
+            if (tcpId != null)
+            {
+                statusLabel.Text = $"已切换到 TCP：{tcpId}";
+                await RefreshDevicesAsync();
+                MessageBox.Show("已切换到 TCP 模式，可以拔掉数据线了。", "成功",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                statusLabel.Text = "启用 TCP 失败";
+                MessageBox.Show("启用 TCP 失败：手机可能未连接 WiFi，或 adb tcpip 未生效。", "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = "启用 TCP 异常";
+            MessageBox.Show($"启用 TCP 异常: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

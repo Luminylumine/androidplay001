@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace AdbManager;
 
@@ -130,18 +131,18 @@ public class AdbHelper
             }
         }
 
-        // Get device models
-        foreach (var device in devices)
+        // 取型号（并行，避免多台设备串行拖慢刷新）
+        await Task.WhenAll(devices.Select(async d =>
         {
             try
             {
-                var model = await RunCommandAsync($"{AdbPath} -s {device.Id} shell getprop ro.product.model", timeoutMs: 3000);
-                device.Name = model.Trim();
+                var model = await RunCommandAsync($"{AdbPath} -s {d.Id} shell getprop ro.product.model", timeoutMs: 3000);
+                d.Name = model.Trim();
             }
             catch
             {
             }
-        }
+        }));
 
         return devices;
     }
@@ -155,75 +156,76 @@ public class AdbHelper
     /// </summary>
     private static async Task<string?> TryAutoConnectUsbToTcpAsync(DeviceInfo usb)
     {
+        // 只做“安全的直接连接”，绝不调用 `adb tcpip`：
+        // `adb tcpip 5555` 会重启 adbd 从而断开 USB，违反“保留 USB、TCP 仅作额外连接”的要求。
+        // 因此仅当手机已开启无线调试(端口 5555)时才会连上；否则保持 USB 不动、快速返回。
         var ip = await GetWifiIpAsync(usb.Id);
         if (string.IsNullOrEmpty(ip))
             return null;
 
         var tcpTarget = $"{ip}:5555";
-
-        // 1. 先直接尝试 connect（若手机已开启 TCP 调试，这是最快的路径）
-        var connectResult = await RunCommandAsync($"{AdbPath} connect {tcpTarget}", timeoutMs: 5000);
-        if (connectResult.Contains("connected") || connectResult.Contains("already connected"))
-            return tcpTarget;
-
-        // 2. 如果直接 connect 失败，可能 TCP 调试未开启。尝试用 shell 开启（不影响 USB）
         try
         {
-            // 尝试通过 shell 开启 TCP 调试（Android 11+ 推荐方式，不影响 USB 连接）
-            await RunCommandAsync($"{AdbPath} -s {usb.Id} shell settings put global adb_enabled 1", timeoutMs: 3000);
-            await RunCommandAsync($"{AdbPath} -s {usb.Id} shell setprop service.adb.tcp.port 5555", timeoutMs: 3000);
-            await Task.Delay(500);
-
-            // 再次尝试连接
-            connectResult = await RunCommandAsync($"{AdbPath} connect {tcpTarget}", timeoutMs: 5000);
-            if (connectResult.Contains("connected") || connectResult.Contains("already connected"))
-                return tcpTarget;
+            var connectResult = await RunCommandAsync($"{AdbPath} connect {tcpTarget}", timeoutMs: 2000);
+            return (connectResult.Contains("connected") || connectResult.Contains("already connected"))
+                ? tcpTarget
+                : null;
         }
         catch
         {
-            // shell 方式失败，继续尝试其他方式
+            return null;
         }
-
-        // 3. 最后兜底：使用传统的 adb tcpip（注意：这可能导致 USB 断开！）
-        // 仅在上述方法都失败时使用
-        try
-        {
-            var tcpipResult = await RunCommandAsync($"{AdbPath} -s {usb.Id} tcpip 5555", timeoutMs: 5000);
-            if (tcpipResult.Contains("restarting") || tcpipResult.Contains("cannot run"))
-            {
-                await Task.Delay(500);
-                connectResult = await RunCommandAsync($"{AdbPath} connect {tcpTarget}", timeoutMs: 5000);
-                if (connectResult.Contains("connected") || connectResult.Contains("already connected"))
-                    return tcpTarget;
-            }
-        }
-        catch
-        {
-        }
-
-        return null;
     }
 
     /// <summary>
-    /// 通过 adb shell ip addr show wlan0 解析 WiFi IP。
-    /// 部分厂商/旧系统可能把接口命名为 wlan0、eth0 或 rmnet_data，多接口按顺序兜底。
+    /// 解析设备的 WiFi IP。只认 wlan* 接口的 inet 地址——绝不用蜂窝(rmnet)/USB-ethernet 地址，
+    /// 否则会对一个不可达地址做 adb connect 白等超时。没有 WiFi 连接则返回 null。
     /// </summary>
     public static async Task<string?> GetWifiIpAsync(string deviceId)
     {
         var output = await RunCommandAsync($"{AdbPath} -s {deviceId} shell ip addr show", timeoutMs: 5000);
-        var lines = output.Split('\n');
-        string? candidate = null;
-        foreach (var line in lines)
+        string? currentIface = null;
+        foreach (var rawLine in output.Split('\n'))
         {
-            var match = System.Text.RegularExpressions.Regex.Match(line, @"inet\s+(\d+\.\d+\.\d+\.\d+)/");
-            if (!match.Success) continue;
-            var ip = match.Groups[1].Value;
-            if (ip.StartsWith("127.")) continue;
-            // 优先取 wlan0 接口
-            if (line.Contains("wlan0")) return ip;
-            candidate = ip;
+            var line = rawLine.Trim();
+            // 接口定义行形如 "2: wlan0: <...>"
+            var ifaceMatch = System.Text.RegularExpressions.Regex.Match(line, @"^\d+:\s+([a-zA-Z0-9_]+):");
+            if (ifaceMatch.Success)
+            {
+                currentIface = ifaceMatch.Groups[1].Value;
+                continue;
+            }
+            if (currentIface == null || !currentIface.StartsWith("wlan")) continue;
+            var m = System.Text.RegularExpressions.Regex.Match(line, @"inet\s+(\d+\.\d+\.\d+\.\d+)/");
+            if (m.Success && !m.Groups[1].Value.StartsWith("127."))
+                return m.Groups[1].Value;
         }
-        return candidate;
+        return null;
+    }
+
+    /// <summary>
+    /// 手动把 USB 设备切换到 TCP 模式（adb tcpip 5555），随后连上 ip:5555。
+    /// 注意：会重启 adbd、断开 USB（adb 固有限制），完成后设备仅经 TCP 可达；
+    /// 恢复 USB 需重新插拔或执行 `adb usb`。由用户显式触发（“启用TCP”菜单），不自动执行。
+    /// 返回新的 TCP 设备 ID（ip:5555）；无 WiFi 或失败返回 null。
+    /// </summary>
+    public static async Task<string?> EnableTcpOverUsbAsync(DeviceInfo usb)
+    {
+        var ip = await GetWifiIpAsync(usb.Id);
+        if (string.IsNullOrEmpty(ip))
+            return null; // 没有 WiFi，无法走 TCP
+
+        var tcpipResult = await RunCommandAsync($"{AdbPath} -s {usb.Id} tcpip 5555", timeoutMs: 10000);
+        if (!tcpipResult.Contains("restarting") && !tcpipResult.Contains("cannot run"))
+            return null; // tcpip 未生效
+
+        await Task.Delay(1200); // adbd 重启需要片刻
+
+        var tcpTarget = $"{ip}:5555";
+        var connectResult = await RunCommandAsync($"{AdbPath} connect {tcpTarget}", timeoutMs: 5000);
+        return (connectResult.Contains("connected") || connectResult.Contains("already connected"))
+            ? tcpTarget
+            : null;
     }
 
     private static void ParseDevicesOutput(string output, List<DeviceInfo> devices)
@@ -389,7 +391,7 @@ public class AdbHelper
         catch (OperationCanceledException)
         {
             if (!process.HasExited)
-                process.Kill();
+                process.Kill(entireProcessTree: true);
             return "Command timed out";
         }
     }
@@ -404,14 +406,213 @@ public class AdbHelper
         return await RunCommandAsync($"{AdbPath} -s {deviceId} shell ls -la \"{path}\"");
     }
 
-    public static async Task PullFileAsync(string deviceId, string remotePath, string localPath)
+    /// <summary>
+    /// 拉取远端文件（SYNC 协议，不经远端 shell 解析，路径含空格/中文/引号安全）。
+    /// <paramref name="diagnostics"/> 回填 adb 的 stdout/stderr 仅用于诊断；
+    /// 文件内容只认本地落盘结果 + 调用方校验，pull 的 host exit code 可在此通道信。
+    /// </summary>
+    public static async Task PullFileAsync(string deviceId, string remotePath, string localPath, int timeoutMs = 300000, CancellationToken ct = default, StringBuilder? diagnostics = null)
     {
-        await RunCommandAsync($"{AdbPath} -s {deviceId} pull \"{remotePath}\" \"{localPath}\"", timeoutMs: 300000);
+        var psi = new ProcessStartInfo
+        {
+            FileName = AdbPath,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+        psi.ArgumentList.Add("-s");
+        psi.ArgumentList.Add(deviceId);
+        psi.ArgumentList.Add("pull");
+        psi.ArgumentList.Add(remotePath);
+        psi.ArgumentList.Add(localPath);
+
+        using var process = new Process { StartInfo = psi };
+        process.Start();
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        linked.CancelAfter(timeoutMs);
+
+        var outTask = process.StandardOutput.ReadToEndAsync(ct);
+        var errTask = process.StandardError.ReadToEndAsync(ct);
+        try
+        {
+            await process.WaitForExitAsync(linked.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            try { if (!process.HasExited) process.Kill(entireProcessTree: true); } catch { }
+            throw new TimeoutException("adb pull 超时");
+        }
+
+        var outp = await outTask;
+        var errp = await errTask;
+        if (diagnostics != null)
+        {
+            diagnostics.Append(outp);
+            if (errp.Length > 0) diagnostics.Append(" | ").Append(errp);
+        }
+        if (process.ExitCode != 0)
+            throw new IOException($"adb pull 失败 (exit {process.ExitCode}): {(errp + outp).Trim()}");
     }
 
     public static async Task PushFileAsync(string deviceId, string localPath, string remotePath)
     {
         await RunCommandAsync($"{AdbPath} -s {deviceId} push \"{localPath}\" \"{remotePath}\"", timeoutMs: 300000);
+    }
+
+    /// <summary>
+    /// 多源批量拉取（<c>adb pull REMOTE... LOCAL-DIR</c>，SYNC 协议，一次进程拉多个小文件）。
+    /// 注意：某个远端文件失败不会中止其余文件，但整体 exit 会变非 0 ——
+    /// 因此本方法**不抛异常**，只返回 exit code，调用方必须逐个检查 staging 目录里的实际文件。
+    /// </summary>
+    public static async Task<bool> PullFilesAsync(string deviceId, string[] remotePaths, string localDir, int timeoutMs = 60000, CancellationToken ct = default)
+    {
+        Directory.CreateDirectory(localDir);
+        var psi = new ProcessStartInfo
+        {
+            FileName = AdbPath,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+        psi.ArgumentList.Add("-s");
+        psi.ArgumentList.Add(deviceId);
+        psi.ArgumentList.Add("pull");
+        foreach (var p in remotePaths) psi.ArgumentList.Add(p);
+        psi.ArgumentList.Add(localDir);
+
+        using var process = new Process { StartInfo = psi };
+        process.Start();
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        linked.CancelAfter(timeoutMs);
+
+        var outTask = process.StandardOutput.ReadToEndAsync(ct);
+        var errTask = process.StandardError.ReadToEndAsync(ct);
+        try
+        {
+            await process.WaitForExitAsync(linked.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            try { if (!process.HasExited) process.Kill(entireProcessTree: true); } catch { }
+            return false;
+        }
+        await outTask; await errTask;
+        return process.ExitCode == 0;
+    }
+
+    // ===== 结构化 ADB 进程执行（新代码统一走这里，避免按空格拼接/引号问题） =====
+
+    /// <summary>POSIX shell 严格引号：把任意字符串安全地作为一个 shell 参数（防注入 / 含特殊字符文件名）。</summary>
+    public static string ShellQuote(string value)
+        => "'" + value.Replace("'", "'\"'\"'") + "'";
+
+    /// <summary>
+    /// 用 <see cref="ProcessStartInfo.ArgumentList"/> 结构化启动进程（文件名 + 参数数组），
+    /// 不再按空格拼字符串，避免复杂文件名/引号把 host 参数拆坏。带超时 + 整进程树 kill。
+    /// 返回 stdout（若为空则返回 stderr）。
+    /// </summary>
+    public static async Task<string> RunArgsAsync(string fileName, IEnumerable<string> args, int timeoutMs = 10000, CancellationToken ct = default)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = fileName,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+        foreach (var a in args) psi.ArgumentList.Add(a);
+
+        using var process = new Process { StartInfo = psi };
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        linked.CancelAfter(timeoutMs);
+
+        try
+        {
+            process.Start();
+            var outTask = process.StandardOutput.ReadToEndAsync(ct);
+            var errTask = process.StandardError.ReadToEndAsync(ct);
+            try
+            {
+                await process.WaitForExitAsync(linked.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                try { if (!process.HasExited) process.Kill(entireProcessTree: true); } catch { }
+                throw new TimeoutException("adb 命令超时");
+            }
+            var output = await outTask;
+            var error = await errTask;
+            return string.IsNullOrEmpty(output) ? error : output;
+        }
+        finally
+        {
+            process.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 执行 <c>adb -s <id> shell <shellArgs...></c>。host 侧结构化传参；
+    /// shellArgs 里不要放含空格的裸值，需要时用 <see cref="ShellQuote"/>。
+    /// </summary>
+    public static Task<string> ShellCommandAsync(string deviceId, string[] shellArgs, int timeoutMs = 20000, CancellationToken ct = default)
+    {
+        var args = new List<string> { "-s", deviceId, "shell" };
+        args.AddRange(shellArgs);
+        return RunArgsAsync(AdbPath, args, timeoutMs, ct);
+    }
+
+    // ===== content read 能力负缓存（同一设备 session 内一次失败即停用，避免每张图都吃一次 SecurityException） =====
+    private static readonly HashSet<string> _contentReadBroken = new(StringComparer.Ordinal);
+
+    public static bool IsContentReadBroken(string deviceId) => _contentReadBroken.Contains(deviceId);
+
+    public static void MarkContentReadBroken(string deviceId) => _contentReadBroken.Add(deviceId);
+
+    /// <summary>
+    /// 读取 content URI 的二进制内容到内存流（provider fallback 用，不落盘）。host 侧结构化传参。
+    /// 注意：content CLI 会吞异常且 exit 可能为 0，stdout 可能是一段 Java 异常文本 —— 调用方必须内容校验。
+    /// </summary>
+    public static async Task ReadContentUriToStreamAsync(string deviceId, string contentUri, Stream dest, int timeoutMs = 120000, CancellationToken ct = default)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = AdbPath,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+        psi.ArgumentList.Add("-s");
+        psi.ArgumentList.Add(deviceId);
+        psi.ArgumentList.Add("exec-out");
+        psi.ArgumentList.Add("content");
+        psi.ArgumentList.Add("read");
+        psi.ArgumentList.Add("--uri");
+        psi.ArgumentList.Add(contentUri);
+
+        using var process = new Process { StartInfo = psi };
+        process.Start();
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        linked.CancelAfter(timeoutMs);
+
+        var errTask = process.StandardError.ReadToEndAsync(ct);
+        try
+        {
+            await process.StandardOutput.BaseStream.CopyToAsync(dest, ct);
+            await process.WaitForExitAsync(linked.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            try { if (!process.HasExited) process.Kill(entireProcessTree: true); } catch { }
+            throw new TimeoutException("adb content read 超时");
+        }
+
+        var error = await errTask;
+        if (process.ExitCode != 0)
+            throw new IOException($"adb content read 失败 (exit {process.ExitCode}): {error}".Trim());
     }
 
     public static async Task<bool> ConnectAsync(string ipAddress, int port)

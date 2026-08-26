@@ -16,6 +16,7 @@ partial class MainForm
     private System.Windows.Forms.ToolStripMenuItem 扩展屏ToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     private System.Windows.Forms.ToolStripMenuItem 连接TCP设备ToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem 启用TCPToolStripMenuItem;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label pcInputLabel;
     private System.Windows.Forms.TextBox pcInputBox;
@@ -47,6 +48,7 @@ partial class MainForm
         扩展屏ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
         toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
         连接TCP设备ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+        启用TCPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
         label1 = new System.Windows.Forms.Label();
         pcInputLabel = new System.Windows.Forms.Label();
         pcInputBox = new System.Windows.Forms.TextBox();
@@ -110,7 +112,7 @@ partial class MainForm
         // 
         // contextMenuStrip
         // 
-        contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { 传输文件ToolStripMenuItem, 屏幕共享ToolStripMenuItem, 访问相册ToolStripMenuItem, 扩展屏ToolStripMenuItem, toolStripSeparator1, 连接TCP设备ToolStripMenuItem });
+        contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { 传输文件ToolStripMenuItem, 屏幕共享ToolStripMenuItem, 访问相册ToolStripMenuItem, 扩展屏ToolStripMenuItem, toolStripSeparator1, 连接TCP设备ToolStripMenuItem, 启用TCPToolStripMenuItem });
         contextMenuStrip.Name = "contextMenuStrip";
         contextMenuStrip.Size = new System.Drawing.Size(153, 148);
         // 
@@ -153,6 +155,13 @@ partial class MainForm
         连接TCP设备ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
         连接TCP设备ToolStripMenuItem.Text = "连接TCP设备...";
         连接TCP设备ToolStripMenuItem.Click += 连接TCP设备ToolStripMenuItem_Click;
+        // 
+        // 启用TCPToolStripMenuItem
+        // 
+        启用TCPToolStripMenuItem.Name = "启用TCPToolStripMenuItem";
+        启用TCPToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+        启用TCPToolStripMenuItem.Text = "启用TCP(拔线用)";
+        启用TCPToolStripMenuItem.Click += 启用TCPToolStripMenuItem_Click;
         // 
         // label1
         // 
