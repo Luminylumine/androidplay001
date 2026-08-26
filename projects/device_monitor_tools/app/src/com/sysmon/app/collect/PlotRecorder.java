@@ -89,12 +89,15 @@ public final class PlotRecorder {
                 // 哪些子选项到期；按数据组划分，避免高频项触发全量采样
                 boolean anyDue = false, fullDue = false, cpuDue = false;
                 boolean gpuDue = false, fpsDue = false;
+                boolean[] due = new boolean[PlotItems.ALL.length];
                 for (int i = 0; i < PlotItems.ALL.length; i++) {
                     PlotItems.Item it = PlotItems.ALL[i];
                     if (!prefs.plotBool(it.key, Prefs.P_ENABLED)) continue;
                     int freq = prefs.plotInt(it.key, Prefs.P_FREQ_MS);
                     if (freq < 100) freq = 100;
                     if (now - lastSampleTs[i] >= freq) {
+                        due[i] = true;
+                        lastSampleTs[i] = now; // 尝试即推进：数据恒非法时避免每轮 busy 采样
                         anyDue = true;
                         if (it.key.equals("cpu_use")) { fullDue = true; cpuDue = true; }
                         else if (it.key.equals("gpu_use")) gpuDue = true;
@@ -117,20 +120,16 @@ public final class PlotRecorder {
                     if (gpuDue) gpuSampler.sample(d);
                     if (fpsDue) d.screenFps = screenFps.sample();
                     for (int i = 0; i < PlotItems.ALL.length; i++) {
+                        if (!due[i]) continue;
                         PlotItems.Item it = PlotItems.ALL[i];
-                        if (!prefs.plotBool(it.key, Prefs.P_ENABLED)) continue;
-                        int freq = prefs.plotInt(it.key, Prefs.P_FREQ_MS);
-                        if (freq < 100) freq = 100;
-                        if (now - lastSampleTs[i] < freq) continue;
                         float v = valueOf(it, d);
                         if (!Float.isNaN(v)) {
                             PlotStore st = stores.get(it.key);
                             st.append(now, v);
                             st.trim(now, prefs.plotInt(it.key, Prefs.P_RETENTION_SEC),
                                     prefs.plotInt(it.key, Prefs.P_MAX_POINTS));
-                            lastSampleTs[i] = now;
                         }
-                        // 数据非法：不写入、不推进 lastSampleTs（下次仍会尝试）
+                        // 数据非法：不写入（图上断线），按采样周期在 now+freq 再尝试
                     }
                 }
                 // 定期落盘

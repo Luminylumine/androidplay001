@@ -45,6 +45,8 @@ public class PlotView extends View {
     private String title = "";
     private boolean xTicks, yTicks, xGrid, yGrid, xCross, yCross;
     private int axisW = 4, pointSz = 3, gridW = 2;
+    /** 无数据时的中心提示（如"已失能"/"无数据（需 Shizuku/Dhizuku/ADB 通道）"）。 */
+    private String hint = null;
 
     private final int mLeft, mRight, mTop, mLabelBottom, mTitleBottom;
 
@@ -92,6 +94,8 @@ public class PlotView extends View {
         this.gridW = Math.max(1, gridW);
     }
 
+    public void setHint(String h) { this.hint = h; }
+
     private int plotSize() {
         return getWidth() - mLeft - mRight;
     }
@@ -123,11 +127,11 @@ public class PlotView extends View {
         canvas.drawText(title, L + S / 2f, B + mLabelBottom + mTitleBottom - 6, pTitle);
 
         if (n == 0) {
-            // 空数据：只画坐标轴 + 提示
+            // 空数据：只画坐标轴 + 提示（已失能 / 无数据 / 需通道）
             drawAxis(canvas, L, T, S);
             Paint tmp = new Paint(pText);
             tmp.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("无数据", L + S / 2f, T + S / 2f, tmp);
+            canvas.drawText(hint != null ? hint : "无数据", L + S / 2f, T + S / 2f, tmp);
             return;
         }
 

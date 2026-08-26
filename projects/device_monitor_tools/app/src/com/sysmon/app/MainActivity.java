@@ -48,6 +48,7 @@ public class MainActivity extends Activity {
     // 绘图页
     private PlotView[] plotViews;
     private boolean[] plotExpanded;
+    private TextView[] plotTitleTvs;
     private int currentTab = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable ticker = new Runnable() {
@@ -150,6 +151,9 @@ public class MainActivity extends Activity {
                 SysLog.w("auto start overlay: " + t);
             }
         }
+        updatePlotRowStates();
+        if (currentTab == 1) refreshPlots();
+        refreshBatteryOptState();
         handler.post(ticker);
     }
 
@@ -476,6 +480,7 @@ public class MainActivity extends Activity {
                 for (PlotItems.Item it : PlotItems.ALL) prefs.removePlot(it.key);
                 android.widget.Toast.makeText(MainActivity.this,
                         "已重置全部绘图项为默认", android.widget.Toast.LENGTH_SHORT).show();
+                updatePlotRowStates();
                 refreshPlots();
             }
         });
@@ -486,6 +491,8 @@ public class MainActivity extends Activity {
                     prefs.setPlotBool(it.key, Prefs.P_ENABLED, false);
                 android.widget.Toast.makeText(MainActivity.this,
                         "已全部失能", android.widget.Toast.LENGTH_SHORT).show();
+                updatePlotRowStates();
+                refreshPlots();
             }
         });
         addActionButton(actRow, "使能", "全部开始采样", new View.OnClickListener() {
@@ -495,6 +502,8 @@ public class MainActivity extends Activity {
                     prefs.setPlotBool(it.key, Prefs.P_ENABLED, true);
                 android.widget.Toast.makeText(MainActivity.this,
                         "已全部使能", android.widget.Toast.LENGTH_SHORT).show();
+                updatePlotRowStates();
+                refreshPlots();
             }
         });
         llDraw.addView(actRow, lp());
@@ -502,6 +511,7 @@ public class MainActivity extends Activity {
         int n = PlotItems.ALL.length;
         plotViews = new PlotView[n];
         plotExpanded = new boolean[n];
+        plotTitleTvs = new TextView[n];
 
         for (int i = 0; i < n; i++) {
             final int idx = i;
@@ -513,6 +523,7 @@ public class MainActivity extends Activity {
             row.setPadding(0, dp(6), 0, dp(6));
 
             final TextView t = new TextView(this);
+            plotTitleTvs[idx] = t;
             t.setText((plotExpanded[idx] ? "▼ " : "▶ ") + it.title + " (" + it.unit + ")");
             t.setTextColor(FG);
             t.setTextSize(13);
@@ -540,7 +551,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     plotExpanded[idx] = !plotExpanded[idx];
-                    t.setText((plotExpanded[idx] ? "▼ " : "▶ ") + it.title + " (" + it.unit + ")");
+                    updatePlotRowStates();
                     plotViews[idx].setVisibility(plotExpanded[idx] ? View.VISIBLE : View.GONE);
                     if (plotExpanded[idx]) refreshPlots();
                 }
@@ -552,9 +563,30 @@ public class MainActivity extends Activity {
             plotViews[idx] = pv;
             llDraw.addView(pv, lp());
         }
+        updatePlotRowStates();
     }
 
-    /** 刷新所有展开的图（数据 + 样式）。 */
+    /** 刷新每行标题的 使能(●)/失能(○) 指示。 */
+    private void updatePlotRowStates() {
+        if (plotTitleTvs == null) return;
+        for (int i = 0; i < PlotItems.ALL.length; i++) {
+            PlotItems.Item it = PlotItems.ALL[i];
+            boolean en = prefs.plotBool(it.key, Prefs.P_ENABLED);
+            plotTitleTvs[i].setText((plotExpanded[i] ? "▼ " : "▶ ") + (en ? "● " : "○ ")
+                    + it.title + " (" + it.unit + ")");
+            plotTitleTvs[i].setTextColor(en ? GREEN : DIM);
+        }
+    }
+
+    /** 已使能但暂无数据时的提示。 */
+    private String emptyHint(int count, PlotItems.Item it) {
+        if (count > 0) return null;
+        if (it.key.equals("cpu_use") && !Privilege.available())
+            return "无数据（需 Shizuku/Dhizuku/ADB 通道）";
+        return "无数据";
+    }
+
+    /** 刷新所有展开的图（数据 + 样式）。失能项不显示旧数据，显示"已失能"。 */
     private void refreshPlots() {
         if (plotViews == null) return;
         for (int i = 0; i < PlotItems.ALL.length; i++) {
@@ -564,9 +596,14 @@ public class MainActivity extends Activity {
             if (maxPts < 10) maxPts = 10;
             long[] tsBuf = new long[maxPts + 16];
             float[] valBuf = new float[maxPts + 16];
-            PlotStore st = plotRecorder.store(it.key);
-            int c = st.snapshot(tsBuf, valBuf);
+            int c = 0;
+            boolean en = prefs.plotBool(it.key, Prefs.P_ENABLED);
+            if (en) {
+                PlotStore st = plotRecorder.store(it.key);
+                c = st.snapshot(tsBuf, valBuf);
+            }
             plotViews[i].setData(tsBuf, valBuf, c, prefs.plotInt(it.key, Prefs.P_FREQ_MS));
+            plotViews[i].setHint(en ? emptyHint(c, it) : "已失能");
             plotViews[i].setStyle(
                     it.title + " (" + it.unit + ")",
                     prefs.plotBool(it.key, Prefs.P_X_TICKS),
@@ -585,9 +622,43 @@ public class MainActivity extends Activity {
     // ---------- 设置页 ----------
 
     private Switch swHideBg;
+    private TextView tvBatteryOpt;
 
     private void buildSettingsRows() {
         addSection(llChannelInner, "── 设置 ──");
+
+        // 后台保活（长期采集关键项）
+        addSection(llChannelInner, "── 后台保活（长期采集） ──");
+        LinearLayout rowKeep = new LinearLayout(this);
+        rowKeep.setOrientation(LinearLayout.HORIZONTAL);
+        rowKeep.setGravity(Gravity.CENTER_VERTICAL);
+        rowKeep.setPadding(0, dp(6), 0, dp(6));
+        tvBatteryOpt = new TextView(this);
+        tvBatteryOpt.setTextSize(12);
+        tvBatteryOpt.setTypeface(android.graphics.Typeface.MONOSPACE);
+        LinearLayout.LayoutParams keepLp = new LinearLayout.LayoutParams(0, -2, 1);
+        rowKeep.addView(tvBatteryOpt, keepLp);
+        Button bKeep = new Button(this);
+        bKeep.setText("申请豁免");
+        bKeep.setTextSize(11);
+        bKeep.setMinWidth(0);
+        bKeep.setAllCaps(false);
+        bKeep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestBatteryOptExemption();
+            }
+        });
+        rowKeep.addView(bKeep);
+        llChannelInner.addView(rowKeep, lp());
+        TextView keepNote = new TextView(this);
+        keepNote.setText("长期后台监控（绘图/悬浮窗）需要保活，否则系统杀进程后数据断线。"
+                + "华为/EMUI 另需：设置→电池→启动管理→SysMon→关闭自动管理（允许后台活动）。");
+        keepNote.setTextColor(DIM);
+        keepNote.setTextSize(11);
+        keepNote.setTypeface(android.graphics.Typeface.MONOSPACE);
+        llChannelInner.addView(keepNote, lp());
+        refreshBatteryOptState();
 
         // 悬浮窗设置
         addEntryRow(llChannelInner, "悬浮窗设置", "外观/显示项/行为", new View.OnClickListener() {
@@ -669,6 +740,39 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams noteLp = lp();
         noteLp.topMargin = dp(4);
         llChannelInner.addView(note, noteLp);
+    }
+
+    /** 刷新"电池优化豁免"状态显示。 */
+    private void refreshBatteryOptState() {
+        if (tvBatteryOpt == null) return;
+        boolean ok = batteryOptGranted();
+        tvBatteryOpt.setText(ok ? "电池优化：已豁免" : "电池优化：未豁免（后台可能被杀）");
+        tvBatteryOpt.setTextColor(ok ? GREEN : YELLOW);
+    }
+
+    private boolean batteryOptGranted() {
+        try {
+            android.os.PowerManager pm = (android.os.PowerManager) getSystemService(POWER_SERVICE);
+            return pm != null && pm.isIgnoringBatteryOptimizations(getPackageName());
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** 请求忽略电池优化（系统对话框，一次性授权）。 */
+    private void requestBatteryOptExemption() {
+        try {
+            if (batteryOptGranted()) {
+                android.widget.Toast.makeText(this, "已豁免电池优化", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            startActivity(new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    android.net.Uri.parse("package:" + getPackageName())));
+        } catch (Throwable t) {
+            android.widget.Toast.makeText(this,
+                    "请手动在 设置→电池 中搜索本应用并关闭优化", android.widget.Toast.LENGTH_LONG).show();
+        }
+        refreshBatteryOptState();
     }
 
     /** 绘图页全局操作按钮（三等分宽）。 */
