@@ -48,6 +48,13 @@ public class Prefs {
     public boolean autoStart() { return sp.getBoolean("autoStart", false); }
     public void autoStart(boolean v) { sp.edit().putBoolean("autoStart", v).apply(); }
 
+    /**
+     * 系统级提示词覆盖（回退链第三层，可在全局设置编辑）。
+     * null/空 = 使用内置默认 AgentPrompts.builtInBase()。
+     */
+    public String systemPrompt() { return sp.getString("systemPrompt", ""); }
+    public void systemPrompt(String v) { sp.edit().putString("systemPrompt", v == null ? "" : v).apply(); }
+
     /** 经验池保留时间（天，0=不按时间清理）。 */
     public int expRetainDays() { return sp.getInt("expRetainDays", 0); }
     public void expRetainDays(int v) { sp.edit().putInt("expRetainDays", v).apply(); }

@@ -197,6 +197,8 @@ public class AgentService extends Service {
     private static SessionStore chatStore = null;
     /** Permission/prompt snapshot of the running task's agent (req 6/7). */
     private volatile ModelInfo runProfile = null;
+    /** 会话级提示词快照 (任务开始时读取; 空 = 回退模型提示词, 再回退系统提示词). */
+    private volatile String runSessionPrompt = null;
 
     public static void log(String s) {
         log(s, null);
@@ -348,6 +350,14 @@ public class AgentService extends Service {
         currentSessionId = sessionId;
         currentAgentId = agentId;
         runProfile = findProfile(agentId);
+        // 会话级提示词: 任务开始时快照一次 (null/空 = 回退模型级 → 系统默认)
+        runSessionPrompt = null;
+        if (chatStore != null && sessionId != null) {
+            try {
+                ChatSession cs = chatStore.get(sessionId);
+                if (cs != null) runSessionPrompt = cs.customPrompt;
+            } catch (Exception ignored) {}
+        }
         AutoExperienceWriter.get(this).resetRound();
         updateNotif("Agent 运行中", "任务: " + (goal.isEmpty() ? "(无)" : goal));
         final long gen = ++generation;
@@ -1498,8 +1508,9 @@ public class AgentService extends Service {
 
     /**
      * System prompt assembly (req 6/7):
-     * goal + live guide + (agent custom prompt | built-in default)
+     * goal + live guide + (会话提示词 | 模型提示词 | 系统提示词)
      *   + permission-filtered tool docs + installed apps.
+     * 三级回退: 会话提示词(空)→ 模型提示词(空)→ 系统提示词 AgentPrompts.defaultBase(this)(空=内置默认)。
      */
     private String buildSystemPrompt(String goal, String appList) {
         StringBuilder sb = new StringBuilder();
@@ -1510,13 +1521,9 @@ public class AgentService extends Service {
                 for (String g : GUIDE_NOTES) sb.append("- ").append(g).append("\n");
             }
         }
-        String custom = (runProfile != null && runProfile.customPrompt != null)
-                ? runProfile.customPrompt.trim() : "";
-        if (!custom.isEmpty()) {
-            sb.append(custom).append("\n");
-        } else {
-            sb.append(AgentPrompts.defaultBase()).append("\n");
-        }
+        String[] base = AgentPrompts.resolveBase(this, runSessionPrompt, runProfile);
+        CpLog.d("Akasha", "prompt source: " + base[1]);
+        sb.append(base[0]).append("\n");
         sb.append(AgentPrompts.toolDocs(runProfile)).append("\n")
           .append("已装应用: ").append(appList).append("\n");
         return sb.toString();

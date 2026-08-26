@@ -48,6 +48,8 @@ public class SessionStore {
                 s.lastMsgTime = o.optLong("lastMsgTime");
                 s.pinned = o.optBoolean("pinned");
                 s.unread = o.optBoolean("unread");
+                s.customPrompt = o.optString("customPrompt", "");
+                if (s.customPrompt.isEmpty()) s.customPrompt = null;
                 if (s.id != null && !s.id.isEmpty()) out.add(s);
             }
         } catch (Exception ignored) {}
@@ -177,6 +179,7 @@ public class SessionStore {
                 o.put("lastMsgTime", s.lastMsgTime);
                 o.put("pinned", s.pinned);
                 o.put("unread", s.unread);
+                if (s.customPrompt != null) o.put("customPrompt", s.customPrompt);
                 arr.put(o);
             } catch (Exception ignored) {}
         }

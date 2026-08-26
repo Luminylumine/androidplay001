@@ -24,6 +24,8 @@ public class ChatSession {
     public long lastMsgTime = 0;  // epoch millis
     public boolean pinned = false;
     public boolean unread = false;
+    /** 会话级提示词 (null/空 = 回退该 Agent 的模型提示词, 再回退系统提示词; 见 AgentPrompts.resolveBase)。 */
+    public String customPrompt = null;
 
     public ChatSession() {}
 

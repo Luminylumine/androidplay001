@@ -400,7 +400,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="自定义提示词（留空保存 = 恢复系统默认提示词；工具清单按权限自动附加，无需手写）。下方两段提示词长按 3 秒直接复制到剪贴板"
+                        android:text="模型级提示词（留空保存 = 回退系统提示词；工具清单按权限自动附加，无需手写）。提示词回退链: 会话提示词 → 模型提示词 → 系统提示词（会话级在「对话→设置」里改，系统级在「全局设置→系统提示词」里改）。下方提示词长按 3 秒直接复制到剪贴板"
                         android:textSize="11sp"
                         android:textColor="#999999"/>
 
@@ -418,7 +418,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="系统默认提示词（参考）:"
+                        android:text="系统提示词（回退链最底层，参考；可在「全局设置→系统提示词」编辑）:"
                         android:textSize="12sp"
                         android:textColor="#666666"/>
 

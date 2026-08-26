@@ -19,7 +19,8 @@ import java.util.List;
 
 /**
  * Per-agent 设置 (重构 2026-08-24):
- *  - 索引页: 只列设置项名称(定时与唤醒/基本信息/权限/API/经验池/Prompt)
+ *  - 索引页: 只列设置项名称(定时与唤醒/基本信息/权限/API/经验池/模型级Prompt)
+ *  - Prompt 为模型级: 回退链 会话提示词→模型提示词→系统默认 (会话级在 SessionSettingsActivity 改)
  *  - 子页面: 每项独立页面(section extra), 保存后返回索引
  *  - 定时器与唤醒 → TimerWakeupActivity (闹钟/事件/倒计时)
  */
@@ -176,8 +177,8 @@ public class ModelSettingsActivity extends Activity {
             }
         });
 
-        tvDefaultPrompt.setText(AgentPrompts.defaultBase());
-        attachCopy3s(tvDefaultPrompt, "系统默认提示词");
+        tvDefaultPrompt.setText(AgentPrompts.defaultBase(this));
+        attachCopy3s(tvDefaultPrompt, "系统提示词");
         attachCopy3s(tvEffectivePrompt, "当前生效提示词");
 
         if (SEC_INDEX.equals(section)) {
@@ -229,8 +230,10 @@ public class ModelSettingsActivity extends Activity {
         addIndexRow("权限管理", permCountSummary(m), SEC_PERMS);
         addIndexRow("API 与自启", apiSummary(m), SEC_API);
         addIndexRow("经验池与权限", poolSummary(m), SEC_POOL);
-        addIndexRow("自定义 Prompt",
-                (m.customPrompt != null && !m.customPrompt.isEmpty()) ? "已启用自定义 Prompt" : "使用系统默认 Prompt", SEC_PROMPT);
+        addIndexRow("模型级 Prompt",
+                (m.customPrompt != null && !m.customPrompt.isEmpty())
+                        ? "已启用（空则回退系统提示词；会话级可再覆盖）"
+                        : "回退系统提示词（会话级可再覆盖）", SEC_PROMPT);
 
         // 删除 (红色, 仅已存在的 Agent)
         Button del = new Button(this);
@@ -387,7 +390,7 @@ public class ModelSettingsActivity extends Activity {
                 buildPoolPermRows();
                 break;
             case SEC_PROMPT:
-                tvMsTitle.setText("自定义 Prompt");
+                tvMsTitle.setText("模型级 Prompt");
                 prompt.setVisibility(View.VISIBLE);
                 populatePrompt();
                 break;
@@ -615,11 +618,13 @@ public class ModelSettingsActivity extends Activity {
     // ---------- Prompt ----------
 
     private void showEffectivePrompt() {
+        // 这里展示的是"模型级"回退结果; 单个对话还可在会话设置里用会话提示词覆盖
         String base = (m.customPrompt != null && !m.customPrompt.isEmpty())
                 ? m.customPrompt
-                : AgentPrompts.defaultBase();
+                : AgentPrompts.defaultBase(this);
         String tools = AgentPrompts.toolDocs(m);
-        tvEffectivePrompt.setText("当前生效: " + (m.customPrompt != null ? "自定义 Prompt" : "系统默认 Prompt")
+        tvEffectivePrompt.setText("当前模型级生效: " + (m.customPrompt != null ? "模型提示词" : "系统提示词")
+                + "（回退链: 会话提示词 → 模型提示词 → 系统提示词；会话级在「对话→设置」里改）"
                 + "\n【角色/规则】\n" + base
                 + "\n\n【可用工具(按当前权限)】\n" + tools);
         tvEffectivePrompt.setVisibility(View.VISIBLE);

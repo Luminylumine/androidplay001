@@ -3,8 +3,7 @@ package com.akasha.app;
 import android.app.Activity;
 import android.os.Bundle;
 
-/** Standalone settings screen (deep link). The home "设置" tab embeds the
- *  same SettingsPanel inside an in-app view. */
+/** 全局设置页（索引 → 子页面模式; SettingsPanel 动态生成索引行）。 */
 public class SettingsActivity extends Activity {
 
     private SettingsPanel panel;
@@ -13,7 +12,7 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        panel = SettingsPanel.attach(this, findViewById(android.R.id.content), true);
+        panel = SettingsPanel.attach(this, findViewById(android.R.id.content));
     }
 
     @Override

@@ -85,6 +85,14 @@
             android:exported="false"/>
 
         <activity
+            android:name=".PromptEditorActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".SettingsDetailActivity"
+            android:exported="false"/>
+
+        <activity
             android:name=".AgentDialogsPickerActivity"
             android:exported="false"/>
 

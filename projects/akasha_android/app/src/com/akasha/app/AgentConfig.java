@@ -13,7 +13,9 @@ import android.content.Context;
  *  - modelId : LLM 模型名（一般等于 agent.id）
  *  - ctxIn / maxOut : 上下文窗口 & 单次输出上限
  *  - vision  : 是否支持多模态
- *  - prompt  : 系统提示词（空串 = 默认 AgentPrompts.defaultBase()）
+ *  - prompt  : 模型级提示词（空串 = 回退系统提示词 AgentPrompts.defaultBase(ctx)）。
+ *              注意: 会话级/系统级提示词不在此解析，由 AgentService 任务开始时读取会话并
+ *              经 AgentPrompts.resolveBase(ctx, 会话, 模型) 三级回退: 会话→模型→系统(空=内置默认)。
  */
 public final class AgentConfig {
     public final String modelId;

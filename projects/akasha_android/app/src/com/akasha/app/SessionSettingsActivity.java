@@ -10,23 +10,31 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
  * Per-session settings (FR-6).
- * Entry: ChatActivity top gear. Does NOT expose agent-level API/perm/pool/prompt.
+ * Entry: ChatActivity top gear.
  *   - ⏰ Timer & wake-up (delegates to TimerWakeupActivity, still per-agent store)
  *   - Session display name (rename in place, unique across sessions)
+ *   - 会话提示词: 点击进入 PromptEditorActivity 子页面编辑
+ *     (回退链: 会话提示词 → 模型提示词 → 系统提示词; 模型级/系统级不在本页面改)
+ *   - 查看当前生效提示词 (显示回退链实际命中的那一层 + 工具清单)
  *   - Delete this session (final red action at the bottom)
  */
 public class SessionSettingsActivity extends Activity {
 
     public static final String EXTRA_SESSION_ID = "sessionId";
 
+    private static final int REQ_PROMPT = 100;
+
     private SessionStore store;
     private Prefs prefs;
     private ChatSession session;
+    // 会话提示词行的小字 (子页面返回后原地刷新)
+    private TextView tvSessionPromptSub;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +118,32 @@ public class SessionSettingsActivity extends Activity {
                     }
                 }));
 
-        // row 3: delete (red card)
+        // row 3: 会话提示词 (点击进入子页面编辑; 空 = 回退模型提示词)
+        {
+            LinearLayout r = promptRow("💬 会话提示词（本对话）", sessionPromptSub());
+            tvSessionPromptSub = (TextView) r.getChildAt(1);
+            r.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    Intent i = new Intent(SessionSettingsActivity.this, PromptEditorActivity.class)
+                            .putExtra(PromptEditorActivity.EXTRA_SCOPE, PromptEditorActivity.SCOPE_SESSION)
+                            .putExtra(PromptEditorActivity.EXTRA_SESSION_ID, session.id);
+                    startActivityForResult(i, REQ_PROMPT);
+                }
+            });
+            body.addView(r);
+        }
+
+        // row 4: 查看当前生效提示词
+        body.addView(row(
+                "👀 查看当前生效提示词",
+                "回退链: 会话提示词 → 模型提示词 → 系统提示词",
+                new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        showEffectivePrompt();
+                    }
+                }));
+
+        // row 5: delete (red card)
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -164,6 +197,109 @@ public class SessionSettingsActivity extends Activity {
             if (session.agentId.equals(m.id)) return m.name == null ? m.id : m.name;
         }
         return session.agentId;
+    }
+
+    // ---------- 会话提示词 ----------
+
+    /** 提示词编辑行: 与 row() 相同结构, 调用方取 getChildAt(1) 刷新小字。 */
+    private LinearLayout promptRow(String title, String sub) {
+        LinearLayout r = new LinearLayout(this);
+        r.setOrientation(LinearLayout.VERTICAL);
+        int pad = dp(12);
+        r.setPadding(pad, pad, pad, pad);
+        r.setBackgroundColor(Color.WHITE);
+        r.setClickable(true);
+        r.setFocusable(true);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(6);
+        r.setLayoutParams(lp);
+        TextView t = new TextView(this);
+        t.setText(title);
+        t.setTextColor(Color.BLACK);
+        t.setTextSize(16);
+        t.setTypeface(null, android.graphics.Typeface.BOLD);
+        r.addView(t);
+        TextView s = new TextView(this);
+        s.setText(sub);
+        s.setTextColor(0xFF666666);
+        s.setTextSize(13);
+        r.addView(s);
+        return r;
+    }
+
+    private String sessionPromptRaw() {
+        if (session == null) return "";
+        return session.customPrompt == null ? "" : session.customPrompt;
+    }
+
+    private String sessionPromptSub() {
+        return sessionPromptRaw().trim().isEmpty()
+                ? "未设置（跟随模型提示词）" : "已启用自定义";
+    }
+
+    private ModelInfo agentModel() {
+        if (session == null || session.agentId == null) return null;
+        for (ModelInfo m : prefs.models()) {
+            if (session.agentId.equals(m.id)) return m;
+        }
+        return null;
+    }
+
+    private void refreshPromptRows() {
+        if (tvSessionPromptSub != null) tvSessionPromptSub.setText(sessionPromptSub());
+    }
+
+    /** 从会话提示词子页面返回: 刷新摘要并通知 ChatActivity。 */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_PROMPT && resultCode == RESULT_OK) {
+            ChatSession fresh = store.get(session.id);
+            if (fresh != null) session.customPrompt = fresh.customPrompt;
+            refreshPromptRows();
+            setResult(RESULT_OK);
+        }
+    }
+
+    /** 显示回退链实际命中的提示词 + 工具清单, 可复制。 */
+    private void showEffectivePrompt() {
+        ModelInfo m = agentModel();
+        String[] base = AgentPrompts.resolveBase(this, sessionPromptRaw(), m);
+        String full = "来源: " + base[1]
+                + "\n回退链: 会话提示词 → 模型提示词 → 系统提示词"
+                + "\n\n【角色/规则】\n" + base[0]
+                + "\n\n【可用工具(按当前权限)】\n" + AgentPrompts.toolDocs(m);
+        TextView tv = new TextView(this);
+        tv.setText(full);
+        tv.setTextSize(11);
+        tv.setTextColor(0xFF555555);
+        tv.setPadding(dp(12), dp(8), dp(12), dp(8));
+        tv.setTextIsSelectable(true);
+        ScrollView sv = new ScrollView(this);
+        sv.addView(tv);
+        new AlertDialog.Builder(this)
+                .setTitle("当前生效提示词（" + base[1] + "）")
+                .setView(sv)
+                .setPositiveButton("复制全文", new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface d, int w) {
+                        try {
+                            android.content.ClipboardManager cm =
+                                    (android.content.ClipboardManager)
+                                            getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText(
+                                    "当前生效提示词", full));
+                            Toast.makeText(SessionSettingsActivity.this, "已复制",
+                                    Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(SessionSettingsActivity.this, "复制失败",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton("关闭", null)
+                .show();
     }
 
     /** Index row: title bold / sub gray / clickable. */

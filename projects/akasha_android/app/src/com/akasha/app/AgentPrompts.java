@@ -1,19 +1,56 @@
 package com.akasha.app;
 
+import android.content.Context;
+
 /**
  * System prompt building blocks (req 7):
- *  - defaultBase(): the built-in persona/rules, shown read-only in the
- *    model settings page for reference.
+ *  - builtInBase(): the built-in persona/rules (read-only reference text).
+ *  - defaultBase(ctx): the effective 系统提示词 — 用户在全局设置自定义过的覆盖值，
+ *    未自定义则用内置 builtInBase()。
  *  - toolDocs(profile): the action/tool documentation, filtered by the
  *    per-agent permission grants (req 6) - ungranted tools are NOT
  *    advertised to the LLM at all.
  *
- * AgentService assembles: goal + guide + (customPrompt | defaultBase)
+ * AgentService assembles: goal + guide
+ *   + (会话提示词 | 模型提示词 | 系统提示词)
  *   + toolDocs(profile) + installed apps.
+ *
+ * 回退链见 {@link #resolveBase(Context, String, ModelInfo)}:
+ * 会话提示词(空则)→ 模型提示词(空则)→ 系统提示词(空则=内置默认)。
  */
 public class AgentPrompts {
 
-    public static String defaultBase() {
+    /**
+     * 三级提示词回退: 会话提示词 → 模型提示词 → 系统提示词（空=内置默认）。
+     * @return [0]=生效提示词文本  [1]=来源标签("会话提示词"/"模型提示词"/"系统提示词(自定义)"/"系统提示词(内置默认)")
+     */
+    public static String[] resolveBase(Context ctx, String sessionPrompt, ModelInfo model) {
+        if (sessionPrompt != null && !sessionPrompt.trim().isEmpty()) {
+            return new String[]{sessionPrompt.trim(), "会话提示词"};
+        }
+        if (model != null && model.customPrompt != null
+                && !model.customPrompt.trim().isEmpty()) {
+            return new String[]{model.customPrompt.trim(), "模型提示词"};
+        }
+        return new String[]{defaultBase(ctx),
+                systemPromptSet(ctx) ? "系统提示词(自定义)" : "系统提示词(内置默认)"};
+    }
+
+    /** 用户是否自定义了系统提示词（全局设置→系统提示词）。 */
+    public static boolean systemPromptSet(Context ctx) {
+        String sp = new Prefs(ctx).systemPrompt();
+        return sp != null && !sp.trim().isEmpty();
+    }
+
+    public static String defaultBase(Context ctx) {
+        String sp;
+        try { sp = new Prefs(ctx).systemPrompt(); } catch (Exception e) { sp = null; }
+        if (sp != null && !sp.trim().isEmpty()) return sp.trim();
+        return builtInBase();
+    }
+
+    /** 内置默认提示词（回退链最底层的兜底文本，只读参考）。 */
+    public static String builtInBase() {
         StringBuilder sb = new StringBuilder();
         sb.append("你是这台安卓手机(720x1600 竖屏)的智能体。\n")
           .append("观察方式: 每轮自动给你【屏幕文本(无障碍)】。仅当你明确需要看画面(图片/画布/排版/验证码)时输出 look，下一轮会附带截图。截图很贵，能用文本解决就不要 look。\n")
