@@ -3,6 +3,7 @@ package com.sysmon.app.collect;
 import android.content.Context;
 
 import com.sysmon.app.Prefs;
+import com.sysmon.app.Privilege;
 import com.sysmon.app.SysLog;
 
 import java.util.HashMap;
@@ -21,6 +22,9 @@ public final class PlotRecorder {
     private final Context ctx;
     private final Prefs prefs;
     private final Sampler sampler;
+    private final ShellSampler shellSampler;
+    private final GpuSampler gpuSampler;
+    private final ScreenFps screenFps;
     private final Map<String, PlotStore> stores = new HashMap<>();
     private final long[] lastSampleTs;
     private volatile boolean running = false;
@@ -31,6 +35,11 @@ public final class PlotRecorder {
         this.ctx = ctx.getApplicationContext();
         this.prefs = new Prefs(ctx);
         this.sampler = new Sampler(ctx);
+        this.shellSampler = new ShellSampler();
+        this.shellSampler.setContext(ctx);
+        this.gpuSampler = new GpuSampler();
+        this.screenFps = new ScreenFps();
+        this.screenFps.setContext(ctx);
         this.lastSampleTs = new long[PlotItems.ALL.length];
         for (PlotItems.Item it : PlotItems.ALL) {
             stores.put(it.key, new PlotStore(ctx, it.key));
@@ -77,8 +86,9 @@ public final class PlotRecorder {
         while (running) {
             try {
                 long now = System.currentTimeMillis();
-                // 是否有子选项到期
-                boolean anyDue = false;
+                // 哪些子选项到期；按数据组划分，避免高频项触发全量采样
+                boolean anyDue = false, fullDue = false, cpuDue = false;
+                boolean gpuDue = false, fpsDue = false;
                 for (int i = 0; i < PlotItems.ALL.length; i++) {
                     PlotItems.Item it = PlotItems.ALL[i];
                     if (!prefs.plotBool(it.key, Prefs.P_ENABLED)) continue;
@@ -86,11 +96,26 @@ public final class PlotRecorder {
                     if (freq < 100) freq = 100;
                     if (now - lastSampleTs[i] >= freq) {
                         anyDue = true;
-                        break;
+                        if (it.key.equals("cpu_use")) { fullDue = true; cpuDue = true; }
+                        else if (it.key.equals("gpu_use")) gpuDue = true;
+                        else if (it.key.equals("screen_fps")) fpsDue = true;
+                        else fullDue = true; // 功率/电量/网络：app 采样器（CPU 走 shell）
                     }
                 }
                 if (anyDue) {
-                    SysData d = sampler.sample();
+                    SysData d = null;
+                    if (fullDue) {
+                        // CPU 需要 shell 通道（/proc/stat）；其余走 app 采样器
+                        if (cpuDue) {
+                            Privilege.ensure();
+                            d = Privilege.available() ? shellSampler.sample() : sampler.sample();
+                        } else {
+                            d = sampler.sample();
+                        }
+                    }
+                    if (d == null) d = new SysData();
+                    if (gpuDue) gpuSampler.sample(d);
+                    if (fpsDue) d.screenFps = screenFps.sample();
                     for (int i = 0; i < PlotItems.ALL.length; i++) {
                         PlotItems.Item it = PlotItems.ALL[i];
                         if (!prefs.plotBool(it.key, Prefs.P_ENABLED)) continue;
@@ -130,6 +155,10 @@ public final class PlotRecorder {
             case "out_power":  return d.powerOut;   // 未充电时为 NaN
             case "in_power":   return d.powerIn;    // 未充电时为 NaN
             case "batt_level": return d.battLevel >= 0 ? d.battLevel : Float.NaN;
+            case "cpu_use":    return d.cpuTotal;   // 无 shell 通道时 NaN → 断线
+            case "screen_fps": return d.screenFps;
+            case "gpu_use":    return d.gpuUtil;
+            case "net_rate":   return d.netRxRate;  // 下载速率 KB/s
             default:           return Float.NaN;
         }
     }

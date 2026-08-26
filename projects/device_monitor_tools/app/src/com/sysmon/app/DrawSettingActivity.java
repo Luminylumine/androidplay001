@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -49,11 +50,13 @@ public class DrawSettingActivity extends Activity {
         PlotItems.Item it = PlotItems.byKey(plotKey);
         plotTitle = it != null ? it.title : plotKey;
 
+        ScrollView root = new ScrollView(this);
+        root.setBackgroundColor(0xFF0F0F14);
         ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
-        ll.setBackgroundColor(0xFF0F0F14);
         ll.setPadding(dp(12), dp(12), dp(12), dp(16));
-        setContentView(ll);
+        root.addView(ll);
+        setContentView(root);
 
         addSection("── " + plotTitle + " · 设置 ──");
 

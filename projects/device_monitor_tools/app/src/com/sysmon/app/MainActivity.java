@@ -465,6 +465,40 @@ public class MainActivity extends Activity {
     /** 构建子选项行：标题 + 展开（手风琴）+ 右侧"设置"按钮。 */
     private void buildPlotRows() {
         addSection(llDraw, "── 绘图 ──");
+
+        // 全局操作行：重置 / 失能 / 使能（应用于所有绘图对象）
+        LinearLayout actRow = new LinearLayout(this);
+        actRow.setOrientation(LinearLayout.HORIZONTAL);
+        actRow.setGravity(Gravity.CENTER_VERTICAL);
+        addActionButton(actRow, "重置", "所有项回落到表格默认格式", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (PlotItems.Item it : PlotItems.ALL) prefs.removePlot(it.key);
+                android.widget.Toast.makeText(MainActivity.this,
+                        "已重置全部绘图项为默认", android.widget.Toast.LENGTH_SHORT).show();
+                refreshPlots();
+            }
+        });
+        addActionButton(actRow, "失能", "全部停止采样", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (PlotItems.Item it : PlotItems.ALL)
+                    prefs.setPlotBool(it.key, Prefs.P_ENABLED, false);
+                android.widget.Toast.makeText(MainActivity.this,
+                        "已全部失能", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+        addActionButton(actRow, "使能", "全部开始采样", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (PlotItems.Item it : PlotItems.ALL)
+                    prefs.setPlotBool(it.key, Prefs.P_ENABLED, true);
+                android.widget.Toast.makeText(MainActivity.this,
+                        "已全部使能", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+        llDraw.addView(actRow, lp());
+
         int n = PlotItems.ALL.length;
         plotViews = new PlotView[n];
         plotExpanded = new boolean[n];
@@ -635,6 +669,21 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams noteLp = lp();
         noteLp.topMargin = dp(4);
         llChannelInner.addView(note, noteLp);
+    }
+
+    /** 绘图页全局操作按钮（三等分宽）。 */
+    private void addActionButton(LinearLayout parent, String label, String desc, View.OnClickListener onClick) {
+        Button b = new Button(this);
+        b.setText(label);
+        b.setContentDescription(desc);
+        b.setTextSize(12);
+        b.setMinWidth(0);
+        b.setAllCaps(false);
+        b.setOnClickListener(onClick);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1);
+        lp.leftMargin = dp(2);
+        lp.rightMargin = dp(2);
+        parent.addView(b, lp);
     }
 
     /** 设置入口行：标签 + 描述 + 按钮。 */

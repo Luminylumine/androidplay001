@@ -150,7 +150,14 @@ public final class Prefs {
     }
     public int plotInt(String plot, String s) {
         String k = "plot_" + plot + "_" + s;
-        return sp.contains(k) ? sp.getInt(k, 0) : plotDefInt(s);
+        if (sp.contains(k)) return sp.getInt(k, 0);
+        if (s.equals(P_FREQ_MS)) {
+            // 回退顺序：该项自身默认频率 → 表格默认格式
+            com.sysmon.app.collect.PlotItems.Item it =
+                    com.sysmon.app.collect.PlotItems.byKey(plot);
+            if (it != null && it.defFreqMs > 0) return it.defFreqMs;
+        }
+        return plotDefInt(s);
     }
     public void setPlotInt(String plot, String s, int v) {
         sp.edit().putInt("plot_" + plot + "_" + s, v).apply();
