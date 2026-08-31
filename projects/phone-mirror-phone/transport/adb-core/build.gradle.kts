@@ -27,4 +27,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines.core)
     implementation(libs.okio)
+
+    testImplementation("junit:junit:4.13.2")
 }
