@@ -1,0 +1,3 @@
+# Copy to local.properties and fill in paths
+# sdk.dir=C\\Users\\<your-user>\\AppData\\Local\\Android\\Sdk
+# ndk.dir=C\\Users\\<your-user>\\AppData\\Local\\Android\\Sdk\\ndk\\<version>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Jetpack Compose Material3 在运行时动态生成主题，
+        但 Manifest 里需要一个基础 Style 作为 fallback (status bar color 等)。
+    -->
+    <style name="Theme.PhoneMirrorPhone" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>

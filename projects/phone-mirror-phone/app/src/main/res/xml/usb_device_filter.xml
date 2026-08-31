@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        ADB USB 接口特征：
+        Interface.Class    = 0xFF  (Vendor Specific)
+        Interface.Subclass = 0x42
+        Interface.Protocol = 0x01
+    -->
+    <usb-device class="255" subclass="66" protocol="1" />
+</resources>
