@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 29
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -23,10 +23,10 @@ android {
 }
 
 dependencies {
+    // core 的 Result 出现在本模块公开 API（AdbConnection/AdbStream/AdbTransport）中，用 api 暴露
     api(project(":core"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines.core)
-    implementation(libs.okio)
 
     testImplementation("junit:junit:4.13.2")
 }

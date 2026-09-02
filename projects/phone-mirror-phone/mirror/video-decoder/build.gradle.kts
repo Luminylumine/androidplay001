@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 29
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -24,6 +24,7 @@ android {
 
 dependencies {
     api(project(":mirror:scrcpy-protocol"))
+    api(project(":core"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

@@ -36,7 +36,7 @@ interface RemoteFileService {
      */
     suspend fun push(
         remotePath: String,
-        source: kotlinx.coroutines.flow.flow<ByteArray>,
+        source: Flow<ByteArray>,
         totalSize: Long,
         mode: Int = 0b110_100_100,
     ): Result<Unit>

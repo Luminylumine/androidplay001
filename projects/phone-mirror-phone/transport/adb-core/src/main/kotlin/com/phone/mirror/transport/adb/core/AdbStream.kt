@@ -1,7 +1,6 @@
 package com.phone.mirror.transport.adb.core
 
 import com.phone.mirror.core.Result
-import kotlinx.coroutines.channels.Channel
 
 /**
  * 多路复用的 ADB stream，由 [AdbConnection.open] 获得。

@@ -3,6 +3,7 @@ package com.phone.mirror.phone.ui.device
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +37,7 @@ fun DeviceListScreen(
     container: AppContainer,
     onMirrorClick: (String) -> Unit,
     onPairingClick: () -> Unit,
+    onPhase0Click: () -> Unit,
     onGalleryClick: (String) -> Unit,
     onFilesClick: (String) -> Unit,
 ) {
@@ -65,6 +67,9 @@ fun DeviceListScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 8.dp),
                     )
+                    Button(onClick = onPhase0Click, modifier = Modifier.padding(top = 16.dp)) {
+                        Text("Phase 0 手动连接测试")
+                    }
                 }
             }
         } else {

@@ -34,8 +34,30 @@ inline fun <T> runResult(block: () -> T): Result<T> = try {
     Result.failure(t.message ?: t.javaClass.simpleName, t)
 }
 
+suspend inline fun <T> runResultSuspend(crossinline block: suspend () -> T): Result<T> = try {
+    Result.success(block())
+} catch (t: Throwable) {
+    Result.failure(t.message ?: t.javaClass.simpleName, t)
+}
+
+/**
+ * 执行 [block]（block 本身返回 [Result]，不二次包装）；
+ * block 抛异常时转成 [Result.Failure]。
+ * 与 [kotlin.runCatching] 的区别：runCatching 会把返回值也包一层。
+ */
+inline fun <T> runCatchingResult(block: () -> Result<T>): Result<T> = try {
+    block()
+} catch (t: Throwable) {
+    Result.failure(t.message ?: t.javaClass.simpleName, t)
+}
+
 inline fun <T> Result<T>.onFailure(block: (Result.Failure) -> Unit): Result<T> {
     if (this is Result.Failure) block(this)
+    return this
+}
+
+inline fun <T> Result<T>.onSuccess(block: (T) -> Unit): Result<T> {
+    if (this is Result.Success) block(value)
     return this
 }
 

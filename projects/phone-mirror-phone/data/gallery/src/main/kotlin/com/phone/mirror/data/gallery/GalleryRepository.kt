@@ -1,5 +1,8 @@
 package com.phone.mirror.data.gallery
 
+import com.phone.mirror.core.Result
+import com.phone.mirror.core.runResultSuspend
+import com.phone.mirror.core.successOrNull
 import com.phone.mirror.data.remote.files.RemoteFileService
 import com.phone.mirror.transport.adb.core.AdbConnection
 import kotlinx.coroutines.async
@@ -76,7 +79,7 @@ class GalleryRepository(
         //  2) Mark tombstones（远端已不存在的本地条目）
         //  3) 从 Room 重新读回权威数据源
         val remoteMediaIds = remoteList.map { it.mediaId }.distinct()
-        dao.markTombstones(deviceId, System.currentTimeMillis() / 1000, remoteMediaIds)
+        markMissingAsTombstones(remoteMediaIds)
 
         dao.upsertAll(remoteList.map { it.toEntity() })
         dao.purgeTombstones(deviceId)
@@ -88,7 +91,7 @@ class GalleryRepository(
     }
 
     /** 增量轮询（后台每 30s 调用一次） */
-    suspend fun pollNewAsync(): Result<Int> = runResult {
+    suspend fun pollNewAsync(): Result<Int> = runResultSuspend {
         val remoteList = queryRemoteGallery()
 
         // 过滤出上次同步后新增 / 修改的条目
@@ -99,7 +102,7 @@ class GalleryRepository(
 
         // 更新远端不存在的条目为 tombstone
         val remoteMediaIds = remoteList.map { it.mediaId }
-        dao.markTombstones(deviceId, System.currentTimeMillis() / 1000, remoteMediaIds)
+        markMissingAsTombstones(remoteMediaIds)
         dao.purgeTombstones(deviceId)
 
         // 重算内存状态
@@ -124,6 +127,20 @@ class GalleryRepository(
     }
 
     // —— 内部工具 ——
+
+    /**
+     * 把远端已不存在的条目标记为 tombstone。
+     * 远端列表为空时走 [GalleryDao.markAllTombstones] —— Room 对空列表会生成
+     * `NOT IN ()` 非法 SQL，首次空同步会直接崩溃。
+     */
+    private suspend fun markMissingAsTombstones(remoteMediaIds: List<Long>) {
+        val ts = System.currentTimeMillis() / 1000
+        if (remoteMediaIds.isEmpty()) {
+            dao.markAllTombstones(deviceId, ts)
+        } else {
+            dao.markTombstones(deviceId, ts, remoteMediaIds)
+        }
+    }
 
     /** 从 [items] 构建 [AlbumSummary] 列表（按每个 album 的最新条目做 cover 图片） */
     private fun buildAlbums(items: List<GalleryItem>): List<AlbumSummary> {

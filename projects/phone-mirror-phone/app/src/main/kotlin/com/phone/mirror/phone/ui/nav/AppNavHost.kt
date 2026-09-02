@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.phone.mirror.phone.Phase0TestScreen
 import com.phone.mirror.phone.di.AppContainer
 import com.phone.mirror.phone.ui.device.DeviceListScreen
 import com.phone.mirror.phone.ui.files.FileBrowserScreen
@@ -19,6 +20,7 @@ import com.phone.mirror.phone.ui.pairing.PairingScreen
 object Routes {
     const val DEVICE_LIST = "device_list"
     const val PAIRING = "pairing"
+    const val PHASE0 = "phase0"
     const val MIRROR = "mirror/{deviceId}"
     const val FILES = "files/{deviceId}"
     const val GALLERY = "gallery/{deviceId}"
@@ -47,6 +49,9 @@ fun AppNavHost(
                 onPairingClick = {
                     navController.navigate(Routes.PAIRING)
                 },
+                onPhase0Click = {
+                    navController.navigate(Routes.PHASE0)
+                },
                 onGalleryClick = { deviceId ->
                     navController.navigate(Routes.GALLERY.replace("{deviceId}", deviceId))
                 },
@@ -58,6 +63,10 @@ fun AppNavHost(
 
         composable(Routes.PAIRING) {
             PairingScreen(container = container)
+        }
+
+        composable(Routes.PHASE0) {
+            Phase0TestScreen()
         }
 
         composable(

@@ -9,7 +9,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 29
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -26,6 +26,7 @@ android {
 dependencies {
     api(project(":transport:adb-core"))
     api(project(":core"))
+    api(project(":data:remote-files"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

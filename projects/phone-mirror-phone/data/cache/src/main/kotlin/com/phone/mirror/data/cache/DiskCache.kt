@@ -2,6 +2,7 @@ package com.phone.mirror.data.cache
 
 import android.content.Context
 import com.phone.mirror.core.Result
+import com.phone.mirror.core.runResult
 import java.io.File
 import java.security.MessageDigest
 

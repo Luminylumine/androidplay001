@@ -1,6 +1,6 @@
 package com.phone.mirror.transport.adb.core
 
-import android.util.Base64
+import java.util.Base64
 import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -34,7 +34,7 @@ import java.security.spec.RSAKeyGenParameterSpec
 class AdbKeyPair(
     /** Java RSA 密钥对 (exportable, MVP 阶段不存 AndroidKeyStore) */
     val keyPair: KeyPair,
-    /** ADB 格式 Base64 public key (700 chars + 一个 '=' padding) */
+    /** ADB 格式 Base64 public key (标准 Base64，700 chars，含一个 '=' padding) */
     val publicKeyBase64: String,
     /** 用于 AUTH/RSAPUBLICKEY 的 payload: base64 + ' ' + comment + '\0' */
     val authPayload: ByteArray,
@@ -80,11 +80,12 @@ class AdbKeyPair(
             }
 
             val raw524 = encodeAdbPublicKey(pub)
-            val base64 = Base64.encodeToString(raw524, Base64.NO_WRAP)
+            // 标准 Base64（带 padding）：524 字节 → ceil(524/3)*4 = 700 chars（含 1 个 '='）
+            // 与 AOSP adb_auth_host 的 key 序列化一致；withoutPadding 会得到 699 chars
+            val base64 = Base64.getEncoder().encodeToString(raw524)
 
-            // 524 mod 3 = 2 -> ceil(524/3)*4 = 700 chars + 1 padding
             check(base64.length == 700) {
-                "ADB public key Base64 should be 700 chars, got ${base64.length}"
+                "ADB public key Base64 should be 700 chars (with padding), got ${base64.length}"
             }
 
             // AUTH/RSAPUBLICKEY payload: "<base64> <comment>\0"

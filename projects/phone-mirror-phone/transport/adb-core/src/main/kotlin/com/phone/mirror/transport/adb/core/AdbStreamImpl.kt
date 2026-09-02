@@ -2,6 +2,7 @@ package com.phone.mirror.transport.adb.core
 
 import com.phone.mirror.core.Result
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
@@ -12,15 +13,12 @@ import kotlinx.coroutines.withTimeoutOrNull
  *
  * ## 接收端
  * 用 [readChannel] 把后台 readLoop 收到的 WRTE payload 投递给调用方的 [read]。
- * 使用容量 256 的 BufferedChannel —— 足够容纳 shell 输出（每个 WRTE 最多 1 MiB，
- * 但实际 shell 输出一般是 KB 级 chunk），避免 readLoop 被 block 而饿死其他 stream。
+ * 使用容量 256 的 BufferedChannel —— 足够容纳 shell 输出。
  *
  * ## OKAY flow control
  * 收到对端 OKAY 有两个用途：
  *  1. OPEN 后的首次 OKAY —— 把 device_local_id 存到 stream 的 remoteId
- *  2. 每次我们 write() 后对端 OKAY —— 唤醒 write() 里正在等待的协程，允许下一次 write
- *
- * MVP 简化：每次 write 后都等对端 OKAY 再返回，不做精确 window 追踪。
+ *  2. 每次我们 write() 后对端 OKAY —— 唤醒 write() 里正在等待的协程
  */
 class AdbStreamImpl internal constructor(
     private val connection: AdbConnectionImpl,
@@ -34,8 +32,8 @@ class AdbStreamImpl internal constructor(
     @Volatile
     private var okayReceived = false
 
-    /** Java object 用于 synchronized wait/notify —— 不能用 kotlinx Mutex，因为 awaitOkay 是非 suspend wait */
-    private val okayLock = Any()
+    /** Java object 用于 synchronized wait/notify —— 必须是 java.lang.Object 否则 Kotlin 找不到 wait/notify */
+    private val okayLock = java.lang.Object()
 
     @Volatile
     private var closeReceived = false
@@ -63,7 +61,7 @@ class AdbStreamImpl internal constructor(
 
     override val isClosed: Boolean get() = closeReceived || closedLocal
 
-    /** readLoop 投递 WRTE payload —— suspend，channel 满了会背压 readLoop */
+    /** readLoop 投递 WRTE payload */
     internal suspend fun deliverPayload(payload: ByteArray) {
         if (isClosed) return
         readChannel.send(payload)
@@ -80,7 +78,6 @@ class AdbStreamImpl internal constructor(
     /** readLoop 收到对端 CLSE */
     internal fun deliverClose() {
         closeReceived = true
-        // 确保 channel 关闭，让 read() 立即返回空
         runCatching { readChannel.close() }
         synchronized(okayLock) { okayLock.notifyAll() }
     }
@@ -89,20 +86,20 @@ class AdbStreamImpl internal constructor(
 
     override suspend fun write(data: ByteArray): Result<Unit> {
         if (isClosed) return Result.failure("stream closed")
-        return runCatchingResult {
-            // 简单 flow-control: 发 WRTE 前先 reset okayReceived，然后等对端 OKAY 再返回
+        return try {
             synchronized(okayLock) { okayReceived = false }
 
             val pkt = AdbPacket.wrte(localId, remoteId, data)
             connection.writePacket(pkt)
 
-            // 等对端 OKAY —— 或 CLSE (stream 被关)
             withTimeoutOrNull(30_000L) {
                 synchronized(okayLock) {
                     while (!okayReceived && !closeReceived) okayLock.wait()
                 }
             }
             Result.success(Unit)
+        } catch (t: Throwable) {
+            Result.failure(t.message ?: t.javaClass.simpleName, t)
         }
     }
 
@@ -119,7 +116,6 @@ class AdbStreamImpl internal constructor(
     override suspend fun awaitClose() {
         if (closeReceived) return
         try {
-            // drain 所有剩余 payload
             for (p in readChannel) { /* discard */ }
         } catch (_: kotlinx.coroutines.channels.ClosedReceiveChannelException) {
         }
@@ -135,19 +131,11 @@ class AdbStreamImpl internal constructor(
         runCatching { readChannel.close() }
         synchronized(okayLock) { okayLock.notifyAll() }
 
-        // 异步发 CLSE —— 不阻塞
         runCatching {
-            // AdbConnectionImpl 是 CoroutineScope，我们可以 launch
             val pkt = AdbPacket.clse(localId, remoteId)
             connection.launch {
                 runCatching { connection.writePacket(pkt) }
             }
         }
-    }
-
-    private inline fun <T> runCatchingResult(block: () -> Result<T>): Result<T> = try {
-        block()
-    } catch (t: Throwable) {
-        Result.failure(t.message ?: t.javaClass.simpleName, t)
     }
 }

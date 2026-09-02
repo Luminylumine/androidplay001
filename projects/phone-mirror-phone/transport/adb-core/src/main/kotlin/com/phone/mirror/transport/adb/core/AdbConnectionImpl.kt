@@ -1,8 +1,7 @@
 package com.phone.mirror.transport.adb.core
 
 import com.phone.mirror.core.Result
-import com.phone.mirror.core.errorOrThrow
-import com.phone.mirror.core.successOrNull
+import com.phone.mirror.core.runCatchingResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,18 +25,11 @@ import kotlin.coroutines.CoroutineContext
  * **线程模型**：
  *  - 所有写入 transport 的操作通过 [writeMutex] 串行化（TCP 字节流上多个 packet 不能交叉）
  *  - 一个后台 [readerJob] 持续从 transport 读 packet，然后 dispatch 到各 stream channel
- *  - stream 的 read() 从自己的 channel 取 WRTE payload
- *  - stream 的 write() 先 reset okayReceived=false，发 WRTE，再等对端 OKAY 再返回
  *
  * **ACK 规则**：
- *  - OPEN 成功：device 发 OKAY(arg0=device_local_id, arg1=host_local_id) —— 我们把 arg0 存为 stream 的 remoteId
- *  - 每次 WRTE 后：device 发 OKAY 作为 window update —— 唤醒 write() 里等待的协程
+ *  - OPEN 成功：device 发 OKAY(arg0=device_local_id, arg1=host_local_id) —— arg0 存为 stream 的 remoteId
+ *  - 每次 WRTE 后：device 发 OKAY 作为 window update —— 唤醒 write()
  *  - CLSE：双方都可能发，收到后关闭 stream
- *
- * **生命周期**：
- *  1. 构造后调用 [connect] —— 阻塞到 CNXN 握手完成
- *  2. 使用 [open] / [shell]
- *  3. 调用 [close] 关闭所有 stream + transport
  */
 class AdbConnectionImpl(
     private val transport: AdbTransport,
@@ -50,7 +42,7 @@ class AdbConnectionImpl(
     private var nextLocalId = 1
     private val nextLocalIdLock = Any()
 
-    /** 写 transport 的互斥锁 —— 保证多个 stream 不会同时写 24-byte header + payload 乱序 */
+    /** 写 transport 的互斥锁 —— 保证多个 stream 不会同时写 header + payload 乱序 */
     private val writeMutex = Mutex()
 
     /** 活跃 stream: key = localId (host 侧) */
@@ -74,7 +66,8 @@ class AdbConnectionImpl(
         return runCatchingResult {
             ensureActive()
             if (!transport.isConnected) {
-                transport.connect().onFailure { return@runCatchingResult it }
+                val conn = transport.connect()
+                if (conn is Result.Failure) return@runCatchingResult conn
             }
 
             // 1. 发 CNXN
@@ -97,11 +90,10 @@ class AdbConnectionImpl(
                     }
                     runCatching { handleLegacyAuth(first.payload) }
                         .onFailure { t ->
-                            // 可能用户没在 target 上点 "允许" —— 把详细错误返回上层
                             throw IllegalStateException("AUTH handshake failed: ${t.message}", t)
                         }
                 }
-                AdbCommand.STLS -> error("STLS (Wireless Debugging TLS) not supported in Phase 0 —— use legacy TCP")
+                AdbCommand.STLS -> error("STLS (Wireless Debugging TLS) not supported in Phase 0 — use legacy TCP")
                 else -> error("unexpected first packet: ${first.command}")
             }
 
@@ -117,10 +109,9 @@ class AdbConnectionImpl(
             val openPkt = AdbPacket.open(service, localId)
             writePacket(openPkt)
 
-            val stream = AdbStreamImpl(this, localId, remoteId = 0)
+            val stream = AdbStreamImpl(this, localId, remoteIdInternal = 0)
             synchronized(streamsLock) { streams[localId] = stream }
 
-            // 等对端 OKAY (或 CLSE —— 但我们的 stream 不处理 CLSE 作为 OPEN 拒绝)
             if (!stream.awaitOkay(timeoutMs = 30_000)) {
                 synchronized(streamsLock) { streams.remove(localId) }
                 error("OPEN '$service' timeout — peer did not respond with OKAY within 30s")
@@ -131,8 +122,9 @@ class AdbConnectionImpl(
     }
 
     override suspend fun shell(command: String): Result<String> {
-        val stream = open("shell:$command").successOrNull()
-            ?: return Result.failure("open shell:$command failed")
+        val openResult = open("shell:$command")
+        val stream = (openResult as? Result.Success)?.value
+            ?: return Result.failure("open shell:$command failed", (openResult as? Result.Failure)?.cause)
         val sb = StringBuilder()
         try {
             while (!stream.isClosed) {
@@ -209,8 +201,6 @@ class AdbConnectionImpl(
                             ?.deliverPayload(pkt.payload)
                     }
                     AdbCommand.OKAY -> {
-                        // **关键**: OKAY.arg0 = device_local_id (我们的 stream 需要用这个当 remoteId)
-                        //           OKAY.arg1 = host_local_id
                         synchronized(streamsLock) {
                             streams[localId]?.let { stream ->
                                 // 首次 OKAY: 更新 remoteId (之前是 0)
@@ -235,7 +225,6 @@ class AdbConnectionImpl(
             // 正常退出
         } catch (t: Throwable) {
             if (!closed) {
-                // transport 断了
                 synchronized(streamsLock) {
                     streams.values.forEach { it.deliverClose() }
                     streams.clear()
@@ -256,9 +245,27 @@ class AdbConnectionImpl(
         val arg0 = buf.int
         val arg1 = buf.int
         val dataLen = buf.int
+        val dataCheck = buf.int
+        val magic = buf.int
+
+        // 入站报文完整性校验（纵深防御：即使底层是明文 TCP，伪造/损坏报文也应被拒绝）
+        if (dataLen < 0 || dataLen > AdbCommand.MAX_DATA) {
+            error("invalid data_length: $dataLen (max ${AdbCommand.MAX_DATA})")
+        }
+        val expectedMagic = command xor 0xFFFF_FFFF.toInt()
+        if (magic != expectedMagic) {
+            error("bad magic: expected 0x${expectedMagic.toUInt().toString(16)}, got 0x${magic.toUInt().toString(16)}")
+        }
 
         val payload = if (dataLen > 0) transport.readBytes(dataLen) else ByteArray(0)
-        return AdbPacket(command, arg0, arg1, payload)
+        if (payload.size < dataLen) error("truncated payload: ${payload.size} < $dataLen")
+
+        val pkt = AdbPacket(command, arg0, arg1, payload)
+        val expectedChecksum = pkt.checksum
+        if (dataCheck != expectedChecksum) {
+            error("bad checksum: expected 0x${expectedChecksum.toUInt().toString(16)}, got 0x${dataCheck.toUInt().toString(16)}")
+        }
+        return pkt
     }
 
     internal suspend fun writePacket(pkt: AdbPacket) {
@@ -271,11 +278,5 @@ class AdbConnectionImpl(
         val end = payload.indexOf(0)
         val real = if (end >= 0) payload.copyOf(end) else payload
         return String(real, Charsets.UTF_8)
-    }
-
-    private inline fun <T> runCatchingResult(block: () -> Result<T>): Result<T> = try {
-        block()
-    } catch (t: Throwable) {
-        Result.failure(t.message ?: t.javaClass.simpleName, t)
     }
 }

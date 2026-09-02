@@ -24,34 +24,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.phone.mirror.core.Result
+import com.phone.mirror.core.errorOrThrow
+import com.phone.mirror.core.onFailure
+import com.phone.mirror.core.successOrNull
 import com.phone.mirror.transport.adb.core.AdbConnectionImpl
 import com.phone.mirror.transport.adb.core.AdbKeyPair
 import com.phone.mirror.transport.adb.wifi.LegacyTcpTransport
+import com.phone.mirror.phone.ui.nav.AppNavHost
+import com.phone.mirror.phone.ui.theme.PhoneMirrorTheme
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Phase 0 验收入口 —— 只做一件事：
+ * App 入口 —— 挂载 [AppNavHost]（设备列表 / 配对 / 镜像 / 相册 / 文件 五屏导航）。
+ * Phase 0 验收页（[Phase0TestScreen]）作为独立路由保留：
  *   用户输入 target 的 IP:PORT (如 192.168.1.100:5555) → 点按钮
  *   → 显示 target `ro.product.model`，证明 ADB protocol 自实现通了。
- *
- * 成功标准: 界面 status 变成 `>>> [target model name]` 后 `DONE ✓`。
- *
- * target 侧准备:
- *   adb tcpip 5555
- *   adb connect <phone-ip>:5555
- *   adb -s <phone-ip>:5555 shell settings put global adb_enabled 1  (确认)
- * 或直接在 target 上 `setprop service.adb.tcp.port 5555 && stop adbd && start adbd`
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val container = (application as AppApplication).container
         setContent {
             PhoneMirrorTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    Phase0TestScreen()
+                    AppNavHost(container = container)
                 }
             }
         }
@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun Phase0TestScreen() {
+fun Phase0TestScreen() {
     val scope = rememberCoroutineScope()
 
     var host by remember { mutableStateOf("192.168.1.100") }

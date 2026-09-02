@@ -59,6 +59,10 @@ interface GalleryDao {
     @Query("UPDATE gallery_items SET tombstoneTs = :ts WHERE deviceId = :deviceId AND tombstoneTs IS NULL AND mediaId NOT IN (:activeMediaIds)")
     suspend fun markTombstones(deviceId: String, ts: Long, activeMediaIds: List<Long>)
 
+    /** 远端列表为空时的 tombstone 全量标记 —— NOT IN () 是非法 SQL，必须走本方法 */
+    @Query("UPDATE gallery_items SET tombstoneTs = :ts WHERE deviceId = :deviceId AND tombstoneTs IS NULL")
+    suspend fun markAllTombstones(deviceId: String, ts: Long)
+
     @Query("DELETE FROM gallery_items WHERE deviceId = :deviceId AND tombstoneTs IS NOT NULL")
     suspend fun purgeTombstones(deviceId: String)
 
