@@ -19,6 +19,7 @@ downloads/
 /common/sdks/shizuku/sz_src/
 /common/sdks/shizuku/sz_v1320.tar.gz
 /common/sdks/dhizuku/dz260/
+**/local.properties
 
 # ============== Compiled / Build Artifacts ==============
 # Java/Android builds
