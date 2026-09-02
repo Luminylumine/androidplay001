@@ -18,10 +18,8 @@
 | `feature/scrcpy-enhance` | `projects/scrcpy_enhance/` | 基于 scrcpy 的 Windows 投屏/设备管理小工具（.NET 9 WinForms） |
 | `feature/akasha-android` | `projects/akasha_android/` | Akasha 安卓 Agent 终端（`com.akasha.app`，原 ClawPhone 更名而来） |
 | `feature/device-monitor-tools` | `projects/device_monitor_tools/` | SysMon 安卓运行监视器（`com.sysmon.app`，电池 / GPU / 帧率 / 曲线绘制） |
-| `feature/phone-mirror-phone` | `projects/phone_mirror_phone/` | Android 手机投屏与控制实验项目 |
-| `voice-io` | `projects/akasha_android/` | Akasha voice-I/O 实验分支 |
 
-本仓库使用长期项目分支，而不是把每个项目都放在默认分支：请先切换到目标分支再构建。各项目分支包含根级许可证和本说明文件；分支之间互相独立。
+分支关系：三个 feature 分支都直接接在 `main` 最新提交之后；各分支之间互相独立，`projects/` 下每条分支只有自己的项目目录，互不交叉。
 
 ## 公共依赖（工具链，不入库）
 
@@ -39,8 +37,7 @@ tools/
 
 - scrcpy-enhance 分支另外需要 **.NET 9.0 SDK**（`dotnet build` 用）。
 - 所有构建脚本都使用**相对路径**：从脚本所在位置向上查找 `.git/` 目录定位仓库根，因此 clone 到任意位置、在任意工作目录下执行脚本都可以。
-- 公共 SDK jar 在 git 内，位于 `common/sdks/`（Shizuku api/provider/aidl、Dhizuku api），Android 分支的 javac/d8 classpath 直接引用它们，无需额外准备。
-- `common/sdks/README.md` 和 `THIRD_PARTY_NOTICES.md` 记录了第三方组件、来源、版本和许可证；不需要构建的 upstream 源码不会随项目分支发布。
+- 公共 SDK jar 在 git 内，位于 `common/sdks/`（Shizuku api/provider/aidl、Dhizuku api），Android 两个分支的 javac/d8 classpath 直接引用它们，无需额外准备。
 
 ## 编译方法
 
@@ -76,7 +73,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File projects/device_monitor_tool
 
 产物：`projects/device_monitor_tools/app/build/SysMon-v1.apk`
 
-> `AdbKey.java` 不包含任何预置测试机私钥。首次运行时使用 Android Keystore 为当前安装生成独立的 ADB 身份；构建不需要额外的本地秘密源码。
+> ⚠️ 注意：本项目的 `src/com/sysmon/app/adb/AdbKey.java` 内含荧荧测试机的 ADB 密钥，**不入库**（已被 `.gitignore` 忽略）。
+> 本地编译前需先从自己的本地备份把该文件复制到
+> `projects/device_monitor_tools/app/src/com/sysmon/app/adb/` 下，否则 javac 会报找不到 `AdbKey` 符号。
 
 ## 使用方法
 
@@ -107,11 +106,3 @@ powershell -NoProfile -ExecutionPolicy Bypass -File projects/device_monitor_tool
 
 - `.gitignore` 对私钥类文件（`adbkey`、`*.p12`、`*.pfx`、`*.keystore`、`*.jks`、测试机 ADB 密钥等）做了精确忽略；
 - 本仓库不包含任何 sk- 开头的 API 密钥；文档中出现的 `apiKey` 等均为字段名/占位符。
-
-## Security model
-
-Akasha and SysMon may obtain shell-level privileges through Shizuku or Dhizuku.
-These privileges can access device information unavailable to ordinary Android
-applications. Only grant these permissions if you understand and trust the
-application. Shizuku, Dhizuku, scrcpy, Android, Huawei, and Xiaomi are third-party
-projects or trademarks; this repository is not affiliated with or endorsed by them.
