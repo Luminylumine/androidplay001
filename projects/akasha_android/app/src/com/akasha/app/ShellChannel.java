@@ -229,6 +229,11 @@ public class ShellChannel {
         return svcUid;
     }
 
+    /** Only Shizuku's real shell process may change secure accessibility settings. */
+    public static boolean hasRealShell() {
+        return available() && "shizuku".equals(source) && "2000".equals(svcUid);
+    }
+
     /** Execute a command through the channel. Returns "rc=N\n<output>" or null. */
     public static String exec(String cmd) {
         IAkashaShell s = svc;

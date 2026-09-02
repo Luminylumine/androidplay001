@@ -21,6 +21,9 @@ import java.util.List;
  */
 public class SessionStore {
 
+    private static final Object CONTEXT_IO_LOCK = new Object();
+    private static final Object CHAT_IO_LOCK = new Object();
+
     private final Context ctx;
     private final Prefs prefs;
 
@@ -50,6 +53,8 @@ public class SessionStore {
                 s.unread = o.optBoolean("unread");
                 s.customPrompt = o.optString("customPrompt", "");
                 if (s.customPrompt.isEmpty()) s.customPrompt = null;
+                s.defaultGoal = o.optString("defaultGoal", "");
+                if (s.defaultGoal.isEmpty()) s.defaultGoal = null;
                 if (s.id != null && !s.id.isEmpty()) out.add(s);
             }
         } catch (Exception ignored) {}
@@ -138,6 +143,7 @@ public class SessionStore {
         }
         persist(l);
         chatFile(id).delete();
+        contextFile(id).delete();
     }
 
     /** 生成不与现有会话重复的对话显示名: base / base(1) / base(2) ... */
@@ -180,6 +186,7 @@ public class SessionStore {
                 o.put("pinned", s.pinned);
                 o.put("unread", s.unread);
                 if (s.customPrompt != null) o.put("customPrompt", s.customPrompt);
+                if (s.defaultGoal != null) o.put("defaultGoal", s.defaultGoal);
                 arr.put(o);
             } catch (Exception ignored) {}
         }
@@ -236,26 +243,29 @@ public class SessionStore {
 
     public void appendChat(String sessionId, String type, String text, long time, String meta) {
         if (sessionId == null) return;
-        List<Line> l = loadChat(sessionId);
-        l.add(new Line());
-        l.get(l.size() - 1).type = type;
-        l.get(l.size() - 1).text = text;
-        l.get(l.size() - 1).time = time;
-        l.get(l.size() - 1).meta = meta;
-        while (l.size() > 300) l.remove(0);
-        writeChat(sessionId, l);
+        synchronized (CHAT_IO_LOCK) {
+            List<Line> l = loadChat(sessionId);
+            l.add(new Line());
+            l.get(l.size() - 1).type = type;
+            l.get(l.size() - 1).text = text;
+            l.get(l.size() - 1).time = time;
+            l.get(l.size() - 1).meta = meta;
+            while (l.size() > 300) l.remove(0);
+            writeChat(sessionId, l);
 
-        // refresh the session preview line
-        try {
-            ChatSession s = get(sessionId);
-            if (s != null) {
-                s.lastMsg = text == null ? "" : text.replace('\n', ' ');
-                if (s.lastMsg.length() > 60) s.lastMsg = s.lastMsg.substring(0, 60) + "…";
-                s.lastMsgRole = type;
-                s.lastMsgTime = time;
-                save(s);
+            // refresh the session preview line
+            try {
+                ChatSession s = get(sessionId);
+                if (s != null) {
+                    s.lastMsg = text == null ? "" : text.replace('\n', ' ');
+                    if (s.lastMsg.length() > 60) s.lastMsg = s.lastMsg.substring(0, 60) + "…";
+                    s.lastMsgRole = type;
+                    s.lastMsgTime = time;
+                    save(s);
+                }
+            } catch (Exception ignored) {
             }
-        } catch (Exception ignored) {}
+        }
     }
 
     private void writeChat(String sessionId, List<Line> l) {
@@ -284,6 +294,79 @@ public class SessionStore {
     private File noteFile(String sessionId) {
         return new File(new File(ctx.getFilesDir(), "sessions"),
                 sanitize(sessionId) + ".note.txt");
+    }
+
+    private File contextFile(String sessionId) {
+        return new File(new File(ctx.getFilesDir(), "sessions"),
+                sanitize(sessionId) + ".context.json");
+    }
+
+    /** Durable LLM turns, separate from the user-facing chat transcript. */
+    public static class ContextLine {
+        public String assistant;
+        public String user;
+        public long time;
+    }
+
+    public List<ContextLine> loadContext(String sessionId) {
+        List<ContextLine> out = new ArrayList<>();
+        synchronized (CONTEXT_IO_LOCK) {
+            File f = contextFile(sessionId);
+            if (!f.isFile()) return out;
+            try {
+                InputStream is = new FileInputStream(f);
+                byte[] buf = new byte[8192];
+                StringBuilder sb = new StringBuilder();
+                int n;
+                while ((n = is.read(buf)) > 0) sb.append(new String(buf, 0, n, "UTF-8"));
+                is.close();
+                JSONArray arr = new JSONArray(sb.toString());
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject o = arr.getJSONObject(i);
+                    ContextLine line = new ContextLine();
+                    line.assistant = o.optString("a", "");
+                    line.user = o.optString("u", "");
+                    line.time = o.optLong("ts", 0);
+                    out.add(line);
+                }
+            } catch (Exception ignored) {}
+        }
+        return out;
+    }
+
+    public void appendContext(String sessionId, String assistant, String user, long time) {
+        if (sessionId == null) return;
+        synchronized (CONTEXT_IO_LOCK) {
+            List<ContextLine> lines = loadContext(sessionId);
+            ContextLine line = new ContextLine();
+            line.assistant = assistant == null ? "" : assistant;
+            line.user = user == null ? "" : user;
+            line.time = time;
+            lines.add(line);
+            while (lines.size() > 100) lines.remove(0);
+            try {
+                JSONArray arr = new JSONArray();
+                for (ContextLine x : lines) {
+                    arr.put(new JSONObject().put("a", x.assistant).put("u", x.user).put("ts", x.time));
+                }
+                File f = contextFile(sessionId);
+                f.getParentFile().mkdirs();
+                File tmp = new File(f.getPath() + ".tmp");
+                OutputStream os = new FileOutputStream(tmp);
+                os.write(arr.toString().getBytes("UTF-8"));
+                os.close();
+                if (!tmp.renameTo(f)) {
+                    writeContextDirect(f, arr);
+                    tmp.delete();
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private void writeContextDirect(File f, JSONArray arr) throws Exception {
+        OutputStream os = new FileOutputStream(f);
+        os.write(arr.toString().getBytes("UTF-8"));
+        os.close();
     }
 
     public void appendNote(String sessionId, String text) {

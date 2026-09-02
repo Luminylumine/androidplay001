@@ -39,6 +39,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -62,16 +64,18 @@ public class AgentService extends Service {
     public static final String ACTION_STOP = "com.akasha.app.STOP";
     public static final String ACTION_ANSWER = "com.akasha.app.ANSWER";
     public static final String ACTION_GUIDE = "com.akasha.app.ACTION_GUIDE";
+    public static final String ACTION_QUEUE = "com.akasha.app.QUEUE";
 
     public static final LinkedList<String> LOG = new LinkedList<>();
-    public static volatile boolean running = false;
-    public static volatile String currentQuestion = null;
+    /** Legacy last-task fields. They are not worker context; use the query APIs below. */
+    @Deprecated public static volatile boolean running = false;
+    @Deprecated public static volatile String currentQuestion = null;
     /** Goal of the task the current loop is executing. */
-    public static volatile String currentGoal = "";
+    @Deprecated public static volatile String currentGoal = "";
     /** Session the current/last task belongs to (chat history is per-session). */
-    public static volatile String currentSessionId = null;
+    @Deprecated public static volatile String currentSessionId = null;
     /** Agent (model) of the current/last task. */
-    public static volatile String currentAgentId = null;
+    @Deprecated public static volatile String currentAgentId = null;
 
     /**
      * Per-agent recent (assistant, user-observation) pairs. Keyed by agentId.
@@ -82,7 +86,7 @@ public class AgentService extends Service {
     @Deprecated
     public static final LinkedList<String[]> HISTORY = new LinkedList<>();
 
-    /** Per-agent HISTORY storage. Keyed by ModelInfo.id/agentId. */
+    /** Retained only for source compatibility. Active workers keep history per session. */
     private static final java.util.Map<String, LinkedList<String[]>> AGENT_HISTORY =
             new java.util.HashMap<>();
 
@@ -96,10 +100,16 @@ public class AgentService extends Service {
         }
     }
 
-    /** Steering notes for the running task, injected into every round's system prompt. */
-    private static final LinkedList<String> GUIDE_NOTES = new LinkedList<>();
-    /** Tasks waiting to run after the current one finishes. */
-    public static final LinkedList<String> TASK_QUEUE = new LinkedList<>();
+    private static final Map<String, Task> TASKS = new ConcurrentHashMap<>();
+    private static final ThreadLocal<Task> WORKER_TASK = new ThreadLocal<>();
+    private static final AtomicInteger NEXT_TASK_ID = new AtomicInteger();
+    private static final int MAX_OBSERVATION_CHARS = 10000;
+    private static final int MAX_HISTORY_ENTRY_CHARS = 6000;
+    private static final int MAX_HISTORY_CHARS = 24000;
+    private static final int MAX_APP_LIST_CHARS = 3000;
+    private static final Object DEVICE_LOCK = new Object();
+    /** The sole task allowed to observe or operate the physical device. */
+    private static Task deviceOwner;
     /** Static context for use in static helper methods. */
     private static Context staticCtx = null;
 
@@ -125,29 +135,157 @@ public class AgentService extends Service {
         }
     }
 
-    public static final LinkedList<ChatMsg> CHAT = new LinkedList<>();
+    /** Legacy global chat view. Active chat is available through sessionChat(sessionId). */
+    @Deprecated public static final LinkedList<ChatMsg> CHAT = new LinkedList<>();
+
+    private static final class Task {
+        final String sessionId;
+        final String agentId;
+        final String goal;
+        final AgentConfig config;
+        final ModelInfo profile;
+        final String sessionPrompt;
+        final int intervalMs;
+        final int maxTokens;
+        final int maxRounds;
+        final String appList;
+        final boolean suppressTaskDoneTrigger;
+        final LinkedList<String[]> history = new LinkedList<>();
+        final LinkedList<ChatMsg> chat = new LinkedList<>();
+        final LinkedList<String> guides = new LinkedList<>();
+        final LinkedList<String> queuedGoals = new LinkedList<>();
+        final LinkedList<Boolean> queuedSuppressTaskDone = new LinkedList<>();
+        final ArrayDeque<byte[]> shots = new ArrayDeque<>();
+        final Object answerLock = new Object();
+        volatile boolean stopped;
+        volatile boolean wantLook;
+        volatile String question;
+        volatile String pendingAnswer;
+        volatile Thread workerThread;
+
+        Task(String sessionId, String agentId, String goal, AgentConfig config, ModelInfo profile,
+                String sessionPrompt, int intervalMs, int maxTokens, int maxRounds, String appList,
+                boolean suppressTaskDoneTrigger) {
+            this.sessionId = sessionId;
+            this.agentId = agentId;
+            this.goal = goal;
+            this.config = config;
+            this.profile = profile;
+            this.sessionPrompt = sessionPrompt;
+            this.intervalMs = intervalMs;
+            this.maxTokens = maxTokens;
+            this.maxRounds = maxRounds;
+            this.appList = appList;
+            this.suppressTaskDoneTrigger = suppressTaskDoneTrigger;
+        }
+    }
+
+    public static boolean isSessionRunning(String sessionId) {
+        return sessionId != null && TASKS.containsKey(sessionId);
+    }
+
+    public static String sessionQuestion(String sessionId) {
+        Task t = sessionId == null ? null : TASKS.get(sessionId);
+        return t == null ? null : t.question;
+    }
+
+    public static List<ChatMsg> sessionChat(String sessionId) {
+        Task t = sessionId == null ? null : TASKS.get(sessionId);
+        if (t == null) return Collections.emptyList();
+        synchronized (t.chat) { return new ArrayList<>(t.chat); }
+    }
+
+    public static boolean isAgentRunning(String agentId) {
+        if (agentId == null) return false;
+        for (Task t : TASKS.values()) if (agentId.equals(t.agentId)) return true;
+        return false;
+    }
+
+    private static String deviceOwnerDescription(Task requester) {
+        synchronized (DEVICE_LOCK) {
+            if (deviceOwner == null || deviceOwner == requester) return null;
+            String name = deviceOwner.profile == null || deviceOwner.profile.name == null
+                    ? deviceOwner.agentId : deviceOwner.profile.name;
+            return name + " / " + deviceOwner.sessionId;
+        }
+    }
+
+    private static boolean ownsDevice(Task task) {
+        synchronized (DEVICE_LOCK) { return deviceOwner == task; }
+    }
+
+    private static AgentToolResult acquireDevice(Task task) {
+        synchronized (DEVICE_LOCK) {
+            if (deviceOwner == null || deviceOwner == task) {
+                deviceOwner = task;
+                return AgentToolResult.ok("已获得手机操作锁；请完成当前手机操作后 release_device");
+            }
+            return AgentToolResult.err(AgentErrorCodes.DEVICE_LOCK_HELD,
+                    deviceOwnerDescription(task));
+        }
+    }
+
+    private static void releaseDevice(Task task) {
+        synchronized (DEVICE_LOCK) {
+            if (deviceOwner == task) deviceOwner = null;
+        }
+    }
+
+    public static void stopSession(String sessionId) {
+        if (sessionId == null) {
+            for (String id : new ArrayList<>(TASKS.keySet())) stopSession(id);
+            return;
+        }
+        Task t = sessionId == null ? null : TASKS.get(sessionId);
+        if (t != null) {
+            t.stopped = true;
+            t.question = null;
+            // Keep the lock until the worker's finally block. The current shell
+            // operation may still be running after interrupt is requested.
+            Thread thread = t.workerThread;
+            if (thread != null) thread.interrupt();
+            synchronized (t.answerLock) { t.answerLock.notifyAll(); }
+        }
+    }
+
+    public static void answerSession(String sessionId, String text) {
+        Task t = sessionId == null ? null : TASKS.get(sessionId);
+        if (t != null) {
+            t.pendingAnswer = text;
+            synchronized (t.answerLock) { t.answerLock.notifyAll(); }
+        }
+    }
+
+    /** Appends a system line to exactly one session, whether or not it is running. */
+    public static void logToSession(String sessionId, String text) {
+        Task t = sessionId == null ? null : TASKS.get(sessionId);
+        if (t != null) taskLog(t, text, null);
+        else if (chatStore != null && sessionId != null)
+            chatStore.appendChat(sessionId, ChatMsg.SYSTEM, text, System.currentTimeMillis(), null);
+    }
 
     /** Steering note: applies to the currently running task from the next round on. */
     public static void addGuide(String text) {
-        synchronized (GUIDE_NOTES) {
-            GUIDE_NOTES.addLast(text);
-            while (GUIDE_NOTES.size() > 20) GUIDE_NOTES.removeFirst();
-        }
-        log("已加入引导(不打断): " + text);
+        Task t = WORKER_TASK.get();
+        if (t != null) addGuideToSession(text, t.sessionId);
     }
 
     /** Steering note: sends a guide to a specific session (for session-level timer triggers). */
     public static void addGuideToSession(String text, String sessionId) {
         if (text == null || text.isEmpty()) return;
-        synchronized (GUIDE_NOTES) {
-            GUIDE_NOTES.addLast(text);
-            while (GUIDE_NOTES.size() > 20) GUIDE_NOTES.removeFirst();
+        Task task = sessionId == null ? null : TASKS.get(sessionId);
+        if (task != null) {
+            synchronized (task.guides) {
+                task.guides.addLast(text);
+                while (task.guides.size() > 20) task.guides.removeFirst();
+            }
+            taskLog(task, "已加入引导: " + text, null);
+            return;
         }
-        log("已加入引导(会话 " + (sessionId == null ? "?" : sessionId) + "): " + text);
         if (chatStore != null && sessionId != null) {
             chatStore.appendNote(sessionId, text);
         }
-        if (!running) {
+        if (task == null) {
             Context c = staticCtx;
             if (c != null && sessionId != null) {
                 String aid = null;
@@ -170,35 +308,33 @@ public class AgentService extends Service {
         }
     }
 
-    public static String popQueue() {
-        synchronized (TASK_QUEUE) {
-            return TASK_QUEUE.pollFirst();
-        }
+    public static void enqueueTask(String text) {
+        Task t = WORKER_TASK.get();
+        if (t != null) enqueueTaskForSession(t.sessionId, text);
     }
 
-    public static void enqueueTask(String text) {
-        synchronized (TASK_QUEUE) {
-            TASK_QUEUE.addLast(text);
+    /** Queue a follow-up only behind the task in this same session. */
+    public static boolean enqueueTaskForSession(String sessionId, String text) {
+        return enqueueTaskForSession(sessionId, text, false);
+    }
+
+    private static boolean enqueueTaskForSession(String sessionId, String text,
+                                                 boolean suppressTaskDoneTrigger) {
+        if (text == null || text.trim().isEmpty()) return false;
+        Task task = sessionId == null ? null : TASKS.get(sessionId);
+        if (task == null) return false;
+        synchronized (task.queuedGoals) {
+            task.queuedGoals.addLast(text.trim());
+            task.queuedSuppressTaskDone.addLast(suppressTaskDoneTrigger);
         }
-        log("已排队: " + text);
+        taskLog(task, "已排队: " + text.trim(), null);
+        return true;
     }
 
     /** When true, the next round's user message carries a screenshot. */
-    private volatile boolean wantLook = false;
-
-    private Thread worker;
-    private volatile boolean stopRequested = false;
-    /** Bumped on every STOP/RUN so stale loop threads (from previous service
-     *  instances) invalidate themselves and never clobber shared state. */
-    private volatile long generation = 0;
-    private final Object lock = new Object();
-    private String pendingAnswer = null;
     /** Per-session chat persistence (set in onCreate). */
     private static SessionStore chatStore = null;
     /** Permission/prompt snapshot of the running task's agent (req 6/7). */
-    private volatile ModelInfo runProfile = null;
-    /** 会话级提示词快照 (任务开始时读取; 空 = 回退模型提示词, 再回退系统提示词). */
-    private volatile String runSessionPrompt = null;
 
     public static void log(String s) {
         log(s, null);
@@ -219,14 +355,35 @@ public class AgentService extends Service {
     }
 
     public static void chat(String type, String text, String meta) {
+        Task task = WORKER_TASK.get();
+        if (task != null) {
+            taskChat(task, type, text, meta);
+            return;
+        }
         synchronized (CHAT) {
             CHAT.addLast(new ChatMsg(type, text, meta));
             while (CHAT.size() > 200) CHAT.removeFirst();
         }
-        // persist to the session's own history (independent contexts, req 2.2)
-        if (running && chatStore != null && currentSessionId != null) {
-            chatStore.appendChat(currentSessionId, type, text, System.currentTimeMillis(), meta);
+        // Calls made outside a worker are process diagnostics only. They must never be
+        // attributed to whichever session happened to start most recently.
+    }
+
+    private static void taskChat(Task task, String type, String text, String meta) {
+        if (TASKS.get(task.sessionId) != task) return;
+        synchronized (task.chat) {
+            task.chat.addLast(new ChatMsg(type, text, meta));
+            while (task.chat.size() > 200) task.chat.removeFirst();
         }
+        if (chatStore != null) chatStore.appendChat(task.sessionId, type, text, System.currentTimeMillis(), meta);
+    }
+
+    private static void taskLog(Task task, String text, String meta) {
+        synchronized (LOG) {
+            LOG.addLast("[" + ts() + "] " + text);
+            while (LOG.size() > 300) LOG.removeFirst();
+        }
+        CpLog.i("Akasha", text);
+        taskChat(task, ChatMsg.SYSTEM, text, meta);
     }
 
     private static String ts() {
@@ -239,6 +396,8 @@ public class AgentService extends Service {
         staticCtx = getApplicationContext();
         CpLog.init(this); // idempotent; needed if service starts without MainActivity (boot)
         CpLog.i("Akasha", "=== AgentService onCreate ===");
+        ShellChannel.init(this);
+        ShellChannel.ensure();
         TimerEngine.init(this.getApplicationContext()); // 闹钟/事件唤醒(开机自启场景也要生效)
         chatStore = new SessionStore(this);
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -257,44 +416,50 @@ public class AgentService extends Service {
         String act = intent != null ? intent.getAction() : null;
         if (act == null) act = ACTION_RUN;
         if (ACTION_STOP.equals(act)) {
-            generation++;
-            stopRequested = true;
-            running = false;
-            currentQuestion = null;
-            updateNotif("Akasha", "Agent 已停止");
-            synchronized (lock) { lock.notifyAll(); }
+            stopSession(intent.getStringExtra("sessionId"));
             return START_NOT_STICKY;
         }
         if (ACTION_ANSWER.equals(act)) {
-            pendingAnswer = intent.getStringExtra("text");
-            synchronized (lock) { lock.notifyAll(); }
+            answerSession(intent.getStringExtra("sessionId"), intent.getStringExtra("text"));
             return START_NOT_STICKY;
         } else if (ACTION_GUIDE.equals(act)) {
             String text = intent.getStringExtra("text");
             String sid = intent.getStringExtra("sessionId");
             String aid = intent.getStringExtra("agentId");
             if (sid != null && !sid.isEmpty()) {
-                currentSessionId = sid;
                 ChatSession s = new SessionStore(this).get(sid);
                 if (s != null && (aid == null || aid.isEmpty())) aid = s.agentId;
             }
             if (text != null && !text.isEmpty()) {
-                addGuideToSession(text, currentSessionId);
+                addGuideToSession(text, sid);
             }
             if (aid != null && !aid.isEmpty()) {
-                startTask(text != null ? text : "", false, sid, aid);
+                // A guide is context, never a replacement task goal.
+                if (!isSessionRunning(sid)) startTask("", false, sid, aid,
+                        intent.getBooleanExtra("suppressTaskDone", false));
+            }
+            return START_NOT_STICKY;
+        } else if (ACTION_QUEUE.equals(act)) {
+            String sid = intent.getStringExtra("sessionId");
+            String text = intent.getStringExtra("text");
+            if (!enqueueTaskForSession(sid, text,
+                    intent.getBooleanExtra("suppressTaskDone", false))) {
+                startTask(text, false, sid, intent.getStringExtra("agentId"),
+                        intent.getBooleanExtra("suppressTaskDone", false));
             }
             return START_NOT_STICKY;
         }
         if (ACTION_RUN.equals(act)) {
             Prefs p = new Prefs(this);
-            startTask(p.goal(), false, resolveBootSession(p), null);
+            startTask("", false, resolveBootSession(p), null);
         } else if (ACTION_RUN_GOAL.equals(act)) {
             startTask(intent.getStringExtra("text"), false,
-                    intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"));
+                    intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"),
+                    intent.getBooleanExtra("suppressTaskDone", false));
         } else if (ACTION_INT.equals(act)) {
             startTask(intent.getStringExtra("text"), intent.getBooleanExtra("keep", false),
-                    intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"));
+                    intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"),
+                    intent.getBooleanExtra("suppressTaskDone", false));
         }
         return START_NOT_STICKY;
     }
@@ -317,53 +482,52 @@ public class AgentService extends Service {
         return s.id;
     }
 
-    /** Kill any running loop (via generation bump) and start a fresh task. */
+    /** Starts an independent task. A new task only replaces an existing task in this session. */
     private void startTask(String goal, boolean keepHistory, String sessionId, String agentId) {
+        startTask(goal, keepHistory, sessionId, agentId, false);
+    }
+
+    private void startTask(String goal, boolean keepHistory, String sessionId, String agentId,
+                           boolean suppressTaskDoneTrigger) {
         if (goal == null) goal = "";
-        if (sessionId == null) sessionId = currentSessionId;
+        if (sessionId == null) sessionId = resolveBootSession(new Prefs(this));
         if (agentId == null && sessionId != null && chatStore != null) {
             ChatSession s = chatStore.get(sessionId);
             if (s != null) agentId = s.agentId;
         }
         if (agentId == null) agentId = new Prefs(this).model();
-        // FR-3.1: 上下文是 agent 级的; 同 agent 的不同对话共享窗口.
-        boolean keepCtx = keepHistory && agentId != null && agentId.equals(currentAgentId);
-        LinkedList<String[]> agentH = agentHistory(agentId);
-        if (!keepCtx) {
-            synchronized (agentH) { agentH.clear(); }
-            // 不 keepCtx 时如果 agentH 为空, 从该 agent 的所有对话聊天文件合并复原最近 maxRounds 窗口 (FR-3.3)
-            int maxRounds = (runProfile == null) ? new Prefs(this).historyRounds()
-                    : Math.max(4, runProfile.ctxIn <= 0 ? new Prefs(this).historyRounds()
-                            : Math.min(new Prefs(this).historyRounds(), runProfile.ctxIn / 1024));
-            rebuildAgentHistoryFromChats(agentId, agentH, Math.max(4, maxRounds));
+        if (goal.trim().isEmpty()) goal = resolveDefaultGoal(sessionId, agentId);
+        stopSession(sessionId);
+        ModelInfo profile = snapshotProfile(findProfile(agentId));
+        if (profile == null) {
+            logToSession(sessionId, "任务无法启动：Agent 不存在或已被删除 (" + agentId + ")");
+            return;
         }
-        synchronized (GUIDE_NOTES) { GUIDE_NOTES.clear(); }
-        // inject queued "tell the model" notes from the log detail screen (req 5)
+        Prefs prefs = new Prefs(this);
+        int maxRounds = Math.max(0, prefs.historyRounds());
+        String sessionPrompt = null;
+        // Snapshot every task input before its worker starts.
         if (chatStore != null && sessionId != null) {
+            ChatSession cs = chatStore.get(sessionId);
+            if (cs != null) sessionPrompt = cs.customPrompt;
+        }
+        AgentConfig cfg = AgentConfig.resolve(this, profile);
+        final Task task = new Task(sessionId, agentId, goal, cfg, profile, sessionPrompt,
+                Math.max(1000, prefs.intervalMs()),
+                Math.max(256, Math.min(prefs.maxTokens(), profile.maxOut > 0 ? profile.maxOut : prefs.maxTokens())),
+                maxRounds, buildAppList(), suppressTaskDoneTrigger);
+        if (chatStore != null) {
             for (String n : chatStore.consumeNotes(sessionId)) {
-                synchronized (GUIDE_NOTES) {
-                    GUIDE_NOTES.addFirst(n);
-                }
+                task.guides.addFirst(n);
             }
         }
-        currentGoal = goal;
-        currentSessionId = sessionId;
-        currentAgentId = agentId;
-        runProfile = findProfile(agentId);
-        // 会话级提示词: 任务开始时快照一次 (null/空 = 回退模型级 → 系统默认)
-        runSessionPrompt = null;
-        if (chatStore != null && sessionId != null) {
-            try {
-                ChatSession cs = chatStore.get(sessionId);
-                if (cs != null) runSessionPrompt = cs.customPrompt;
-            } catch (Exception ignored) {}
-        }
-        AutoExperienceWriter.get(this).resetRound();
-        updateNotif("Agent 运行中", "任务: " + (goal.isEmpty() ? "(无)" : goal));
-        final long gen = ++generation;
-        stopRequested = false;
-        running = true;
-        worker = new Thread(() -> loop(gen), "agent-loop-" + gen);
+        // A fresh goal starts with a clean working context; explicit continuation keeps the tail.
+        if (keepHistory) rebuildSessionHistory(sessionId, task.history, maxRounds);
+        Task old = TASKS.put(sessionId, task);
+        if (old != null) old.stopped = true;
+        running = !TASKS.isEmpty();
+        Thread worker = new Thread(() -> loop(task), "agent-loop-" + NEXT_TASK_ID.incrementAndGet());
+        task.workerThread = worker;
         worker.start();
     }
 
@@ -384,63 +548,70 @@ public class AgentService extends Service {
         }
     }
 
-    /** FR-3.3 不 keepCtx 时: 从同一 agent 所有对话合并聊天文件复原 HISTORY (单 agent 会话总大小>2MB 丢弃老的) */
-    private void rebuildAgentHistoryFromChats(String agentId, LinkedList<String[]> out, int maxRounds) {
-        if (agentId == null || chatStore == null) return;
+    /** Resolve the configured default without ever borrowing another session's active goal. */
+    private String resolveDefaultGoal(String sessionId, String agentId) {
+        if (chatStore != null && sessionId != null) {
+            ChatSession s = chatStore.get(sessionId);
+            if (s != null && s.defaultGoal != null && !s.defaultGoal.trim().isEmpty()) {
+                return s.defaultGoal.trim();
+            }
+        }
+        ModelInfo model = findProfile(agentId);
+        if (model != null && model.defaultGoal != null && !model.defaultGoal.trim().isEmpty()) {
+            return model.defaultGoal.trim();
+        }
+        return new Prefs(this).goal();
+    }
+
+    private static void pushHistory(Task task, int maxRounds, String assistantContent, String userObs) {
+        synchronized (task.history) {
+            if (task.history.size() >= Math.max(2, maxRounds)) {
+                int drop = Math.max(1, task.history.size() / 2);
+                for (int i = 0; i < drop; i++) task.history.removeFirst();
+            }
+            task.history.addLast(new String[]{clip(assistantContent, MAX_HISTORY_ENTRY_CHARS),
+                    clip(userObs, MAX_HISTORY_ENTRY_CHARS)});
+            int chars = 0;
+            for (String[] pair : task.history) chars += pair[0].length() + pair[1].length();
+            while (chars > MAX_HISTORY_CHARS && !task.history.isEmpty()) {
+                String[] old = task.history.removeFirst();
+                chars -= old[0].length() + old[1].length();
+            }
+        }
+        if (chatStore != null && TASKS.get(task.sessionId) == task) {
+            chatStore.appendContext(task.sessionId, clip(assistantContent, MAX_HISTORY_ENTRY_CHARS),
+                    clip(userObs, MAX_HISTORY_ENTRY_CHARS), System.currentTimeMillis());
+        }
+    }
+
+    /** Rebuild only this session's assistant/observation pairs. */
+    private void rebuildSessionHistory(String sessionId, LinkedList<String[]> out, int maxRounds) {
+        if (sessionId == null || chatStore == null) return;
         try {
-            java.util.List<ChatSession> sames = new java.util.ArrayList<>();
-            for (ChatSession s : chatStore.list()) {
-                if (agentId.equals(s.agentId)) sames.add(s);
-            }
-            Collections.sort(sames, new Comparator<ChatSession>() {
-                @Override public int compare(ChatSession a, ChatSession b) {
-                    return Long.compare(b.lastMsgTime, a.lastMsgTime); // new first
+            List<SessionStore.ContextLine> context = chatStore.loadContext(sessionId);
+            if (!context.isEmpty()) {
+                int from = Math.max(0, context.size() - Math.max(1, maxRounds));
+                for (int i = from; i < context.size(); i++) {
+                    SessionStore.ContextLine line = context.get(i);
+                    out.addLast(new String[]{clip(line.assistant, MAX_HISTORY_ENTRY_CHARS),
+                            clip(line.user, MAX_HISTORY_ENTRY_CHARS)});
                 }
-            });
-            // 按 2MB 限制保护: 从最新开始逐个入, 累计字节>2MB 就停下
-            long totalBytes = 0;
-            final long cap = 2L * 1024 * 1024;
-            // 候选 (assistant_line, user_line, global_sort_ts) 三元组
-            java.util.List<long[]> idx = new java.util.ArrayList<>();
-            java.util.List<String[]> cache = new java.util.ArrayList<>();
-            for (ChatSession s : sames) {
-                if (totalBytes >= cap) break;
-                java.io.File f = new java.io.File(new java.io.File(getFilesDir(), "sessions"),
-                        sanitizeId(s.id) + ".json");
-                if (!f.isFile()) continue;
-                long sz = f.length();
-                if (totalBytes + sz > cap) continue; // 单文件超限就跳过 (不会只取一半)
-                totalBytes += sz;
-                List<SessionStore.Line> lines = chatStore.loadChat(s.id);
-                // 扫描 user/agent 相邻对 (连续 say/done 也按 agent 的最后一句作为一次 pair)
-                String lastAgent = null;
-                long lastAgentTs = 0;
-                for (SessionStore.Line ln : lines) {
-                    if (ln == null) continue;
-                    if ("agent".equals(ln.type)) {
-                        lastAgent = ln.text;
-                        lastAgentTs = ln.time;
-                    } else if ("user".equals(ln.type) && lastAgent != null) {
-                        idx.add(new long[]{cache.size(), ln.time == 0 ? lastAgentTs : ln.time});
-                        cache.add(new String[]{lastAgent, ln.text});
-                        lastAgent = null;
-                    }
+                return;
+            }
+            String lastAgent = null;
+            for (SessionStore.Line ln : chatStore.loadChat(sessionId)) {
+                if (ln == null) continue;
+                if ("agent".equals(ln.type)) lastAgent = ln.text;
+                else if ("user".equals(ln.type) && lastAgent != null) {
+                    out.addLast(new String[]{lastAgent, ln.text});
+                    lastAgent = null;
                 }
             }
-            Collections.sort(idx, new Comparator<long[]>() {
-                @Override public int compare(long[] a, long[] b) { return Long.compare(a[1], b[1]); }
-            });
-            int from = Math.max(0, idx.size() - maxRounds);
             synchronized (out) {
-                for (int i = from; i < idx.size(); i++) {
-                    String[] p = cache.get((int) idx.get(i)[0]);
-                    out.addLast(new String[]{p[0], p[1]});
-                }
+                while (out.size() > maxRounds) out.removeFirst();
             }
-            CpLog.d("HISTORY", "rebuild agent=" + agentId + " pairs=" + out.size()
-                    + "/" + idx.size() + " bytes=" + totalBytes);
         } catch (Exception e) {
-            CpLog.w("HISTORY", "rebuild fail: " + e);
+            CpLog.w("HISTORY", "session rebuild fail: " + e);
         }
     }
 
@@ -456,14 +627,21 @@ public class AgentService extends Service {
         return null;
     }
 
-    /** Open the running session's chat (or the home screen). */
+    private static ModelInfo snapshotProfile(ModelInfo source) {
+        if (source == null) return null;
+        ModelInfo copy = new ModelInfo(source.id, source.name, source.vision, source.ctxIn, source.maxOut);
+        copy.permShell = source.permShell; copy.permA11y = source.permA11y; copy.permFile = source.permFile;
+        copy.permMedia = source.permMedia; copy.permPhoto = source.permPhoto; copy.permMusic = source.permMusic;
+        copy.permExpRead = source.permExpRead; copy.permExpWrite = source.permExpWrite;
+        copy.pinned = source.pinned; copy.baseUrl = source.baseUrl; copy.apiKey = source.apiKey;
+        copy.autoStart = source.autoStart; copy.customPrompt = source.customPrompt;
+        copy.defaultGoal = source.defaultGoal;
+        return copy;
+    }
+
+    /** The foreground notification is process-wide; task notifications target sessions directly. */
     private PendingIntent openSessionPi() {
-        Intent i;
-        if (currentSessionId != null) {
-            i = new Intent(this, ChatActivity.class).putExtra("sessionId", currentSessionId);
-        } else {
-            i = new Intent(this, MainActivity.class);
-        }
+        Intent i = new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(this, 3, i,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -494,15 +672,31 @@ public class AgentService extends Service {
         } catch (Exception ignored) {}
     }
 
+    private void updateTaskNotif(Task task, String title, String text) {
+        try {
+            Intent open = new Intent(this, ChatActivity.class).putExtra("sessionId", task.sessionId);
+            PendingIntent pi = PendingIntent.getActivity(this, 500 + (task.sessionId.hashCode() & 0x7fff), open,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            Notification n = new Notification.Builder(this, "agent")
+                    .setContentTitle(title).setContentText(text == null ? "" : text)
+                    .setSmallIcon(android.R.drawable.ic_menu_compass).setOngoing(true)
+                    .setContentIntent(pi).build();
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                    100 + (task.sessionId.hashCode() & 0x7fffffff) % 100000, n);
+        } catch (Exception ignored) {}
+    }
+
     /**
      * Agent message notification (agent 走消息通知): shows the agent's say
      * output like a chat message; coalesced per session; tap opens the session.
      */
-    private void notifyAgentMessage(String text) {
+    private void notifyAgentMessage(Task task, String text) {
         try {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            String name = agentName();
-            PendingIntent pi = openSessionPi();
+            String name = agentName(task);
+            Intent open = new Intent(this, ChatActivity.class).putExtra("sessionId", task.sessionId);
+            PendingIntent pi = PendingIntent.getActivity(this, 3 + (task.sessionId.hashCode() & 0x7fff), open,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             Notification n = new Notification.Builder(this, "agent_msg")
                     .setContentTitle(name)
                     .setContentText(text == null ? "" : text)
@@ -511,64 +705,60 @@ public class AgentService extends Service {
                     .setContentIntent(pi)
                     .setStyle(new Notification.BigTextStyle().bigText(text))
                     .build();
-            int id = 100 + (currentSessionId == null ? 0
-                    : (currentSessionId.hashCode() & 0x7fffffff) % 100000);
+            int id = 100 + (task.sessionId.hashCode() & 0x7fffffff) % 100000;
             nm.notify(id, n);
         } catch (Exception ignored) {}
     }
 
     /** Outer loop: runs one task, then the next queued task, until stopped/queue empty. */
-    private void loop(final long gen) {
+    private void loop(final Task task) {
         PowerManager.WakeLock wl = null;
         try {
+            WORKER_TASK.set(task);
             PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-            wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "akasha:agent:" + gen);
+            wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "akasha:agent:" + task.sessionId);
             wl.acquire(6 * 60 * 60 * 1000L);
-
-            while (gen == generation && !stopRequested) {
-                runTask(gen);
-                if (gen != generation || stopRequested) break;
-                String next = popQueue();
-                if (next == null) break;
-                LinkedList<String[]> ah = agentHistory(currentAgentId);
-                synchronized (ah) { ah.clear(); }
-                synchronized (GUIDE_NOTES) { GUIDE_NOTES.clear(); }
-                currentGoal = next;
-                log("开始队列任务: " + next);
-                updateNotif("Agent 运行中", "任务: " + next);
+            runTask(task);
+            String next;
+            boolean suppressNext = false;
+            synchronized (task.queuedGoals) {
+                next = task.queuedGoals.pollFirst();
+                if (next != null && !task.queuedSuppressTaskDone.isEmpty()) {
+                    suppressNext = task.queuedSuppressTaskDone.pollFirst();
+                }
+            }
+            if (!task.stopped && next != null) {
+                startTask(next, false, task.sessionId, task.agentId, suppressNext);
             }
         } catch (Exception e) {
-            log("Agent 异常: " + e);
+            taskLog(task, "Agent 异常: " + e, null);
         } finally {
+            releaseDevice(task);
             if (wl != null && wl.isHeld()) wl.release();
-            // Only the current generation may clear the shared "running" state;
-            // a stale thread from a previous start/stop cycle must not clobber it.
-            if (gen == generation) {
-                AutoExperienceWriter.get(this).flush();
-                running = false;
-                currentQuestion = null;
-                log("Agent 已停止");
+            if (TASKS.remove(task.sessionId, task)) {
+                task.question = null;
+                taskLog(task, "Agent 已停止", null);
             }
+            running = !TASKS.isEmpty();
+            // Flush completed-task memories even when other sessions remain active.
+            AutoExperienceWriter.get(this).flush();
+            WORKER_TASK.remove();
         }
     }
 
     /** Inner loop: one task, round by round, until done / interrupted. */
-    private void runTask(final long gen) {
-        Prefs prefs = new Prefs(this);
-        String goal = currentGoal;
-        // Settings are snapshot here: model/API changes mid-task apply next task.
-        // Effective config: per-agent override -> global default -> built-in
-        String agentId = currentAgentId;
-        AgentConfig cfg = AgentConfig.resolve(this, agentId);
-        String baseUrl = cfg.baseUrl;
-        String apiKey = cfg.apiKey;
-        // the session's agent model (falls back to AgentConfig resolved model id)
-        String model = (runProfile != null) ? runProfile.id : cfg.modelId;
-        int intervalMs = Math.max(1000, prefs.intervalMs());
-        int maxTokens = Math.max(256, prefs.maxTokens());
-        int maxRounds = Math.max(0, prefs.historyRounds());
-        String appList = buildAppList();
-        log("任务开始 model=" + model + " goal=" + (goal.isEmpty() ? "(无)" : goal));
+    private void runTask(final Task task) {
+        String goal = task.goal;
+        String agentId = task.agentId;
+        String baseUrl = task.config.baseUrl;
+        String apiKey = task.config.apiKey;
+        String model = task.profile != null ? task.profile.id : task.config.modelId;
+        int intervalMs = task.intervalMs;
+        int maxTokens = task.maxTokens;
+        int maxRounds = task.maxRounds;
+        String appList = task.appList;
+        taskLog(task, "任务开始 model=" + model + " goal=" + (goal.isEmpty() ? "(无)" : goal), null);
+        taskChat(task, ChatMsg.USER, "任务目标: " + goal, null);
 
         // 测试会话: 跳过 LLM 调用, 直接触发 onTaskDone
         if ("__test__".equals(agentId)) {
@@ -576,47 +766,57 @@ public class AgentService extends Service {
             new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
                 @Override public void run() {
                     android.widget.Toast.makeText(AgentService.this,
-                            "测试会话触发: " + currentGoal, android.widget.Toast.LENGTH_SHORT).show();
+                            "测试会话触发: " + task.goal, android.widget.Toast.LENGTH_SHORT).show();
                 }
             });
             try {
-                TimerEngine.onTaskDone(this, agentId, currentSessionId, true, "测试会话触发");
+                TimerEngine.onTaskDone(this, agentId, task.sessionId, true, "测试会话触发");
             } catch (Throwable t) {
                 CpLog.w("Akasha", "TimerEngine.onTaskDone(test): " + t);
             }
-            running = false;
-            currentQuestion = null;
-            stopSelf();
             return;
         }
 
         // If the a11y service died (Huawei may kill our process) while the
         // system still shows it enabled, force AMS to rebind before starting.
         if (!ControlService.ready()) {
-            log("无障碍服务未就绪，尝试重新绑定…");
-            boolean rb = ControlService.rebind();
-            log("rebind 已尝试=" + rb + "（约1-2秒后生效）");
+            boolean enabled = ControlService.enableWithShizuku();
+            boolean rb = enabled || ControlService.rebind();
+            log(enabled ? "已通过 Shizuku 自动授予无障碍，等待系统绑定…"
+                    : "无障碍服务未就绪，尝试重新绑定…");
+            log("无障碍授权/重绑已尝试=" + rb + "（约1-2秒后生效）");
             sleep(1500);
             if (ControlService.ready()) log("无障碍服务已恢复");
         }
 
-        while (!stopRequested && gen == generation) {
+        while (!task.stopped && TASKS.get(task.sessionId) == task) {
             // --- observation (text-first; screenshot only on demand) ---
+            boolean hasDevice = ownsDevice(task);
             String a11y = null;
-            if (ControlService.ready()) {
+            if (!hasDevice) {
+                String owner = deviceOwnerDescription(task);
+                a11y = "【手机操作锁】" + (owner == null
+                        ? "当前未持有。需要读屏或操作手机时先输出 acquire_device。"
+                        : "当前由 " + owner + " 持有。不要读屏或操作手机；可处理非设备任务，或 wait 后输出 acquire_device。");
+            } else if (task.profile != null && task.profile.permA11y && ControlService.ready()) {
                 a11y = ControlService.dumpText(120);
             }
-            if (a11y == null
+            if (hasDevice && task.profile != null && task.profile.permA11y && (a11y == null
                     || a11y.contains("无可读文本")
                     || a11y.contains("未启用")
-                    || a11y.contains("取不到")) {
+                    || a11y.contains("取不到"))) {
                 String viaShell = uiDumpViaShell();
                 if (viaShell != null && !viaShell.contains("无可读文本")) a11y = viaShell;
             }
-            if (a11y == null) a11y = "(屏幕文本不可用)";
+            if (a11y == null) {
+                a11y = task.profile != null && !task.profile.permA11y
+                        ? "(本 Agent 未授予屏幕读取权限；不可读取或截图手机界面)"
+                        : "(屏幕文本不可用)";
+            }
 
-            boolean needImage = wantLook || a11y.contains("屏幕文本不可用");
-            wantLook = false;
+            boolean needImage = hasDevice && task.profile != null && task.profile.permA11y
+                    && task.profile.vision && (task.wantLook || a11y.contains("屏幕文本不可用"));
+            task.wantLook = false;
 
             String jpegB64 = null;
             if (needImage) {
@@ -628,14 +828,15 @@ public class AgentService extends Service {
                     bmp.recycle();
                 }
             }
-            if (jpegB64 != null) pushShot(jpegB64); // ring for exp_record attachments
-            if (jpegB64 == null && a11y.contains("屏幕文本不可用")) {
+            if (jpegB64 != null) pushShot(task, jpegB64);
+            if (hasDevice && jpegB64 == null && a11y.contains("屏幕文本不可用")) {
                 // nothing usable at all
                 log("截屏/无障碍/shell 均不可用 — 请在设置中授权 Dhizuku 或 Shizuku，或完成屏幕录制授权");
                 sleep(5000);
                 continue;
             }
 
+            a11y = clip(a11y, MAX_OBSERVATION_CHARS);
             String obs = "【屏幕文本(无障碍)】\n" + a11y
                     + "\n（带 [n] C 前缀的节点可点击，C=clickable；可用 tap_idx n 或 tap_text 操作）";
             if (jpegB64 != null) {
@@ -649,22 +850,24 @@ public class AgentService extends Service {
             CpLog.d("Akasha", "obs: " + obsLog);
 
             List<LlmClient.Msg> msgs = new ArrayList<>();
-            String pkg = getForegroundPackage();
-            String expSection = new ExpStore(this).retrieveRelevant(
-                    currentQuestion, pkg, currentAgentId, 5, 2000);
-            String systemPrompt = buildSystemPrompt(goal, appList);
+            String pkg = hasDevice ? getForegroundPackage() : "";
+            String expSection = "";
+            if (task.profile != null && task.profile.permExpRead) {
+                expSection = new ExpStore(this).retrieveRelevant(goal, pkg, task.agentId, 5, 1200);
+            }
+            String systemPrompt = buildSystemPrompt(task, goal, appList);
             if (expSection != null && !expSection.isEmpty()) {
                 systemPrompt = systemPrompt + "\n" + expSection;
             }
             msgs.add(new LlmClient.Msg("system", systemPrompt));
-            LinkedList<String[]> hq = agentHistory(currentAgentId);
+            LinkedList<String[]> hq = task.history;
             synchronized (hq) {
                 for (String[] h : hq) {
                     msgs.add(new LlmClient.Msg("assistant", h[0]));
                     msgs.add(new LlmClient.Msg("user", h[1]));
                 }
             }
-            CpLog.d("HISTORY", "agent=" + currentAgentId + " size=" + hq.size());
+            CpLog.d("HISTORY", "session=" + task.sessionId + " size=" + hq.size());
             JSONArray contentArr;
             try {
                 contentArr = new JSONArray();
@@ -692,6 +895,8 @@ public class AgentService extends Service {
             }
             CpLog.d("Akasha", "llm: " + truncate(content, 400));
 
+            if (!activeTask(task)) return;
+
             ActionParser.Action a = ActionParser.parse(content);
             if (!a.ok) {
                 // parse failure → centralized error_code (no inline text; ChatGPT spec v2)
@@ -710,7 +915,7 @@ public class AgentService extends Service {
                 CpLog.w("Akasha", "动作匹配失败: " + code + " detail=" + detail);
                 log(usrH, meta);
                 chat(ChatMsg.AGENT, "⚠ " + usrH);
-                pushHistory(currentAgentId, maxRounds, content, llmH);
+                pushHistory(task, maxRounds, content, llmH);
                 sleep(intervalMs);
                 continue;
             }
@@ -732,8 +937,8 @@ public class AgentService extends Service {
                     continue;
                 }
                 for (String seg : splitSentences(said)) chat(ChatMsg.AGENT, seg);
-                notifyAgentMessage(said); // agent 走消息通知 (req 5)
-                pushHistory(currentAgentId, maxRounds, content, said);
+                notifyAgentMessage(task, said);
+                pushHistory(task, maxRounds, content, said);
                 sleep(intervalMs);
                 continue;
             }
@@ -744,7 +949,8 @@ public class AgentService extends Service {
                 res = a.type;
                 tres = null;
             } else {
-                tres = execute(a);
+                if (!activeTask(task)) return;
+                tres = execute(task, a);
                 res = tres.llmHint(); // goes back into LLM observation
                 // ops are NOT echoed into the chat (req 4); only failures with ⚠
                 // no-match codes (search no hit) are intentionally NOT shown in chat
@@ -755,11 +961,11 @@ public class AgentService extends Service {
                     log(tres.userHint() == null ? tres.llmHint() : tres.userHint(), meta);
                     if (tres.userHint() != null) chat(ChatMsg.AGENT, "⚠ " + tres.userHint());
                     AutoExperienceWriter.get(this).onTaskRecovered(
-                            currentAgentId, agentName(), currentSessionId,
+                            task.agentId, agentName(task), task.sessionId,
                             "Tool error: " + tres.rawError(), "Will retry or use alternative approach");
                     if (tres.errorCode != null && (tres.errorCode.contains("PERMISSION") || tres.errorCode.contains("DENIED"))) {
                         AutoExperienceWriter.get(this).onToolRestricted(
-                                currentAgentId, agentName(), currentSessionId,
+                                task.agentId, agentName(task), task.sessionId,
                                 "Permission denied: " + a.type + (a.cmd != null ? " " + a.cmd : ""), "Try with shell/root access or alternative method");
                     }
                 } else {
@@ -770,20 +976,23 @@ public class AgentService extends Service {
             }
 
             if ("done".equals(a.type) || "terminate".equals(a.type)) {
+                if (!activeTask(task)) return;
                 boolean term = "terminate".equals(a.type);
                 String msg = a.message == null ? "" : a.message.trim();
                 if (!msg.isEmpty()) {
                     for (String seg : splitSentences(msg)) chat(ChatMsg.AGENT, seg);
-                    notifyAgentMessage(msg);
+                    notifyAgentMessage(task, msg);
                 }
                 log((term ? "任务终止: " : "任务完成: ") + msg);
-                updateNotif((term ? "任务终止: " : "任务完成: ") + msg, msg);
+                updateTaskNotif(task, (term ? "任务终止: " : "任务完成: ") + msg, msg);
                 // 事件唤醒钩子: 任务结束/终止 (TimerWakeup「任务完成」事件)
                 try {
-                    TimerEngine.onTaskDone(this, currentAgentId, currentSessionId, term, msg);
+                    if (!task.suppressTaskDoneTrigger) {
+                        TimerEngine.onTaskDone(this, task.agentId, task.sessionId, term, msg);
+                    }
                     AutoExperienceWriter.get(this).onTaskSuccess(
-                            currentAgentId, agentName(), currentSessionId,
-                            currentQuestion != null ? currentQuestion : "",
+                            task.agentId, agentName(task), task.sessionId,
+                            task.goal,
                             "", msg);
                 } catch (Throwable t) {
                     CpLog.w("Akasha", "TimerEngine.onTaskDone: " + t);
@@ -791,25 +1000,44 @@ public class AgentService extends Service {
                 return;
             }
             if ("ask_user".equals(a.type)) {
-                currentQuestion = a.question;
+                task.question = a.question;
                 chat(ChatMsg.AGENT, "❓ 提问: " + a.question + "（请在底部输入框回答）");
-                updateNotif("Agent 提问: " + a.question, a.question);
-                String answer = waitForAnswer(gen);
-                currentQuestion = null;
+                updateTaskNotif(task, "Agent 提问: " + a.question, a.question);
+                String answer = waitForAnswer(task);
+                task.question = null;
                 if (answer == null) return;
                 res = "用户回答: " + answer;
                 chat(ChatMsg.USER, "回答: " + answer);
                 AutoExperienceWriter.get(this).onUserConfirmed(
-                        currentAgentId, agentName(), currentSessionId,
+                        task.agentId, agentName(task), task.sessionId,
                         answer);
             }
 
-            pushHistory(currentAgentId, maxRounds, content, res);
+            pushHistory(task, maxRounds, content, res);
             sleep(intervalMs);
         }
     }
 
-    private AgentToolResult execute(ActionParser.Action a) {
+    private AgentToolResult execute(Task task, ActionParser.Action a) {
+        if (!activeTask(task)) return AgentToolResult.err(AgentErrorCodes.TASK_CANCELLED, "");
+        if ("acquire_device".equals(a.type)) return acquireDevice(task);
+        if ("release_device".equals(a.type)) {
+            if (!ownsDevice(task)) return AgentToolResult.err(AgentErrorCodes.DEVICE_LOCK_REQUIRED, "");
+            releaseDevice(task);
+            return AgentToolResult.ok("已释放手机操作锁");
+        }
+        if (isDeviceAction(a.type) && !ownsDevice(task)) {
+            return AgentToolResult.err(AgentErrorCodes.DEVICE_LOCK_REQUIRED, "");
+        }
+        if (("look".equals(a.type) || "a11y_text".equals(a.type)
+                || "tap_text".equals(a.type) || "tap_idx".equals(a.type)
+                || "tap".equals(a.type) || "double_tap".equals(a.type)
+                || "swipe".equals(a.type) || "type".equals(a.type)
+                || "key".equals(a.type) || "open_app".equals(a.type)
+                || "web_open".equals(a.type))
+                && !hasPerm("a11y")) {
+            return AgentToolResult.err(AgentErrorCodes.AGENT_A11Y_PERMISSION_DENIED, "");
+        }
         // --- per-agent permission gate (req 6): centralized error_codes ---
         if ("file_ls".equals(a.type) || "file_read".equals(a.type)
                 || "file_write".equals(a.type) || "file_search".equals(a.type)) {
@@ -823,24 +1051,26 @@ public class AgentService extends Service {
         }
         if ("a11y_text".equals(a.type) || "tap_text".equals(a.type) || "tap_idx".equals(a.type)
                 || "tap".equals(a.type) || "double_tap".equals(a.type) || "swipe".equals(a.type)
-                || "type".equals(a.type) || "key".equals(a.type) || "open_app".equals(a.type)
-                || "wait".equals(a.type)) {
+                || "type".equals(a.type) || "key".equals(a.type) || "open_app".equals(a.type)) {
             if (!hasPerm("a11y")) return AgentToolResult.err(
                     AgentErrorCodes.AGENT_A11Y_PERMISSION_DENIED, "");
         }
         if ("exp_record".equals(a.type) || "exp_delete".equals(a.type)) {
-            if (runProfile != null && !runProfile.permExpWrite) {
+            if (task.profile != null && !task.profile.permExpWrite) {
                 return AgentToolResult.err(AgentErrorCodes.EXP_NO_WRITE_PERM, "");
             }
         }
         if ("exp_search".equals(a.type)) {
-            if (runProfile != null && !runProfile.permExpRead) {
+            if (task.profile != null && !task.profile.permExpRead) {
                 return AgentToolResult.err(AgentErrorCodes.EXP_NO_READ_PERM, "");
             }
         }
 
         try {
             switch (a.type) {
+                case "wait":
+                    sleep(Math.min(30000, Math.max(200, a.ms)));
+                    return AgentToolResult.ok("wait " + a.ms + "ms");
                 case "chat_search": {
                     ChatSearch.Q sq = new ChatSearch.Q();
                     sq.query = a.message == null ? "" : a.message;
@@ -849,13 +1079,13 @@ public class AgentService extends Service {
                     sq.toTs = a.toTs;
                     sq.role = a.role;
                     sq.senderAgentIds = a.senderAgentIds;
-                    ChatSearch.R res = ChatSearch.query(this, sq, currentAgentId, currentSessionId);
+                    ChatSearch.R res = ChatSearch.query(this, sq, task.agentId, task.sessionId);
                     String body = res.hint;
                     if (body == null || body.isEmpty()) body = "无命中";
                     return AgentToolResult.ok(body);
                 }
                 case "look":
-                    wantLook = true;
+                    task.wantLook = true;
                     return AgentToolResult.ok("下一轮将附带截图");
                 case "file_ls":
                     return fileLs(a.path);
@@ -969,7 +1199,8 @@ public class AgentService extends Service {
      * the agent's per-category permission gate, or null if allowed.
      */
     private String fileCategoryDeny(ActionParser.Action a) {
-        ModelInfo p = runProfile;
+        Task task = WORKER_TASK.get();
+        ModelInfo p = task == null ? null : task.profile;
         if (p == null) return null;
         String path = a.path == null ? "" : a.path.toLowerCase(Locale.ROOT);
         if (!p.permPhoto && looksLikePhoto(path))
@@ -984,7 +1215,8 @@ public class AgentService extends Service {
     // ---------------- per-agent permission helpers (req 6) ----------------
 
     private boolean hasPerm(String k) {
-        ModelInfo p = runProfile;
+        Task task = WORKER_TASK.get();
+        ModelInfo p = task == null ? null : task.profile;
         if (p == null) return true; // legacy/no session: keep old behavior
         switch (k) {
             case "shell": return p.permShell;
@@ -1062,30 +1294,31 @@ public class AgentService extends Service {
     // ---------------- screenshot ring for exp_record (req 6) ----------------
 
     /** JPEG bytes of recent grabbed screens (newest last, capped). */
-    private static final ArrayDeque<byte[]> SHOT_RING = new ArrayDeque<>();
     private static final int SHOT_RING_MAX = 10;
 
-    private static synchronized void pushShot(String jpegB64) {
+    private static void pushShot(Task task, String jpegB64) {
         try {
             byte[] b = android.util.Base64.decode(jpegB64, android.util.Base64.DEFAULT);
             if (b == null || b.length == 0) return;
-            SHOT_RING.addLast(b);
-            while (SHOT_RING.size() > SHOT_RING_MAX) SHOT_RING.removeFirst();
+            synchronized (task.shots) {
+                task.shots.addLast(b);
+                while (task.shots.size() > SHOT_RING_MAX) task.shots.removeFirst();
+            }
         } catch (Exception ignored) {}
     }
 
-    private static synchronized List<Bitmap> takeShots(int n) {
-        List<Bitmap> out = new ArrayList<>();
-        if (n <= 0) return out;
-        if (n > SHOT_RING_MAX) n = SHOT_RING_MAX;
-        int from = Math.max(0, SHOT_RING.size() - n);
-        int i = 0;
-        for (byte[] b : SHOT_RING) {
-            if (i++ < from) continue;
-            Bitmap bmp = BitmapFactory.decodeByteArray(b, 0, b.length);
-            if (bmp != null) out.add(bmp);
-        }
-        return out;
+    private static boolean activeTask(Task task) {
+        return task != null && !task.stopped
+                && TASKS.get(task.sessionId) == task
+                && !Thread.currentThread().isInterrupted();
+    }
+
+    private static boolean isDeviceAction(String action) {
+        return "look".equals(action) || "a11y_text".equals(action) || "tap_text".equals(action)
+                || "tap_idx".equals(action) || "tap".equals(action) || "double_tap".equals(action)
+                || "swipe".equals(action) || "type".equals(action) || "key".equals(action)
+                || "open_app".equals(action) || "web_open".equals(action) || "shell".equals(action)
+                || "clipboard_set".equals(action) || "clipboard_get".equals(action);
     }
 
     // ---------------- experience pool tools (req 6) ----------------
@@ -1103,11 +1336,22 @@ public class AgentService extends Service {
         }
         if (title.isEmpty()) title = content.length() > 20 ? content.substring(0, 20) + "…" : content;
         int n = a.shots;
-        if (n < 0) n = Math.min(2, SHOT_RING.size()); // auto: up to 2 recent screenshots
-        List<Bitmap> shots = takeShots(Math.min(9, Math.max(0, n)));
+        Task task = WORKER_TASK.get();
+        if (n < 0) n = Math.min(2, task.shots.size());
+        List<Bitmap> shots = new ArrayList<>();
+        synchronized (task.shots) {
+            int from = Math.max(0, task.shots.size() - Math.min(9, Math.max(0, n)));
+            int i = 0;
+            for (byte[] bytes : task.shots) {
+                if (i++ >= from) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    if (bmp != null) shots.add(bmp);
+                }
+            }
+        }
         Experience e = expStore().record(
-                currentAgentId == null ? "unknown" : currentAgentId,
-                agentName(), title, content, shots);
+                task.agentId, agentName(task), title, content, shots);
+        if (e == null) return AgentToolResult.err(AgentErrorCodes.EXP_NO_WRITE_PERM, "");
         CpLog.i("Akasha", "exp_record id=" + e.id + " title=" + title + " shots=" + shots.size());
         return AgentToolResult.ok(
                 "已记录经验 id=" + e.id + "（" + title + "）截图" + shots.size() + "张");
@@ -1119,7 +1363,8 @@ public class AgentService extends Service {
         if (q.isEmpty()) {
             return AgentToolResult.err(AgentErrorCodes.EXP_SEARCH_QUERY_EMPTY, "");
         }
-        List<Experience> hits = expStore().search(q, 5);
+        List<Experience> hits = expStore().searchForAgent(WORKER_TASK.get().agentId, q);
+        if (hits.size() > 5) hits = hits.subList(0, 5);
         if (hits.isEmpty()) {
             return AgentToolResult.err(AgentErrorCodes.EXP_SEARCH_NO_MATCH, q);
         }
@@ -1139,16 +1384,16 @@ public class AgentService extends Service {
             return AgentToolResult.err(AgentErrorCodes.EXP_DELETE_TARGET_EMPTY, "");
         }
         int n = expStore().removeByAgent(
-                currentAgentId == null ? "unknown" : currentAgentId, id.trim());
+                WORKER_TASK.get().agentId, id.trim());
         if (n <= 0) {
             return AgentToolResult.err(AgentErrorCodes.EXP_DELETE_NOT_OWNED_OR_NOT_FOUND, id);
         }
         return AgentToolResult.ok("已删除 " + n + " 条经验");
     }
 
-    private String agentName() {
-        if (runProfile != null && runProfile.name != null) return runProfile.name;
-        return currentAgentId == null ? "unknown" : currentAgentId;
+    private String agentName(Task task) {
+        if (task != null && task.profile != null && task.profile.name != null) return task.profile.name;
+        return task == null ? "unknown" : task.agentId;
     }
 
     /** Category restrictions for explicit file paths (相册/媒体/音乐). */
@@ -1175,7 +1420,8 @@ public class AgentService extends Service {
         }
         String c = cmd.trim();
         String lc = c.toLowerCase(java.util.Locale.ROOT);
-        if (lc.contains("reboot") || lc.contains("shutdown") || lc.contains("fastboot")
+        if (!isAllowedShellCommand(c)
+                || lc.contains("reboot") || lc.contains("shutdown") || lc.contains("fastboot")
                 || lc.contains("pm uninstall") || lc.contains("pm clear")
                 || lc.contains("rm -rf /") || lc.contains("dd if=") || lc.contains("mkfs")) {
             return AgentToolResult.err(AgentErrorCodes.SHELL_DANGEROUS_COMMAND_REJECTED, c);
@@ -1190,9 +1436,31 @@ public class AgentService extends Service {
         return AgentToolResult.ok(r);
     }
 
+    private static boolean isAllowedShellCommand(String command) {
+        if (command.indexOf('\n') >= 0 || command.indexOf('\r') >= 0) return false;
+        for (char ch : new char[]{';', '|', '&', '`', '$', '>', '<', '(', ')'}) {
+            if (command.indexOf(ch) >= 0) return false;
+        }
+        int end = 0;
+        while (end < command.length() && !Character.isWhitespace(command.charAt(end))) end++;
+        String executable = command.substring(0, end);
+        int slash = executable.lastIndexOf('/');
+        if (slash >= 0) executable = executable.substring(slash + 1);
+        return executable.matches("[A-Za-z0-9_.-]+")
+                && (executable.equals("id") || executable.equals("getprop")
+                || executable.equals("dumpsys") || executable.equals("screencap")
+                || executable.equals("uiautomator") || executable.equals("input")
+                || executable.equals("am") || executable.equals("settings")
+                || executable.equals("pm") || executable.equals("cmd")
+                || executable.equals("logcat") || executable.equals("head")
+                || executable.equals("cat") || executable.equals("rm")
+                || executable.equals("echo"));
+    }
+
     /** Screen text tree via `uiautomator dump` when the a11y service is off. */
     private String uiDumpViaShell() {
-        if (runProfile != null && !runProfile.permShell) return null;
+        Task task = WORKER_TASK.get();
+        if (task != null && task.profile != null && !task.profile.permShell) return null;
         if (!ShellChannel.available()) return null;
         String r = ShellChannel.exec(
                 "uiautomator dump /sdcard/akasha_ui.xml >/dev/null 2>&1; "
@@ -1238,7 +1506,8 @@ public class AgentService extends Service {
 
     /** Screenshot via shell `screencap` when mediaProjection is not authorized. */
     private Bitmap screenShotViaShell() {
-        if (runProfile != null && !runProfile.permShell) return null;
+        Task task = WORKER_TASK.get();
+        if (task != null && task.profile != null && !task.profile.permShell) return null;
         if (!ShellChannel.available()) return null;
         String r = ShellChannel.exec("screencap -p /sdcard/akasha_shot.png 2>/dev/null && echo CLAW_OK");
         if (r == null || !r.contains("CLAW_OK")) return null;
@@ -1456,20 +1725,20 @@ public class AgentService extends Service {
         return "open_app " + pkg;
     }
 
-    private String waitForAnswer(final long gen) {
+    private String waitForAnswer(final Task task) {
         long deadline = System.currentTimeMillis() + 30 * 60 * 1000L;
-        synchronized (lock) {
-            while (pendingAnswer == null && gen == generation) {
+        synchronized (task.answerLock) {
+            while (task.pendingAnswer == null && !task.stopped && TASKS.get(task.sessionId) == task) {
                 long left = deadline - System.currentTimeMillis();
                 if (left <= 0) break;
                 try {
-                    lock.wait(Math.min(left, 1000));
+                    task.answerLock.wait(Math.min(left, 1000));
                 } catch (InterruptedException ignored) {
                     break;
                 }
             }
-            String a = (gen == generation) ? pendingAnswer : null;
-            pendingAnswer = null;
+            String a = !task.stopped && TASKS.get(task.sessionId) == task ? task.pendingAnswer : null;
+            task.pendingAnswer = null;
             return a;
         }
     }
@@ -1512,20 +1781,20 @@ public class AgentService extends Service {
      *   + permission-filtered tool docs + installed apps.
      * 三级回退: 会话提示词(空)→ 模型提示词(空)→ 系统提示词 AgentPrompts.defaultBase(this)(空=内置默认)。
      */
-    private String buildSystemPrompt(String goal, String appList) {
+    private String buildSystemPrompt(Task task, String goal, String appList) {
         StringBuilder sb = new StringBuilder();
-        sb.append("任务目标: ").append(goal.isEmpty() ? "（无明确目标，观察屏幕，输出 wait）" : goal).append("\n");
-        synchronized (GUIDE_NOTES) {
-            if (!GUIDE_NOTES.isEmpty()) {
+        sb.append("任务目标: ").append(goal.isEmpty() ? "（无明确目标，输出 wait 或处理非设备任务）" : clip(goal, 4000)).append("\n");
+        synchronized (task.guides) {
+            if (!task.guides.isEmpty()) {
                 sb.append("用户实时引导(必须优先遵循):\n");
-                for (String g : GUIDE_NOTES) sb.append("- ").append(g).append("\n");
+                for (String g : task.guides) sb.append("- ").append(clip(g, 1000)).append("\n");
             }
         }
-        String[] base = AgentPrompts.resolveBase(this, runSessionPrompt, runProfile);
+        String[] base = AgentPrompts.resolveBase(this, task.sessionPrompt, task.profile);
         CpLog.d("Akasha", "prompt source: " + base[1]);
-        sb.append(base[0]).append("\n");
-        sb.append(AgentPrompts.toolDocs(runProfile)).append("\n")
-          .append("已装应用: ").append(appList).append("\n");
+        sb.append(clip(base[0], 12000)).append("\n");
+        sb.append(AgentPrompts.toolDocs(task.profile)).append("\n")
+          .append("已装应用: ").append(clip(appList, MAX_APP_LIST_CHARS)).append("\n");
         return sb.toString();
     }
 
@@ -1558,6 +1827,16 @@ public class AgentService extends Service {
         if (s == null) return "";
         s = s.replace('\n', ' ');
         return s.length() <= n ? s : s.substring(0, n);
+    }
+
+    /** Keep prompt entries bounded while retaining both the beginning and outcome. */
+    private static String clip(String s, int max) {
+        if (s == null) return "";
+        if (max < 16 || s.length() <= max) return s;
+        int head = Math.max(8, max * 2 / 3);
+        int tail = Math.max(8, max - head);
+        return s.substring(0, head) + "\n…(已裁剪 " + s.length() + " 字符)…\n"
+                + s.substring(s.length() - tail);
     }
 
     @Override

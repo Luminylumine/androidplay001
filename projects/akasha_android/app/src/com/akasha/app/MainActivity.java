@@ -393,6 +393,7 @@ public class MainActivity extends Activity {
                             .setTitle("删除会话")
                             .setMessage("删除会话「" + s.title + "」及其聊天记录？")
                             .setPositiveButton("删除", (d, w) -> {
+                                AgentService.stopSession(s.id);
                                 store.remove(s.id);
                                 refreshSessions();
                             })
@@ -481,8 +482,7 @@ public class MainActivity extends Activity {
             name.setText((m.pinned ? "📌 " : "") + (m.name == null || m.name.isEmpty() ? m.id : m.name));
             name.setTextSize(18);
             name.setTypeface(null, android.graphics.Typeface.BOLD);
-            boolean runningHere = AgentService.running
-                    && m.id != null && m.id.equals(AgentService.currentAgentId);
+            boolean runningHere = m.id != null && AgentService.isAgentRunning(m.id);
             // 灰色小字：模型 meta
             TextView meta = (TextView) v.findViewById(R.id.tvAgentMeta);
             meta.setText(m.meta());

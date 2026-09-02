@@ -107,17 +107,16 @@ public class ChatActivity extends Activity {
             @Override
             public void onClick(View v) {
                 String text = input();
-                if (AgentService.running && AgentService.currentQuestion != null) {
+                if (AgentService.isSessionRunning(sessionId) && AgentService.sessionQuestion(sessionId) != null) {
                     // replying to the agent's question
                     if (text.isEmpty()) {
                         text = "(用户选择跳过此提问，请自行决定安全合理的做法)";
                     }
                     answer(text);
-                } else if (AgentService.running) {
+                } else if (AgentService.isSessionRunning(sessionId)) {
                     stopAgent();
                 } else {
-                    String goal = text.isEmpty() ? prefs.goal() : text;
-                    if (!text.isEmpty()) prefs.goal(goal);
+                    String goal = text.isEmpty() ? defaultGoal() : text;
                     startAgent(goal, false);
                 }
             }
@@ -127,7 +126,7 @@ public class ChatActivity extends Activity {
             @Override
             public void onClick(View v) {
                 String text = input();
-                if (AgentService.running) {
+                if (AgentService.isSessionRunning(sessionId)) {
                     if (text.isEmpty()) {
                         Toast.makeText(ChatActivity.this, "输入新任务内容再打断", Toast.LENGTH_SHORT).show();
                         return;
@@ -138,7 +137,9 @@ public class ChatActivity extends Activity {
                         Toast.makeText(ChatActivity.this, "输入要排队的任务", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    AgentService.enqueueTask(text);
+                    if (!AgentService.enqueueTaskForSession(sessionId, text)) {
+                        Toast.makeText(ChatActivity.this, "Agent 未运行，无法排队", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -147,7 +148,7 @@ public class ChatActivity extends Activity {
             @Override
             public void onClick(View v) {
                 String text = input();
-                if (!AgentService.running) {
+                if (!AgentService.isSessionRunning(sessionId)) {
                     Toast.makeText(ChatActivity.this, "Agent 未运行，无任务可引导", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -155,7 +156,7 @@ public class ChatActivity extends Activity {
                     Toast.makeText(ChatActivity.this, "输入引导内容", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                AgentService.addGuide(text);
+                AgentService.addGuideToSession(text, sessionId);
             }
         });
 
@@ -167,13 +168,28 @@ public class ChatActivity extends Activity {
                     Toast.makeText(ChatActivity.this, "输入要排队的任务", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                AgentService.enqueueTask(text);
+                if (!AgentService.enqueueTaskForSession(sessionId, text)) {
+                    Toast.makeText(ChatActivity.this, "Agent 未运行，无法排队", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
     private String input() {
         return etInput.getText().toString().trim();
+    }
+
+    /** A typed goal is one task only. Defaults are explicitly configured by scope. */
+    private String defaultGoal() {
+        ChatSession session = sessionId == null ? null : store.get(sessionId);
+        if (session != null && session.defaultGoal != null && !session.defaultGoal.trim().isEmpty()) {
+            return session.defaultGoal.trim();
+        }
+        ModelInfo agent = prefs.effectiveModel(agentId);
+        if (agent != null && agent.defaultGoal != null && !agent.defaultGoal.trim().isEmpty()) {
+            return agent.defaultGoal.trim();
+        }
+        return prefs.goal();
     }
 
     private void clearInput() {
@@ -196,7 +212,7 @@ public class ChatActivity extends Activity {
     }
 
     private void refresh() {
-        boolean run = AgentService.running;
+        boolean run = AgentService.isSessionRunning(sessionId);
         // 顶栏太窄：只显示名字 + 是否运行（通道状态移入「全局→设置」）
         StringBuilder sb = new StringBuilder();
         if (s_title() != null) sb.append(s_title()).append("  ");
@@ -205,7 +221,7 @@ public class ChatActivity extends Activity {
         tvStatus.setText(sb.toString());
 
         // buttons
-        if (run && AgentService.currentQuestion != null) {
+        if (run && AgentService.sessionQuestion(sessionId) != null) {
             btnA.setText("✔ 回答");
             btnB.setText("■ 停止");
             btnC.setText("➡ 引导");
@@ -228,14 +244,9 @@ public class ChatActivity extends Activity {
         }
 
         List<AgentService.ChatMsg> snapshot;
-        boolean live = AgentService.running
-                && sessionId != null
-                && sessionId.equals(AgentService.currentSessionId);
+        boolean live = AgentService.isSessionRunning(sessionId);
         if (live) {
-            synchronized (AgentService.CHAT) {
-                int from = Math.max(0, AgentService.CHAT.size() - 150);
-                snapshot = new ArrayList<>(AgentService.CHAT.subList(from, AgentService.CHAT.size()));
-            }
+            snapshot = new ArrayList<>(AgentService.sessionChat(sessionId));
         } else {
             // persisted history of this session (independent context, req 2.2)
             snapshot = new ArrayList<>();
@@ -258,23 +269,28 @@ public class ChatActivity extends Activity {
 
     private void answer(String text) {
         startService(new Intent(this, AgentService.class)
-                .setAction(AgentService.ACTION_ANSWER).putExtra("text", text));
+                .setAction(AgentService.ACTION_ANSWER).putExtra("text", text).putExtra("sessionId", sessionId));
         clearInput();
     }
 
     private void stopAgent() {
-        startService(new Intent(this, AgentService.class).setAction(AgentService.ACTION_STOP));
+        startService(new Intent(this, AgentService.class).setAction(AgentService.ACTION_STOP)
+                .putExtra("sessionId", sessionId));
     }
 
     private void startAgent(String goal, boolean interrupt) {
         if (!ControlService.ready()) {
-            new AlertDialog.Builder(this)
-                    .setTitle("无障碍服务未启用")
-                    .setMessage("需要开启 Akasha 的无障碍服务才能执行点击/滑动/输入。现在去设置吗？")
-                    .setPositiveButton("去设置", (d, w) ->
-                            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)))
-                    .setNegativeButton("取消", null)
-                    .show();
+            if (ControlService.enableWithShizuku()) {
+                Toast.makeText(this, "已通过 Shizuku 自动授予无障碍，正在连接…", Toast.LENGTH_SHORT).show();
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override public void run() {
+                        if (ControlService.ready()) startAgent(goal, interrupt);
+                        else showAccessibilitySettings();
+                    }
+                }, 1500);
+                return;
+            }
+            showAccessibilitySettings();
             return;
         }
         if (TextUtils.isEmpty(prefs.agentApiKey(agentId))) {
@@ -296,6 +312,18 @@ public class ChatActivity extends Activity {
         prepareStart(goal, interrupt);
     }
 
+    private void showAccessibilitySettings() {
+        if (!ControlService.ready()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("无障碍服务未启用")
+                    .setMessage("Shizuku 自动授权不可用或系统尚未绑定。需要开启 Akasha 的无障碍服务才能执行点击/滑动/输入。现在去设置吗？")
+                    .setPositiveButton("去设置", (d, w) ->
+                            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)))
+                    .setNegativeButton("取消", null)
+                    .show();
+        }
+    }
+
     private void prepareStart(final String goal, final boolean interrupt) {
         if (!ScreenShotService.active()) {
             // permission dialog is async; remember the pending request
@@ -310,7 +338,7 @@ public class ChatActivity extends Activity {
     private void beginRun(String goal, boolean interrupt) {
         Intent i = new Intent(this, AgentService.class);
         if (interrupt) {
-            i.setAction(AgentService.ACTION_INT).putExtra("text", goal).putExtra("keep", false);
+            i.setAction(AgentService.ACTION_INT).putExtra("text", goal).putExtra("keep", true);
         } else {
             i.setAction(AgentService.ACTION_RUN_GOAL).putExtra("text", goal);
         }

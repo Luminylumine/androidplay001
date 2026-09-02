@@ -99,6 +99,51 @@ public class ControlService extends AccessibilityService {
         }
     }
 
+    /**
+     * Enables this app's accessibility component through Shizuku's shell uid.
+     * Existing enabled services are retained. This is intentionally unavailable
+     * to the Dhizuku fallback because it is not a privileged shell channel.
+     */
+    public static boolean enableWithShizuku() {
+        if (!ShellChannel.hasRealShell()) {
+            CpLog.w("ControlService", "auto-enable skipped: real Shizuku shell unavailable");
+            return false;
+        }
+        try {
+            String raw = ShellChannel.exec("settings get secure enabled_accessibility_services");
+            String current = shellOutput(raw);
+            if ("null".equalsIgnoreCase(current)) current = "";
+            List<String> parts = new ArrayList<>();
+            if (!current.isEmpty()) {
+                for (String part : current.split(":")) {
+                    if (!part.trim().isEmpty() && !OUR_COMP.equals(part.trim())) parts.add(part.trim());
+                }
+            }
+            parts.add(OUR_COMP);
+            String enabled = join(parts);
+            String setServices = ShellChannel.exec(
+                    "settings put secure enabled_accessibility_services '" + enabled + "'");
+            String setMaster = ShellChannel.exec("settings put secure accessibility_enabled 1");
+            boolean ok = shellOk(setServices) && shellOk(setMaster);
+            CpLog.i("ControlService", "auto-enable via Shizuku ok=" + ok);
+            return ok;
+        } catch (Throwable t) {
+            CpLog.w("ControlService", "auto-enable failed: " + t);
+            return false;
+        }
+    }
+
+    private static boolean shellOk(String result) {
+        return result != null && result.startsWith("rc=0");
+    }
+
+    /** ShellChannel returns `rc=N\\nstdout`; settings get has one value line. */
+    private static String shellOutput(String result) {
+        if (!shellOk(result)) return "";
+        int nl = result.indexOf('\n');
+        return nl < 0 ? "" : result.substring(nl + 1).trim();
+    }
+
     private static String join(List<String> l) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < l.size(); i++) {

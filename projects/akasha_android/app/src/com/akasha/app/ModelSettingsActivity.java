@@ -48,7 +48,7 @@ public class ModelSettingsActivity extends Activity {
     private LinearLayout llIndex;
 
     // 基本信息
-    private EditText etModelId, etModelName, etModelCtx, etModelOut;
+    private EditText etModelId, etModelName, etModelCtx, etModelOut, etModelDefaultGoal;
     private CheckBox cbVision;
     // API
     private EditText etAgentUrl, etAgentKey;
@@ -91,6 +91,7 @@ public class ModelSettingsActivity extends Activity {
         etModelName = (EditText) findViewById(R.id.etModelName);
         etModelCtx = (EditText) findViewById(R.id.etModelCtx);
         etModelOut = (EditText) findViewById(R.id.etModelOut);
+        etModelDefaultGoal = (EditText) findViewById(R.id.etModelDefaultGoal);
         cbVision = (CheckBox) findViewById(R.id.cbVision);
         etAgentUrl = (EditText) findViewById(R.id.etAgentUrl);
         etAgentKey = (EditText) findViewById(R.id.etAgentKey);
@@ -407,6 +408,7 @@ public class ModelSettingsActivity extends Activity {
         etModelName.setText(m.name == null ? "" : m.name);
         etModelCtx.setText(String.valueOf(m.ctxIn));
         etModelOut.setText(String.valueOf(m.maxOut));
+        etModelDefaultGoal.setText(m.defaultGoal == null ? "" : m.defaultGoal);
         cbVision.setChecked(m.vision);
     }
 
@@ -465,6 +467,8 @@ public class ModelSettingsActivity extends Activity {
                 m.vision = cbVision.isChecked();
                 m.ctxIn = parseIntDef(etModelCtx, 128000);
                 m.maxOut = parseIntDef(etModelOut, 65536);
+                String defaultGoal = etModelDefaultGoal.getText().toString().trim();
+                m.defaultGoal = defaultGoal.isEmpty() ? null : defaultGoal;
                 break;
             }
             case SEC_API:

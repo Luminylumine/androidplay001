@@ -85,6 +85,8 @@ public class ActionParser {
         if (s.equals("terminate") || s.equals("terminal") || s.equals("end")
                 || s.equals("stop") || s.equals("abort") || s.equals("cancel")
                 || s.equals("failed") || s.equals("failure")) return "terminate";
+        if (s.equals("acquire_device") || s.equals("acquire_lock")) return "acquire_device";
+        if (s.equals("release_device") || s.equals("release_lock")) return "release_device";
         return s;
     }
 }

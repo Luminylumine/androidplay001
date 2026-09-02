@@ -7,7 +7,9 @@ import android.os.HandlerThread;
 import android.os.Looper;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 「定时器与唤醒」执行引擎（避免 Agent 24h 工作，在必要时唤醒）。
@@ -83,6 +85,7 @@ public final class TimerEngine {
 
     // 触发去重 (跨进程重启: 闹钟 key 落 Prefs)
     private static volatile String lastAlarmKey = "";
+    private static final Map<String, Long> firedAlarmKeys = new HashMap<>();
     private static volatile String lastAppKey = "";
     private static volatile long lastAppKeyTs = 0;
 
@@ -99,6 +102,7 @@ public final class TimerEngine {
         worker.start();
         workerH = new Handler(worker.getLooper());
         lastAlarmKey = new Prefs(c).raw().getString("timer_last_alarm_key", "");
+        if (!lastAlarmKey.isEmpty()) firedAlarmKeys.put(lastAlarmKey, System.currentTimeMillis());
         workerH.postDelayed(alarmTick, 3_000L); // 首次 3s 后进入 30s 循环节拍
         CpLog.i(TAG, "engine started");
     }
@@ -134,7 +138,7 @@ public final class TimerEngine {
             if (!dayOk && !monthOk) continue;
 
             String key = m.id + "|" + dateKey + "|" + h + ":" + mi;
-            if (key.equals(lastAlarmKey)) continue;
+            if (alarmAlreadyFired(key)) continue;
             lastAlarmKey = key;
             p.raw().edit().putString("timer_last_alarm_key", key).apply();
             CpLog.i(TAG, "闹钟触发 agent=" + m.id + " at=" + h + ":" + mi);
@@ -146,7 +150,7 @@ public final class TimerEngine {
             TimerConfig cfg = p.timer(m.id);
             if (!cfg.alarmEnabled || cfg.alarmHour >= 0) continue;
             String key = m.id + "|" + "default" + "|" + dateKey + "|" + h + ":" + mi;
-            if (key.equals(lastAlarmKey)) continue;
+            if (alarmAlreadyFired(key)) continue;
             lastAlarmKey = key;
             p.raw().edit().putString("timer_last_alarm_key", key).apply();
             CpLog.i(TAG, "默认闹钟触发 agent=" + m.id);
@@ -173,7 +177,7 @@ public final class TimerEngine {
             }
             if (!sdayOk && !smonthOk) continue;
             String skey = "s" + s.id + "|" + dateKey + "|" + h + ":" + mi;
-            if (skey.equals(lastAlarmKey)) continue;
+            if (alarmAlreadyFired(skey)) continue;
             lastAlarmKey = skey;
             p.raw().edit().putString("timer_last_alarm_key", skey).apply();
             CpLog.i(TAG, "闹钟触发[会话级] session=" + s.id + " at=" + h + ":" + mi);
@@ -187,7 +191,7 @@ public final class TimerEngine {
             TimerConfig scfg = p.sessionTimer(s.id);
             if (!scfg.alarmEnabled || scfg.alarmHour >= 0) continue;
             String skey = "s" + s.id + "|" + "default" + "|" + dateKey + "|" + h + ":" + mi;
-            if (skey.equals(lastAlarmKey)) continue;
+            if (alarmAlreadyFired(skey)) continue;
             lastAlarmKey = skey;
             p.raw().edit().putString("timer_last_alarm_key", skey).apply();
             CpLog.i(TAG, "默认闹钟触发[会话级] session=" + s.id);
@@ -266,6 +270,19 @@ public final class TimerEngine {
             if (aid != null && aid.equals(agentId)) return true;
         }
         return false;
+    }
+
+    private static boolean alarmAlreadyFired(String key) {
+        long now = System.currentTimeMillis();
+        synchronized (firedAlarmKeys) {
+            java.util.Iterator<Map.Entry<String, Long>> it = firedAlarmKeys.entrySet().iterator();
+            while (it.hasNext()) {
+                if (now - it.next().getValue() > 3L * 86400000L) it.remove();
+            }
+            if (firedAlarmKeys.containsKey(key)) return true;
+            firedAlarmKeys.put(key, now);
+            return false;
+        }
     }
 
     /** ControlService: 前台窗口变化(某 App 被打开)时调用。 */
@@ -372,20 +389,23 @@ public final class TimerEngine {
             if (s != null) agentId = s.agentId;
         } catch (Exception ignored) {}
         CpLog.i(TAG, "定时器触发[会话级:" + origin + "] session=" + sessionId + " agent=" + agentId);
+        boolean suppressTaskDone = isTaskDoneOrigin(origin);
 
         if (tr.type == TimerConfig.TRIG_SEND_CONTINUE) {
-            startSvc(c, AgentService.ACTION_RUN_GOAL, "继续", sessionId, agentId);
+            startSvc(c, AgentService.ACTION_RUN_GOAL, "继续", sessionId, agentId, suppressTaskDone);
             return;
         }
 
         String text = (tr.message == null || tr.message.trim().isEmpty())
                 ? "执行既定任务" : tr.message.trim();
         if (tr.sendMode == TimerConfig.MODE_GUIDE) {
-            startSvc(c, AgentService.ACTION_GUIDE, text, sessionId, agentId);
+            startSvc(c, AgentService.ACTION_GUIDE, text, sessionId, agentId, suppressTaskDone);
         } else if (tr.sendMode == TimerConfig.MODE_INTERRUPT) {
-            startSvc(c, AgentService.ACTION_INT, text, sessionId, agentId);
+            startSvc(c, AgentService.ACTION_INT, text, sessionId, agentId, suppressTaskDone);
+        } else if (tr.sendMode == TimerConfig.MODE_QUEUE) {
+            startSvc(c, AgentService.ACTION_QUEUE, text, sessionId, agentId, suppressTaskDone);
         } else {
-            startSvc(c, AgentService.ACTION_RUN_GOAL, text, sessionId, agentId);
+            startSvc(c, AgentService.ACTION_RUN_GOAL, text, sessionId, agentId, suppressTaskDone);
         }
     }
 
@@ -408,29 +428,40 @@ public final class TimerEngine {
         String newSessionId = newS.id;
 
         CpLog.i(TAG, "定时器触发[模型级:" + origin + "] agent=" + agentId + " 新会话=" + newSessionId);
+        boolean suppressTaskDone = isTaskDoneOrigin(origin);
 
         // Auto-record timer trigger
         AutoExperienceWriter.get(c).onTimerTriggered(
                 agentId, name, newSessionId, "定时触发", "已触发: " + origin);
 
         if (tr.type == TimerConfig.TRIG_SEND_CONTINUE) {
-            startSvc(c, AgentService.ACTION_RUN_GOAL, "继续", newSessionId, agentId);
+            startSvc(c, AgentService.ACTION_RUN_GOAL, "继续", newSessionId, agentId, suppressTaskDone);
             return;
         }
         String text = (tr.message == null || tr.message.trim().isEmpty())
                 ? "执行既定任务" : tr.message.trim();
-        startSvc(c, AgentService.ACTION_RUN_GOAL, text, newSessionId, agentId);
+        startSvc(c, AgentService.ACTION_RUN_GOAL, text, newSessionId, agentId, suppressTaskDone);
     }
 
     private static void startSvc(Context c, String action, String text, String sessionId, String agentId) {
+        startSvc(c, action, text, sessionId, agentId, false);
+    }
+
+    private static void startSvc(Context c, String action, String text, String sessionId, String agentId,
+                                 boolean suppressTaskDone) {
         try {
             Intent i = new Intent(c, AgentService.class).setAction(action);
             i.putExtra("text", text == null ? "" : text);
             if (sessionId != null) i.putExtra("sessionId", sessionId);
             if (agentId != null) i.putExtra("agentId", agentId);
+            if (suppressTaskDone) i.putExtra("suppressTaskDone", true);
             c.startService(i);
         } catch (Throwable t) {
             CpLog.e(TAG, "startSvc(" + action + "): " + t);
         }
+    }
+
+    private static boolean isTaskDoneOrigin(String origin) {
+        return origin != null && (origin.contains("任务完成") || origin.contains("任务终止"));
     }
 }

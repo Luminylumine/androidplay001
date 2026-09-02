@@ -727,7 +727,8 @@ public class ExpStore {
      * Also increments usage count for matched experiences.
      */
     public String retrieveRelevant(String goal, String foregroundPkg, String agentId, int k, int maxChars) {
-        List<Experience> all = listAll();
+        // Long-term memory is shared by Agent type through its readable pools, not globally.
+        List<Experience> all = searchForAgent(agentId, "");
         if (all.isEmpty()) return "";
 
         String lGoal = goal == null ? "" : goal.toLowerCase(java.util.Locale.ROOT);
@@ -912,9 +913,7 @@ public class ExpStore {
         e.userEdited = false;
 
         List<String> writable = listWritablePools(agentId);
-        if (writable.isEmpty()) {
-            writable.add(PoolInfo.GLOBAL_ID);
-        }
+        if (writable.isEmpty()) return null;
 
         SQLiteDatabase wdb = AppDb.get(ctx).getWritableDatabase();
         wdb.beginTransaction();

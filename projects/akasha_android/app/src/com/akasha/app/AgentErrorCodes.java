@@ -63,6 +63,9 @@ public final class AgentErrorCodes {
     public static final String LLM_JSON_INVALID = "LLM_JSON_INVALID";
     public static final String ACTION_UNKNOWN = "ACTION_UNKNOWN";
     public static final String ACTION_EXECUTION_EXCEPTION = "ACTION_EXECUTION_EXCEPTION";
+    public static final String DEVICE_LOCK_REQUIRED = "DEVICE_LOCK_REQUIRED";
+    public static final String DEVICE_LOCK_HELD = "DEVICE_LOCK_HELD";
+    public static final String TASK_CANCELLED = "TASK_CANCELLED";
 
     /** Codes that are "no match" rather than real failures (no ⚠ in chat). */
     public static boolean isNoMatch(String code) {

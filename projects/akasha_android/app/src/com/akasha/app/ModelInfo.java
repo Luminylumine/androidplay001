@@ -35,6 +35,9 @@ public class ModelInfo {
     /** 本 Agent 开机自启使能（仅在全局总门控开启时才生效） */
     public boolean autoStart = false;
 
+    /** Default task goal for sessions of this Agent type; empty falls back to global. */
+    public String defaultGoal = null;
+
     // --- custom prompt (null/empty = built-in default) ---
     public String customPrompt = null;
 

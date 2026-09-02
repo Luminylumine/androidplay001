@@ -172,6 +172,24 @@
                                 android:textSize="13sp"/>
                         </LinearLayout>
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="默认任务目标（留空 = 回退全局默认；会话可再覆盖）"
+                        android:textSize="12sp"
+                        android:textColor="#666666"/>
+
+                    <EditText
+                        android:id="@+id/etModelDefaultGoal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="top|start"
+                        android:hint="此 Agent type 新会话的默认任务目标"
+                        android:minLines="2"
+                        android:textSize="13sp"/>
                 </LinearLayout>
 
                 <!-- ======== API 与自启 ======== -->

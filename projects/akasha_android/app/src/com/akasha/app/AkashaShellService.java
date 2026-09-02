@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Bound by Shizuku / Dhizuku and executed inside their privileged process,
@@ -100,19 +101,23 @@ public class AkashaShellService extends Service {
         try {
             Process p = Runtime.getRuntime().exec(new String[]{"/system/bin/sh", "-c", cmd});
             StringBuilder out = new StringBuilder();
-            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream(), "UTF-8"));
-            String line;
-            int lines = 0;
-            while ((line = b.readLine()) != null && lines < 400) {
-                out.append(line).append('\n');
-                lines++;
+            StringBuilder err = new StringBuilder();
+            Thread outReader = new Thread(() -> drain(p.getInputStream(), out, false), "shell-stdout");
+            Thread errReader = new Thread(() -> drain(p.getErrorStream(), err, true), "shell-stderr");
+            outReader.start();
+            errReader.start();
+            boolean finished = p.waitFor(30, TimeUnit.SECONDS);
+            if (!finished) {
+                p.destroy();
+                if (!p.waitFor(2, TimeUnit.SECONDS)) p.destroyForcibly();
+                outReader.interrupt();
+                errReader.interrupt();
+                return "rc=124\n命令执行超时(30秒)";
             }
-            BufferedReader e = new BufferedReader(new InputStreamReader(p.getErrorStream(), "UTF-8"));
-            while ((line = e.readLine()) != null && out.length() < 30000) {
-                out.append("[e] ").append(line).append('\n');
-            }
-            int rc = p.waitFor(); // API 29: waitFor() returns the exit code
-            String s = out.toString();
+            outReader.join(1000);
+            errReader.join(1000);
+            String s = out.toString() + err.toString();
+            int rc = p.exitValue();
             if (s.length() > 30000) s = s.substring(0, 30000) + "\n…(truncated)";
             slog("exec rc=" + rc + " outlen=" + s.length());
             return "rc=" + rc + "\n" + s;
@@ -120,5 +125,23 @@ public class AkashaShellService extends Service {
             slog("exec threw: " + ex);
             return "rc=-1\nexec 异常: " + ex;
         }
+    }
+
+    private static void drain(java.io.InputStream stream, StringBuilder target, boolean error) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+            String line;
+            int lines = 0;
+            while (!Thread.currentThread().isInterrupted()
+                    && (line = reader.readLine()) != null && lines++ < 400) {
+                synchronized (target) {
+                    if (target.length() < 30000) {
+                        if (error) target.append("[e] ");
+                        target.append(line).append('\n');
+                    }
+                }
+            }
+            reader.close();
+        } catch (Exception ignored) {}
     }
 }

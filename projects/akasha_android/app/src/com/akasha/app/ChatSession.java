@@ -26,6 +26,8 @@ public class ChatSession {
     public boolean unread = false;
     /** 会话级提示词 (null/空 = 回退该 Agent 的模型提示词, 再回退系统提示词; 见 AgentPrompts.resolveBase)。 */
     public String customPrompt = null;
+    /** Per-session default task goal; empty falls back to the Agent type, then global. */
+    public String defaultGoal = null;
 
     public ChatSession() {}
 

@@ -63,10 +63,11 @@ public class AgentPrompts {
           .append("5. 任务收尾(必须遵守): 当任务目标已达成，或确认无法继续(权限不足/条件缺失/用户要求停止)时，必须在当轮立即输出 done(message=结果说明) 或 terminate(message=终止原因) 来结束任务；结束前严禁再输出 wait/look/观察类动作拖延，也严禁在任务实际已结束后继续循环。\n")
           .append("6. 遇到有价值的新错误(权限/参数/路径/系统行为)，用 exp_record 简要记录(标题+错误+解决办法，可附截图)；执行陌生任务前先 exp_search 查前人经验。常规成功操作不要记录。\n")
           .append("7. 需要用自然语言向用户解释思考/进展/结论时，用 say 动作(每轮一句，会自动分段显示在对话里)，不要只闷头操作。\n")
-          .append("8. 信息检索(对话记忆搜索): \n")
+           .append("8. 信息检索(对话记忆搜索): \n")
           .append("   - 想了解 用户长期偏好 / 历史设定 / 习惯 / 跨对话背景 → chat_search scope=same_agent_all，在本 Agent 所有对话中搜。\n")
           .append("   - 想了解 当前对话用户给的任务目标 / 临时规则 / 即时上下文 → chat_search scope=this_session，仅在当前对话搜。\n")
-          .append("   - 结果一定带【时间戳 / 所属对话 / 发送者(精确到Agent名称)】，必要时直接引用来源对话名。命中过多时缩小关键词或加上时间范围。\n")
+           .append("   - 结果一定带【时间戳 / 所属对话 / 发送者(精确到Agent名称)】，必要时直接引用来源对话名。命中过多时缩小关键词或加上时间范围。\n")
+           .append("9. 手机操作锁: 读屏、截图、无障碍动作、打开网页/App、shell、剪贴板前，必须先输出 acquire_device。获得后可连续执行这些动作；完成一段手机操作后立即 release_device。若锁被其他会话持有，按返回提示 wait 后再 acquire_device；任务结束/中断会自动释放。\n")
           .append("示例(\"打开Aloha搜索原神\"): open_app→web_open https://www.bing.com/search?q=原神→wait→a11y_text 读结果。\n")
           .append("示例(\"找Download里原神相关文件\"): file_search 原神。\n")
           .append("示例(\"更新 genshin.txt\"): file_read→(web_open 查新闻→a11y_text 读取)→file_write。");
@@ -82,6 +83,7 @@ public class AgentPrompts {
         sb.append("① 零成本工具(不动屏幕，永远优先):\n");
         sb.append(" {\"action\":\"say\",\"message\":\"...\"} 在对话里向用户说话(思考/进展/结论；可每轮说一句，长句会自动分段显示)\n");
         sb.append(" {\"action\":\"chat_search\",\"query\":\"关键词\",\"scope\":\"this_session\",\"from_ts\":0,\"to_ts\":9999999999999,\"role\":\"any\",\"sender_agent_ids\":[\"agentId\"]}\n");
+        sb.append(" {\"action\":\"acquire_device\"} 获取手机操作锁；{\"action\":\"release_device\"} 释放手机操作锁。仅持锁者可读屏/截图/无障碍/网页/App/Shell/剪贴板。\n");
         sb.append("    → 对话记忆搜索 (每轮可调用一次，免费直接用，无需权限)：\n");
         sb.append("      scope: this_session=仅当前对话; same_agent_all=同Agent全部对话\n");
         sb.append("      role: user=只搜用户说的话; agent=只搜Agent说的话; any=二者皆搜（默认）\n");

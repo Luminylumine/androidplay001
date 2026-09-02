@@ -118,7 +118,34 @@ public class SessionSettingsActivity extends Activity {
                     }
                 }));
 
-        // row 3: 会话提示词 (点击进入子页面编辑; 空 = 回退模型提示词)
+        // row 3: per-session default goal. Empty follows the Agent type then global fallback.
+        body.addView(row(
+                "默认任务目标（本对话）",
+                sessionDefaultGoalSub(),
+                new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        final EditText et = new EditText(SessionSettingsActivity.this);
+                        et.setText(session.defaultGoal == null ? "" : session.defaultGoal);
+                        et.setHint("留空 = 跟随 Agent type / 全局默认");
+                        et.setMinLines(3);
+                        et.setGravity(android.view.Gravity.TOP | android.view.Gravity.START);
+                        new AlertDialog.Builder(SessionSettingsActivity.this)
+                                .setTitle("默认任务目标")
+                                .setView(et)
+                                .setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                                    @Override public void onClick(DialogInterface d, int w) {
+                                        String value = et.getText() == null ? "" : et.getText().toString().trim();
+                                        session.defaultGoal = value.isEmpty() ? null : value;
+                                        store.save(session);
+                                        setResult(RESULT_OK);
+                                    }
+                                })
+                                .setNegativeButton("取消", null)
+                                .show();
+                    }
+                }));
+
+        // row 4: 会话提示词 (点击进入子页面编辑; 空 = 回退模型提示词)
         {
             LinearLayout r = promptRow("💬 会话提示词（本对话）", sessionPromptSub());
             tvSessionPromptSub = (TextView) r.getChildAt(1);
@@ -197,6 +224,18 @@ public class SessionSettingsActivity extends Activity {
             if (session.agentId.equals(m.id)) return m.name == null ? m.id : m.name;
         }
         return session.agentId;
+    }
+
+    private String sessionDefaultGoalSub() {
+        if (session != null && session.defaultGoal != null && !session.defaultGoal.trim().isEmpty()) {
+            return session.defaultGoal.trim();
+        }
+        ModelInfo model = agentModel();
+        if (model != null && model.defaultGoal != null && !model.defaultGoal.trim().isEmpty()) {
+            return "跟随 Agent: " + model.defaultGoal.trim();
+        }
+        String global = prefs.goal();
+        return global == null || global.trim().isEmpty() ? "未设置" : "跟随全局: " + global.trim();
     }
 
     // ---------- 会话提示词 ----------

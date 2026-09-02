@@ -68,16 +68,27 @@ public class AutoExperienceWriter {
         
         ExpStore store = new ExpStore(ctx);
         int written = 0;
-        for (PendingEntry e : toWrite) {
-            if (written >= MAX_PER_ROUND) break;
-            Experience result = store.autoRecord(
-                    e.agentId, e.agentName, e.title, e.content,
-                    e.importance, e.sourceSessionId, e.tags);
-            if (result != null) {
-                written++;
-                writtenThisRound++;
-                CpLog.i("AutoExp", "auto-wrote exp id=" + result.id +
-                        " importance=" + e.importance + " title=" + e.title);
+        int i = 0;
+        for (; i < toWrite.size() && written < MAX_PER_ROUND; i++) {
+            PendingEntry e = toWrite.get(i);
+            try {
+                Experience result = store.autoRecord(
+                        e.agentId, e.agentName, e.title, e.content,
+                        e.importance, e.sourceSessionId, e.tags);
+                if (result != null) {
+                    written++;
+                    writtenThisRound++;
+                    CpLog.i("AutoExp", "auto-wrote exp id=" + result.id +
+                            " importance=" + e.importance + " title=" + e.title);
+                }
+            } catch (Throwable t) {
+                synchronized (pending) { pending.add(e); }
+                CpLog.w("AutoExp", "auto-write failed: " + t);
+            }
+        }
+        if (i < toWrite.size()) {
+            synchronized (pending) {
+                for (int j = toWrite.size() - 1; j >= i; j--) pending.add(0, toWrite.get(j));
             }
         }
         if (written > 0) {

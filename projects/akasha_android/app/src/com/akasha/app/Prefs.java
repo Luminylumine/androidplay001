@@ -89,6 +89,8 @@ public class Prefs {
                 String ak = o.optString("apiKey", "");
                 m.apiKey = ak.isEmpty() ? null : ak;
                 m.autoStart = o.optBoolean("autoStart", false);
+                m.defaultGoal = o.optString("defaultGoal", "");
+                if (m.defaultGoal.isEmpty()) m.defaultGoal = null;
                 m.customPrompt = o.optString("customPrompt", "");
                 if (m.customPrompt.isEmpty()) m.customPrompt = null;
                 if (m.id != null && !m.id.isEmpty()) list.add(m);
@@ -149,6 +151,7 @@ public class Prefs {
                 if (m.baseUrl != null) o.put("baseUrl", m.baseUrl);
                 if (m.apiKey != null) o.put("apiKey", m.apiKey);
                 o.put("autoStart", m.autoStart);
+                if (m.defaultGoal != null) o.put("defaultGoal", m.defaultGoal);
                 if (m.customPrompt != null) o.put("customPrompt", m.customPrompt);
                 arr.put(o);
             } catch (Exception ignored) {}

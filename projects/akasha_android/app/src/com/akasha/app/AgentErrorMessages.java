@@ -158,6 +158,15 @@ public final class AgentErrorMessages {
         p(l, u, AgentErrorCodes.LLM_JSON_INVALID,
                 "JSON 损坏或字段缺失；请严格按指令集中 schema 输出",
                 "JSON 解析失败");
+        p(l, u, AgentErrorCodes.DEVICE_LOCK_REQUIRED,
+                "执行该设备操作前必须先输出 acquire_device；获取后再读取或操作手机",
+                "需先获取手机操作锁");
+        p(l, u, AgentErrorCodes.DEVICE_LOCK_HELD,
+                "手机操作锁正由 {0} 持有；不要执行设备动作，可 wait 后再次 acquire_device，或处理不依赖手机的任务",
+                "手机正由其他会话操作：{0}");
+        p(l, u, AgentErrorCodes.TASK_CANCELLED,
+                "当前任务已被取消；不要继续执行动作",
+                "任务已取消");
         p(l, u, AgentErrorCodes.ACTION_UNKNOWN,
                 "未知动作 {0}；请从指令集列表中选合法动作",
                 "未知动作：{0}");

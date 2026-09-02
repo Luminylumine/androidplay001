@@ -145,11 +145,9 @@ public class LogDetailActivity extends Activity {
         tell.append("请修正后重试，并用 say 向用户说明原因。");
         final String tellText = tell.toString();
 
-        boolean sameSessionRunning = AgentService.running
-                && sessionId != null
-                && sessionId.equals(AgentService.currentSessionId);
+        boolean sameSessionRunning = AgentService.isSessionRunning(sessionId);
         if (sameSessionRunning) {
-            AgentService.addGuide(tellText); // injected from the next round on
+            AgentService.addGuideToSession(tellText, sessionId);
         } else if (sessionId != null) {
             new SessionStore(this).appendNote(sessionId, tellText); // next task start
         }
@@ -159,8 +157,8 @@ public class LogDetailActivity extends Activity {
                 + (err.isEmpty() ? "" : ": " + firstWords(err, 30));
         String line = "已打断并告知模型: " + shortSum;
         SessionStore st = new SessionStore(this);
-        if (sessionId != null && sessionId.equals(AgentService.currentSessionId)) {
-            AgentService.log(line);
+        if (sameSessionRunning) {
+            AgentService.logToSession(sessionId, line);
         } else {
             st.appendChat(sessionId, "system", line, System.currentTimeMillis(), null);
         }
