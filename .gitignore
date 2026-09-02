@@ -16,6 +16,7 @@
 # ============== Toolchains (large non-redistributable binaries) ==============
 tools/
 downloads/
+.gradle/
 /common/sdks/shizuku/sz_src/
 /common/sdks/shizuku/sz_v1320.tar.gz
 /common/sdks/dhizuku/dz260/
