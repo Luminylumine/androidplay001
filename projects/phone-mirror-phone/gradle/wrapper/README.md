@@ -1,6 +1,4 @@
 # Gradle Wrapper
 
-本目录 **不包含** gradle-wrapper.jar / gradlew / gradlew.bat 二进制文件。
-
-这些文件会在 Android Studio 首次打开本项目时自动生成。
-也可以通过 Android Studio 菜单 `Help > Find Action > Gradle: Generate Wrapper` 手动生成。
+`gradle-wrapper.jar`、`gradlew` 和 `gradlew.bat` 随仓库提供，确保
+clean clone 可以直接启动 Gradle。不要删除 `gradle-wrapper.jar`。
