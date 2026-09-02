@@ -23,6 +23,11 @@
 tools/
 downloads/
 
+# Vendored reference sources and generated SDK bundles; fetch/build locally.
+/common/sdks/shizuku/sz_src/
+/common/sdks/shizuku/sz_v1320.tar.gz
+/common/sdks/dhizuku/dz260/
+
 # ============== Compiled / Build Artifacts ==============
 # Java/Android builds
 **/build/
