@@ -30,6 +30,8 @@ public final class PlotStore {
     private long[] ts = new long[1024];
     private float[] val = new float[1024];
     private int n = 0;
+    private boolean loaded = false;
+    private boolean dirty = false;
 
     public PlotStore(Context ctx, String key) {
         this.key = key;
@@ -40,6 +42,7 @@ public final class PlotStore {
 
     /** 追加一个有效采样点（调用方已保证数据合法）。 */
     public synchronized void append(long tMs, float v) {
+        load();
         if (n == ts.length) {
             int cap = ts.length * 2;
             long[] nts = new long[cap];
@@ -52,6 +55,7 @@ public final class PlotStore {
         ts[n] = tMs;
         val[n] = v;
         n++;
+        dirty = true;
     }
 
     /** 双约束裁剪：时间窗 + 最大点数（等间隔降采样）。 */
@@ -91,6 +95,8 @@ public final class PlotStore {
 
     public synchronized void clear() {
         n = 0;
+        loaded = true;
+        dirty = false;
         if (file.exists() && !file.delete()) {
             SysLog.w("plotstore: delete failed " + key);
         }
@@ -109,6 +115,8 @@ public final class PlotStore {
     // ---------- 持久化 ----------
 
     public synchronized void load() {
+        if (loaded) return;
+        loaded = true;
         if (!file.exists()) return;
         DataInputStream in = null;
         try {
@@ -134,6 +142,7 @@ public final class PlotStore {
     }
 
     public synchronized void save() {
+        if (!dirty) return;
         File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
         DataOutputStream out = null;
         try {
@@ -150,6 +159,8 @@ public final class PlotStore {
             }
             if (!tmp.renameTo(file)) {
                 SysLog.w("plotstore save: rename failed " + key);
+            } else {
+                dirty = false;
             }
         } catch (Throwable t) {
             SysLog.w("plotstore save " + key + ": " + t);

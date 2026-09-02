@@ -162,6 +162,10 @@ public final class AdbWireless {
 
     /** 完整握手 + 探针验证。 */
     private static boolean tryConnect(String host, int port) {
+        if (!isLoopback(host)) {
+            SysLog.w("adb rejected non-loopback endpoint: " + host + ":" + port);
+            return false;
+        }
         AdbKey key;
         try {
             key = new AdbKey();
@@ -175,7 +179,7 @@ public final class AdbWireless {
         }
         AdbClient c = new AdbClient(host, port, key);
         try {
-            SysLog.d("adb connect " + host + ":" + port + " starting, pubkey=" + key.adbPublicKeyString());
+            SysLog.d("adb connect " + host + ":" + port + " starting");
             c.connect();
             String out = c.exec("id -u");
             if (out == null || out.trim().isEmpty()) {
@@ -250,5 +254,10 @@ public final class AdbWireless {
         } catch (Exception e) {
             return def;
         }
+    }
+
+    private static boolean isLoopback(String host) {
+        return "127.0.0.1".equals(host) || "localhost".equalsIgnoreCase(host)
+                || "::1".equals(host);
     }
 }

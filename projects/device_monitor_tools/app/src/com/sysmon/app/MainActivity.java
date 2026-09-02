@@ -164,6 +164,9 @@ public class MainActivity extends Activity {
         // 主界面不可见：若悬浮窗在运行则进入轻量模式
         if (prefs.overlayEnabled()) {
             engine.setLightMode(true);
+        } else {
+            // 无悬浮窗时后台没有监控消费者，停止采样线程。
+            engine.stop();
         }
     }
 

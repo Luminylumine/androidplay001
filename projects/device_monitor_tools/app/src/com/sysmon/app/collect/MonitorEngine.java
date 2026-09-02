@@ -70,6 +70,7 @@ public class MonitorEngine {
 
     public synchronized void stop() {
         running = false;
+        batteryIntegrator.flush();
         if (thread != null) {
             thread.interrupt();
             thread = null;
@@ -109,10 +110,22 @@ public class MonitorEngine {
             try {
                 SysData d;
                 if (lightMode) {
-                    // 轻量：无权限采样 + 屏幕帧率 + GPU + 电池积分
+                    // 轻量：无权限采样 + 屏幕帧率 + GPU + 电池积分。
+                    // 部分 ROM 会拒绝普通应用读取 /proc/stat；特权通道可用时只补充 CPU。
                     d = appSampler.sample();
-                    d.screenFps = screenFps.sample();
-                    gpuSampler.sample(d);
+                    Privilege.ensure();
+                    if (Privilege.available()) {
+                        SysData cpu = shellSampler.sampleCpu();
+                        d.cpuTotal = cpu.cpuTotal;
+                        d.cpuPer = cpu.cpuPer;
+                    }
+                    int overlayMask = prefs.overlayShowMask();
+                    if ((overlayMask & Prefs.SHOW_FPS) != 0 && prefs.screenFpsEnabled()) {
+                        d.screenFps = screenFps.sample();
+                    }
+                    if ((overlayMask & Prefs.SHOW_GPU) != 0) {
+                        gpuSampler.sample(d);
+                    }
                 } else {
                     Privilege.ensure();
                     if (Privilege.available()) {

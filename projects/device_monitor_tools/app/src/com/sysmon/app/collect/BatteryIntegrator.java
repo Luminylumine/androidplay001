@@ -13,9 +13,16 @@ import com.sysmon.app.SysLog;
  */
 public class BatteryIntegrator {
 
+    private static final long PERSIST_INTERVAL_MS = 5 * 60 * 1000L;
+
     private final Prefs prefs;
     private long lastTs = 0;
     private float lastCurrent = Float.NaN;
+    private long lastPersistTs = 0;
+    private boolean loaded = false;
+    private boolean dirty = false;
+    private float charged = 0f;
+    private float discharged = 0f;
 
     public BatteryIntegrator(Prefs prefs) {
         this.prefs = prefs;
@@ -32,19 +39,22 @@ public class BatteryIntegrator {
     }
 
     /** 累计充入 mAh。 */
-    public float chargedMah() {
-        return prefs.battIntegratedMah();
+    public synchronized float chargedMah() {
+        load();
+        return charged;
     }
 
     /** 累计放出 mAh（正数）。 */
-    public float dischargedMah() {
-        return prefs.battIntegratedDischargedMah();
+    public synchronized float dischargedMah() {
+        load();
+        return discharged;
     }
 
     /** 每次采样调用：用当前电流更新积分。按 intervalMs() 间隔实际积分。 */
-    public void update(SysData d) {
+    public synchronized void update(SysData d) {
         if (!enabled()) return;
         if (!d.hasBattCurrent()) return;
+        load();
 
         long now = SystemClock.elapsedRealtime();
         float cur = d.battCurrent; // mA
@@ -58,12 +68,14 @@ public class BatteryIntegrator {
                 float avgMa = (lastCurrent + cur) / 2f;
                 float mah = avgMa * dt / 3600000f;
                 if (mah > 0) {
-                    prefs.setBattIntegratedMah(prefs.battIntegratedMah() + mah);
+                    charged += mah;
                 } else {
-                    prefs.setBattIntegratedDischargedMah(prefs.battIntegratedDischargedMah() - mah);
+                    discharged -= mah;
                 }
+                dirty = true;
                 lastTs = now;
                 lastCurrent = cur;
+                if (lastPersistTs == 0 || now - lastPersistTs >= PERSIST_INTERVAL_MS) persist(now);
             }
         } else {
             // 首次记录
@@ -73,11 +85,33 @@ public class BatteryIntegrator {
     }
 
     /** 清零累计值。 */
-    public void reset() {
-        prefs.setBattIntegratedMah(0f);
-        prefs.setBattIntegratedDischargedMah(0f);
+    public synchronized void reset() {
+        loaded = true;
+        charged = 0f;
+        discharged = 0f;
+        dirty = true;
+        persist(SystemClock.elapsedRealtime());
         lastTs = 0;
         lastCurrent = Float.NaN;
         SysLog.w("BatteryIntegrator reset");
+    }
+
+    public synchronized void flush() {
+        if (loaded) persist(SystemClock.elapsedRealtime());
+    }
+
+    private void load() {
+        if (loaded) return;
+        charged = prefs.battIntegratedMah();
+        discharged = prefs.battIntegratedDischargedMah();
+        loaded = true;
+    }
+
+    private void persist(long now) {
+        if (!dirty) return;
+        prefs.setBattIntegratedMah(charged);
+        prefs.setBattIntegratedDischargedMah(discharged);
+        lastPersistTs = now;
+        dirty = false;
     }
 }

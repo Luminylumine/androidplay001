@@ -10,8 +10,7 @@
 **/adbkey
 **/adbkey.pub
 **/adbkey_b64.txt
-# Source file embedding the test-device ADB key — kept local only, never pushed
-**/AdbKey.java
+# ADB key implementation is source code; private key material belongs in Android Keystore.
 *.p12
 *.pfx
 

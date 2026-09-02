@@ -54,10 +54,6 @@ public class OverlayService extends Service {
         @Override
         public void run() {
             SysData d = engine.latest();
-            SysLog.w("overlay update: cpu=" + (d.hasCpu() ? String.format("%.0f%%", d.cpuTotal) : "N/A")
-                    + " mem=" + (d.hasMem() ? (d.memTotal / 1024 + "MB") : "N/A")
-                    + " batt=" + (d.battLevel >= 0 ? (d.battLevel + "%") : "N/A")
-                    + " gpu=" + (d.hasGpu() ? String.format("%.0f%%", d.gpuUtil) : "N/A"));
             updateText(d);
             handler.postDelayed(this, prefs.overlayUpdateMs());
         }

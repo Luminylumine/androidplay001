@@ -58,12 +58,8 @@ public class ShellSampler {
                 + " cat \"$d/related_cpus\" 2>/dev/null; cat \"$d/scaling_cur_freq\" 2>/dev/null; cat \"$d/cpuinfo_max_freq\" 2>/dev/null; done;"
                 + "echo '===BATTERY==='; dumpsys battery";
         String out = Privilege.exec(cmd);
-        boolean sysfsOk = false;
         if (out != null) {
             parsePowerAndBattery(out, d);
-            // 检查 sysfs 是否成功读取（检查是否有非 X 的值）
-            sysfsOk = hasBatteryData(d);
-            SysLog.w("power_supply parsed: sysfsOk=" + sysfsOk + " level=" + d.battLevel + " volt=" + d.battVolt + " cur=" + d.battCurrent);
         }
 
         // 3. 使用 BatteryManager API 补充电池数据（特别是电流信息）
@@ -95,9 +91,16 @@ public class ShellSampler {
         return d;
     }
 
-    /** 检查是否已获取到有效的电池数据 */
-    private boolean hasBatteryData(SysData d) {
-        return d.battLevel > 0 || d.battVolt > 0 || d.hasBattCurrent();
+    /**
+     * 轻量后台采样只读取 /proc/stat，避免为 CPU 占用率执行完整的 sysfs/dumpsys 采样。
+     */
+    public SysData sampleCpu() {
+        SysData d = new SysData();
+        d.ts = System.currentTimeMillis();
+        d.source = "shell";
+        String raw = Privilege.readFiles(new String[]{"/proc/stat"});
+        if (raw != null) parseProc(raw, d);
+        return d;
     }
 
     /** 通过 BatteryManager API 获取电池数据 */
@@ -165,9 +168,6 @@ public class ShellSampler {
                 }
             } catch (Exception ignored) {}
 
-            SysLog.w("BatteryManager API result: level=" + d.battLevel + " volt=" + d.battVolt
-                    + " temp=" + d.battTempC + " status=" + d.battStatus + " cur=" + d.battCurrent
-                    + " curAvg=" + d.battCurrentAvg + " cc=" + d.battChargeCounter);
         } catch (Exception e) {
             SysLog.w("fillBatteryFromApi failed: " + e);
         }
@@ -313,7 +313,6 @@ public class ShellSampler {
     private void parsePowerSupply(String ps, SysData d) {
         // 按 "--- path" 分段
         String[] blocks = ps.split("--- ");
-        SysLog.w("parsePowerSupply: blocks count=" + blocks.length + " ps length=" + ps.length());
         for (String block : blocks) {
             if (block.trim().isEmpty()) continue;
             String[] lines = block.split("\n");
@@ -328,7 +327,6 @@ public class ShellSampler {
                 }
             }
             String type = kv.get("type");
-            SysLog.w("power_supply " + path + " type=" + type + " kv=" + kv);
             if (type == null) continue;
             if (type.equals("Battery")) {
                 d.battLevel = parseInt(kv.get("capacity"), -1);
@@ -352,14 +350,12 @@ public class ShellSampler {
                 d.battTech = kv.get("technology") == null ? "" : kv.get("technology");
                 d.battStatus = mapStatus(kv.get("status"));
                 d.battHealth = mapHealth(kv.get("health"));
-                SysLog.w("Battery parsed: level=" + d.battLevel + " volt=" + d.battVolt + " cur=" + d.battCurrent + " curAvg=" + d.battCurrentAvg + " status=" + d.battStatus);
             } else {
                 // 充电器：online=1 时取输入功率
                 if ("1".equals(kv.get("online"))) {
                     long voltUv = parseLong(kv.get("voltage_now"));
                     long curUa = parseLong(kv.get("current_now"));
                     long powerUw = parseLong(kv.get("power_now"));
-                    SysLog.w("Charger " + type + " online=1 voltUv=" + voltUv + " curUa=" + curUa + " powerUw=" + powerUw);
                     if (powerUw > 0) {
                         d.powerIn = powerUw / 1000f; // µW -> mW
                     } else if (voltUv > 0 && curUa > 0) {
@@ -517,9 +513,6 @@ public class ShellSampler {
 
     // ---------- 功率计算 ----------
     private void computePower(SysData d) {
-        SysLog.w("computePower: battVolt=" + d.battVolt + " battCurrent=" + d.battCurrent
-                + " powerIn=" + d.powerIn + " powerOut=" + d.powerOut + " charging=" + d.charging());
-
         // 使用 battStatus 判断方向，电流用于计算大小
         // 电池侧功率：电压(mV) × |电流(mA)| / 1000 -> mW
         if (d.battVolt > 0 && d.hasBattCurrent()) {
@@ -528,32 +521,26 @@ public class ShellSampler {
             if (d.charging()) {
                 d.powerIn = powerMag;
                 d.powerOut = Float.NaN;
-                SysLog.w("computePower: charging powerIn=" + d.powerIn + " mW");
             } else {
                 d.powerOut = powerMag;
                 d.powerIn = Float.NaN;
-                SysLog.w("computePower: discharging powerOut=" + d.powerOut + " mW");
             }
         } else {
-            SysLog.w("computePower: cannot compute - battVolt=" + d.battVolt + " hasBattCurrent=" + d.hasBattCurrent());
         }
 
         // 如果还没有 powerIn，尝试从 dumpsys 获取的最大充电信息估算
         if (d.charging() && (Float.isNaN(d.powerIn) || d.powerIn < 1f)
                 && d.battMaxChargeCurrent > 0 && d.battMaxChargeVoltage > 0) {
             d.powerIn = d.battMaxChargeCurrent * d.battMaxChargeVoltage / 1000f;
-            SysLog.w("computePower: powerIn estimated from max charge specs: " + d.powerIn + " mW");
         }
 
         // 整机消耗估算
         if (d.charging()) {
             if (!Float.isNaN(d.powerIn) && !Float.isNaN(d.powerNow)) {
                 d.powerPhone = Math.max(0, d.powerIn - d.powerNow);
-                SysLog.w("computePower: charging powerPhone=" + d.powerPhone + " mW");
             }
         } else if (!Float.isNaN(d.powerOut)) {
             d.powerPhone = d.powerOut;
-            SysLog.w("computePower: discharging powerPhone=" + d.powerPhone + " mW");
         }
     }
 

@@ -45,12 +45,6 @@ public class Sampler {
         readCpuFreq(d);
         readThermal(d);
         readBattery(d);
-        // 诊断日志：记录采样结果摘要
-        SysLog.w("sample: cpu=" + (d.hasCpu() ? String.format("%.0f%%", d.cpuTotal) : "N/A")
-                + " mem=" + (d.hasMem() ? (d.memTotal / 1024 + "MB") : "N/A")
-                + " batt=" + (d.battLevel >= 0 ? (d.battLevel + "%") : "N/A")
-                + " netRx=" + (Float.isNaN(d.netRxRate) ? "N/A" : String.format("%.0fK/s", d.netRxRate))
-                + " src=app");
         return d;
     }
 
@@ -327,21 +321,14 @@ public class Sampler {
                 if (full > 0) d.battCapacity = full;
             }
 
-            // 日志诊断
-            SysLog.w("readBattery: level=" + d.battLevel + " volt=" + d.battVolt
-                    + " status=" + d.battStatus + " cur=" + d.battCurrent
-                    + " charging=" + d.charging());
-
             // 功率计算：使用 battStatus 判断方向，电流用于计算大小
             if (d.battVolt > 0 && d.hasBattCurrent()) {
                 float powerMag = d.battVolt * Math.abs(d.battCurrent) / 1000f; // mV*mA -> mW
                 d.powerNow = powerMag;
                 if (d.charging()) {
                     d.powerIn = powerMag;
-                    SysLog.w("readBattery: charging powerIn=" + d.powerIn + " mW");
                 } else {
                     d.powerOut = powerMag;
-                    SysLog.w("readBattery: discharging powerOut=" + d.powerOut + " mW");
                 }
             }
             // 整机消耗估算

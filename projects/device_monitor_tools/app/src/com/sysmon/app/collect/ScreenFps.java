@@ -102,7 +102,6 @@ public class ScreenFps {
             }
             if (frames > 0) {
                 shellFps = frames;
-                SysLog.w("screenFps shell: frames=" + frames + " fps=" + shellFps);
             } else if (refreshPeriod > 0) {
                 shellFps = 1_000_000_000f / refreshPeriod;
                 SysLog.w("screenFps shell: no active frames, period=" + refreshPeriod + "ns fps=" + shellFps);

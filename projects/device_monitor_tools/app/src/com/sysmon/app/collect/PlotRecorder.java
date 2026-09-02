@@ -52,13 +52,15 @@ public final class PlotRecorder {
     }
 
     public PlotStore store(String key) {
-        return stores.get(key);
+        PlotStore store = stores.get(key);
+        if (store != null) store.load();
+        return store;
     }
 
     public synchronized void start() {
         if (running) return;
-        for (PlotStore s : stores.values()) s.load();
         running = true;
+        lastSaveMs = System.currentTimeMillis();
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -84,15 +86,19 @@ public final class PlotRecorder {
 
     private void loop() {
         while (running) {
+            long sleepMs = 5000;
             try {
                 long now = System.currentTimeMillis();
                 // 哪些子选项到期；按数据组划分，避免高频项触发全量采样
                 boolean anyDue = false, fullDue = false, cpuDue = false;
                 boolean gpuDue = false, fpsDue = false;
                 boolean[] due = new boolean[PlotItems.ALL.length];
+                long nextDueAt = Long.MAX_VALUE;
                 for (int i = 0; i < PlotItems.ALL.length; i++) {
                     PlotItems.Item it = PlotItems.ALL[i];
                     if (!prefs.plotBool(it.key, Prefs.P_ENABLED)) continue;
+                    long nextAt = lastSampleTs[i] + Math.max(100, prefs.plotInt(it.key, Prefs.P_FREQ_MS));
+                    if (nextAt < nextDueAt) nextDueAt = nextAt;
                     int freq = prefs.plotInt(it.key, Prefs.P_FREQ_MS);
                     if (freq < 100) freq = 100;
                     if (now - lastSampleTs[i] >= freq) {
@@ -104,6 +110,9 @@ public final class PlotRecorder {
                         else if (it.key.equals("screen_fps")) fpsDue = true;
                         else fullDue = true; // 功率/电量/网络：app 采样器（CPU 走 shell）
                     }
+                }
+                if (nextDueAt != Long.MAX_VALUE) {
+                    sleepMs = Math.max(50, Math.min(1000, nextDueAt - now));
                 }
                 if (anyDue) {
                     SysData d = null;
@@ -141,7 +150,7 @@ public final class PlotRecorder {
                 SysLog.w("plot loop: " + t);
             }
             try {
-                Thread.sleep(200);
+                Thread.sleep(sleepMs);
             } catch (InterruptedException e) {
                 break;
             }

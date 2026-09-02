@@ -3,6 +3,7 @@ package com.sysmon.app;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Binder;
 import android.util.Log;
 
 import com.sysmon.aidl.ISysShell;
@@ -30,11 +31,13 @@ public class SysShellService extends Service {
             binder = new ISysShell.Stub() {
                 @Override
                 public String exec(String cmd) {
+                    if (!isAllowedCaller()) return "rc=-1\ncaller not allowed";
                     return SysShellService.this.execCmd(cmd);
                 }
 
                 @Override
                 public String readFiles(String[] paths) {
+                    if (!isAllowedCaller()) return "";
                     return SysShellService.this.readFiles(paths);
                 }
             };
@@ -53,6 +56,7 @@ public class SysShellService extends Service {
 
     private String execCmd(String cmd) {
         if (cmd == null) return "rc=-1\nnull";
+        if (cmd.length() > 4096) return "rc=-1\ncommand too long";
         try {
             Process p = Runtime.getRuntime().exec(new String[]{"/system/bin/sh", "-c", cmd});
             StringBuilder out = new StringBuilder();
@@ -81,6 +85,10 @@ public class SysShellService extends Service {
         if (paths == null) return "";
         StringBuilder sb = new StringBuilder();
         for (String path : paths) {
+            if (!isReadableSystemPath(path)) {
+                Log.w(TAG, "rejected read path from caller: " + path);
+                continue;
+            }
             sb.append("=== ").append(path).append(" ===\n");
             try {
                 File f = new File(path);
@@ -98,5 +106,26 @@ public class SysShellService extends Service {
             if (sb.length() > 200000) break;
         }
         return sb.toString();
+    }
+
+    /** The binder is intentionally exported for Shizuku/Dhizuku user services. */
+    private boolean isAllowedCaller() {
+        int uid = Binder.getCallingUid();
+        if (uid == android.os.Process.SHELL_UID || uid == android.os.Process.myUid()) return true;
+        try {
+            int appUid = getPackageManager().getApplicationInfo(getPackageName(), 0).uid;
+            if (uid == appUid) return true;
+        } catch (Throwable ignored) {}
+        try {
+            int dhizukuUid = getPackageManager().getApplicationInfo("com.rosan.dhizuku", 0).uid;
+            if (uid == dhizukuUid) return true;
+        } catch (Throwable ignored) {}
+        Log.w(TAG, "rejected binder caller uid=" + uid);
+        return false;
+    }
+
+    private boolean isReadableSystemPath(String path) {
+        return path != null && !path.contains("..")
+                && (path.startsWith("/proc/") || path.startsWith("/sys/"));
     }
 }
