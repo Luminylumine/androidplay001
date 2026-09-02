@@ -16,6 +16,7 @@
 # ============== Toolchains (large non-redistributable binaries) ==============
 tools/
 downloads/
+.gradle/
 **/local.properties
 
 # ============== Compiled / Build Artifacts ==============
