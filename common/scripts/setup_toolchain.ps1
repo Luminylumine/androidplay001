@@ -9,12 +9,12 @@ New-Item -ItemType Directory -Force -Path $dl | Out-Null
 $JDK_VERSION = "17.0.20+8"
 $jdkFile = "OpenJDK17U-jdk_x64_windows_hotspot_17.0.20_8.zip"
 
-# 1. JDK 17 (Temurin) - 清华 TUNA 镜像
+# 1. JDK 17 (Temurin) - GitHub Adoptium releases
 $jdkZip = Join-Path $dl "jdk17.zip"
 if (-not ((Test-Path $jdkZip) -and (Get-Item $jdkZip).Length -gt 100MB)) {
-    Write-Host "[1/4] Downloading JDK17 from TUNA ..."
+    Write-Host "[1/4] Downloading JDK17 from Adoptium GitHub ..."
     Remove-Item $jdkZip -Force -ErrorAction SilentlyContinue
-    curl.exe -L --fail --retry 3 --connect-timeout 30 -o $jdkZip "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/17/jdk/x64/windows/$jdkFile"
+    curl.exe -L --fail --retry 3 --connect-timeout 30 -o $jdkZip "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20%2B8/$jdkFile"
     if ($LASTEXITCODE -ne 0) { throw "JDK download failed" }
     Write-Host "JDK downloaded: $((Get-Item $jdkZip).Length) bytes"
 }
