@@ -1,0 +1,7 @@
+{"seq":1,"type":"partial","page":12,"transcript":"Fourier transform is the integral of f t","response":""}
+{"seq":2,"type":"final","page":12,"transcript":"Fourier transform is the integral of f(t) times e to the minus i omega t","response":"Define F(omega) with the page-12 convention."}
+{"seq":3,"type":"page","page":13,"transcript":"","response":"Page 13: frequency-domain view"}
+{"seq":4,"type":"human_typo","page":13,"transcript":"the coefficent decays for smooth functions","human_text":"the coefficent decays for smooth functions","response":"Did you mean coefficient?"}
+{"seq":5,"type":"question","page":13,"transcript":"Why does the Gaussian stay Gaussian under Fourier transform?","response":"Because completing the square preserves the Gaussian form."}
+{"seq":6,"type":"stale_action","action_id":"stale-action","revision":2,"target_revision":2,"created_at_ms":1000,"now_ms":35001,"response":"discard: stale TTL"}
+{"seq":7,"type":"historical_action","action_id":"historical-action","revision":1,"target_revision":3,"created_at_ms":34000,"now_ms":34500,"response":"discard: historical revision"}
