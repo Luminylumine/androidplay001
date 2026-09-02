@@ -54,6 +54,9 @@ common/sdks/shizuku/sz_v1320.tar.gz
 common/sdks/dhizuku/dz260/
 
 # Misc OS / editor files
+*.csproj.user
+*.suo
+.vs/
 Thumbs.db
 .DS_Store
 *.swp
