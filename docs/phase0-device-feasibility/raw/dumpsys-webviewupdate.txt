@@ -1,0 +1,16 @@
+﻿Current WebView Update Service state
+  Multiprocess enabled: true
+  Current WebView package (name, version): (com.huawei.webview, 114.0.5.302)
+  Minimum targetSdkVersion: 31
+  Minimum WebView version code: 11270
+  Number of relros started: 2
+  Number of relros finished: 2
+  WebView package dirty: false
+  Any WebView package installed: true
+  Preferred WebView package (name, version): (com.huawei.webview, 114.0.5.302)
+  WebView packages:
+    Valid package com.huawei.webview (versionName: 114.0.5.302, versionCode: 21705, targetSdkVersion: 33) is  installed/enabled for all users
+    com.android.chrome is NOT installed.
+    com.gbox.com.android.chrome is NOT installed.
+    com.google.android.webview is NOT installed.
+    com.android.webview is NOT installed.

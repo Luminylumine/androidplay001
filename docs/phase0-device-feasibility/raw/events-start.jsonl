@@ -1,0 +1,22 @@
+﻿{"seq":1,"source":"APP","type":"START","eventTimeNs":2687563190842421,"payload":"sdk=31"}
+{"seq":2,"source":"audio","type":"AUDIO_START","eventTimeNs":2687579342867419,"payload":"state=1 recordingState=3"}
+{"seq":3,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687580401993460,"payload":"frames=16384 rc=0 framePosition=16638 audioNs=978675551663157 elapsedNs=2687580401803356 elapsed=1057400000"}
+{"seq":4,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687581422115335,"payload":"frames=32768 rc=0 framePosition=32958 audioNs=978676572767323 elapsedNs=2687581422105960 elapsed=2077665104"}
+{"seq":5,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687582441193981,"payload":"frames=49152 rc=0 framePosition=49278 audioNs=978677591769927 elapsedNs=2687582441184606 elapsed=3096743750"}
+{"seq":6,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687583454097105,"payload":"frames=65536 rc=0 framePosition=65598 audioNs=978678604943365 elapsedNs=2687583454090335 elapsed=4109648437"}
+{"seq":7,"source":"audio","type":"AUDIO_STOP","eventTimeNs":2687583534446585,"payload":"timeNs=2687583534428876"}
+{"seq":8,"source":"human","type":"PAGE_CHANGE","eventTimeNs":2687584498928355,"payload":"page=2"}
+{"seq":9,"source":"agent","type":"FAKE_AGENT_ACTION","eventTimeNs":2687585478034605,"payload":"basedOnSeq=8 basedOnEventTime=2687585478008043 targetRevision=9"}
+{"seq":10,"source":"webview","type":"focus","eventTimeNs":2687588692440334,"payload":""}
+{"seq":11,"source":"webview","type":"selectionchange","eventTimeNs":2687588699501271,"payload":""}
+{"seq":12,"source":"webview","type":"keydown","eventTimeNs":2687592044209604,"payload":""}
+{"seq":13,"source":"webview","type":"beforeinput","eventTimeNs":2687592045362208,"payload":"浣犲ソ"}
+{"seq":14,"source":"webview","type":"input","eventTimeNs":2687592046615333,"payload":"浣犲ソ"}
+{"seq":15,"source":"webview","type":"keyup","eventTimeNs":2687592047243979,"payload":""}
+{"seq":16,"source":"webview","type":"selectionchange","eventTimeNs":2687592047832000,"payload":""}
+{"seq":17,"source":"webview","type":"keydown","eventTimeNs":2687594447681479,"payload":""}
+{"seq":18,"source":"webview","type":"beforeinput","eventTimeNs":2687594448826791,"payload":"鍠?}
+{"seq":19,"source":"webview","type":"input","eventTimeNs":2687594450577833,"payload":"鍠?}
+{"seq":20,"source":"webview","type":"keyup","eventTimeNs":2687594451315333,"payload":""}
+{"seq":21,"source":"webview","type":"selectionchange","eventTimeNs":2687594451964812,"payload":""}
+{"seq":1,"source":"APP","type":"START","eventTimeNs":2687608032737727,"payload":"sdk=31"}

@@ -1,0 +1,2 @@
+﻿Physical size: 2880x1920
+Override size: 1920x2880

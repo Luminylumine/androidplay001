@@ -1,0 +1,1032 @@
+﻿
+WINDOW MANAGER LAST ANR (dumpsys window lastanr)
+  <no ANR has occurred since boot>
+
+WINDOW MANAGER POLICY STATE (dumpsys window policy)
+    mSafeMode=false mSystemReady=true mSystemBooted=true
+    mCameraLensCoverState=CAMERA_LENS_COVER_ABSENT
+    mWakeGestureEnabledSetting=true
+    mUiMode=UI_MODE_TYPE_NORMALmEnableCarDockHomeCapture=true
+    mLidKeyboardAccessibility=0 mLidNavigationAccessibility=0 getLidBehavior=LID_BEHAVIOR_NONE
+    mLongPressOnBackBehavior=LONG_PRESS_BACK_NOTHING
+    mLongPressOnHomeBehavior=LONG_PRESS_HOME_NOTHING
+    mDoubleTapOnHomeBehavior=DOUBLE_TAP_HOME_NOTHING
+    mShortPressOnPowerBehavior=SHORT_PRESS_POWER_GO_TO_SLEEP
+    mLongPressOnPowerBehavior=LONG_PRESS_POWER_GLOBAL_ACTIONS
+    mVeryLongPressOnPowerBehavior=VERY_LONG_PRESS_POWER_NOTHING
+    mDoublePressOnPowerBehavior=MULTI_PRESS_POWER_NOTHING
+    mTriplePressOnPowerBehavior=MULTI_PRESS_POWER_NOTHING
+    mPowerVolUpBehavior=POWER_VOLUME_UP_BEHAVIOR_GLOBAL_ACTIONS
+    mShortPressOnSleepBehavior=SHORT_PRESS_SLEEP_GO_TO_SLEEP
+    mShortPressOnWindowBehavior=SHORT_PRESS_WINDOW_PICTURE_IN_PICTURE
+    mAllowStartActivityForLongPressOnPowerDuringSetup=false
+    mHasSoftInput=true mHapticTextHandleEnabled=false
+    mDismissImeOnBackKeyPressed=false mIncallPowerBehavior=sleep
+    mIncallBackBehavior=<nothing> mEndcallBehavior=sleep
+    mDisplayHomeButtonHandlers=mDisplayId = -1, mHomePressed = false
+    mKeyguardOccluded=false mKeyguardOccludedChanged=false mPendingKeyguardOccluded=false
+    mAllowLockscreenWhenOnDisplays=false mLockScreenTimeout=120000 mLockScreenTimerActive=false
+    mKeyMapping.size=0
+    KeyCombination rules:
+      KEYCODE_VOLUME_DOWN + KEYCODE_POWER
+      KEYCODE_VOLUME_DOWN + KEYCODE_VOLUME_UP
+    SingleKey rules:
+      KeyCode=KEYCODE_POWER, LongPress=true, VeryLongPress=false, MaxMultiPressCount=1
+      KeyCode=752, LongPress=true, VeryLongPress=false, MaxMultiPressCount=1
+    WakeGestureListener
+      mTriggerRequested=false
+      mSensor=null
+    KeyguardServiceDelegate
+      showing=true
+      showingAndNotOccluded=true
+      inputRestricted=false
+      occluded=false
+      secure=false
+      dreaming=false
+      systemIsReady=true
+      deviceHasKeyguard=true
+      enabled=true
+      offReason=OFF_BECAUSE_OF_USER
+      currentUser=-10000
+      bootCompleted=true
+      screenState=SCREEN_STATE_OFF
+      interactiveState=INTERACTIVE_STATE_SLEEP
+      KeyguardStateMonitor
+        mIsShowing=true
+        mSimSecure=false
+        mInputRestricted=true
+        mTrusted=false
+        mCurrentUserId=0
+    Looper state:
+      Looper (android.ui, tid 20) {f9a25f7}
+        Message 0: { when=+19s736ms realwhen=978431354 isVsync=false isAsynchronous=false callback=huawei.com.android.server.policy.stylus.StylusGestureListener$2 target=android.os.Handler }
+        (Total messages: 1, polling=true, quitting=false)
+
+WINDOW MANAGER ANIMATOR STATE (dumpsys window animator)
+    DisplayContentsAnimator #0:
+      Window #0: WindowStateAnimator{9c5766f com.android.systemui.HwImageWallpaper}
+      Window #1: WindowStateAnimator{958b9f4 com.huawei.android.launcher/com.huawei.android.launcher.unihome.UniHomeLauncher}
+      Window #2: WindowStateAnimator{26175ff AssistPreviewPanel}
+      Window #3: WindowStateAnimator{b83491e ShellDropTarget}
+      Window #4: WindowStateAnimator{dad6880 FloatBallFastDelete}
+      Window #5: WindowStateAnimator{35363c5 FullScreenLayoutParamsSystemUI}
+      Window #6: WindowStateAnimator{245b11a FloatBallTaskViewSystemUI}
+      Window #7: WindowStateAnimator{bacaeb9 InputMethod}
+      Window #8: WindowStateAnimator{f81ed07 StatusBar}
+      Window #9: WindowStateAnimator{6f39188 NotificationShade}
+      Window #10: WindowStateAnimator{8debe90 ScreenRecorderTimer}
+      Window #11: WindowStateAnimator{c6fe92b NavigationBar0}
+      Window #12: WindowStateAnimator{be845a5 GestureNavLeft}
+      Window #13: WindowStateAnimator{239ab0f GestureNavRight}
+      Window #14: WindowStateAnimator{df753e9 GestureNavBottom}
+      Window #15: WindowStateAnimator{a73a470 GestureSildeOut}
+      Window #16: WindowStateAnimator{8fa56b3 GestureNavAnim}
+      Window #17: WindowStateAnimator{62d2c22 pip-dismiss-overlay}
+
+    DisplayContentsAnimator #181:
+
+    DisplayContentsAnimator #182:
+      Window #0: WindowStateAnimator{1d8f2fe AodScreen_0}
+      Window #1: WindowStateAnimator{1dd0a5f AodScreen_1}
+
+
+
+WINDOW MANAGER SESSIONS (dumpsys window sessions)
+  Session Session{4591da 2546:u0a10074}:
+    mNumWindow=11 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@8c08cac
+    mPackageName=com.android.systemui
+  Session Session{1077282 14020:u0a10166}:
+    mNumWindow=1 mCanAddInternalSystemWindow=false mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@de07d75
+    mPackageName=com.huawei.ohos.inputmethod
+  Session Session{1266288 15121:1002}:
+    mNumWindow=0 mCanAddInternalSystemWindow=false mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@c4d410a
+    mPackageName=com.android.bluetooth
+  Session Session{369ef6d 2903:u0a10069}:
+    mNumWindow=0 mCanAddInternalSystemWindow=false mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@e71ed7b
+    mPackageName=com.android.permissioncontroller
+  Session Session{3e860a8 25132:1000}:
+    mNumWindow=0 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@4ffc798
+    mPackageName=com.android.settings
+  Session Session{5d50374 19448:u0a10339}:
+    mNumWindow=0 mCanAddInternalSystemWindow=false mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@7487bf1
+    mPackageName=com.tencent.mm
+  Session Session{8c71917 20918:u0a10067}:
+    mNumWindow=0 mCanAddInternalSystemWindow=false mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@d0663d6
+    mPackageName=com.android.packageinstaller
+  Session Session{ce5be59 20116:u0a10163}:
+    mNumWindow=0 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@ba7e657
+    mPackageName=com.huawei.hiwrite
+  Session Session{d5f083d 1859:1000}:
+    mNumWindow=5 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@cf5c544
+    mPackageName=android
+  Session Session{f57e181 26967:u0a10162}:
+    mNumWindow=2 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@d57e62d
+    mPackageName=com.huawei.aod
+  Session Session{f836fc3 30148:u0a10106}:
+    mNumWindow=1 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@a5ce762
+    mPackageName=com.huawei.android.launcher
+  Session Session{fbbe9d7 10527:u0a10129}:
+    mNumWindow=0 mCanAddInternalSystemWindow=true mAppOverlaySurfaces={} mAlertWindowSurfaces={} mClientDead=false mSurfaceSession=android.view.SurfaceSession@fda90f3
+    mPackageName=com.huawei.vassistant
+
+WINDOW MANAGER DISPLAY CONTENTS (dumpsys window displays)
+  mLastOrientationSource=Leaf:17:36@120320432
+  deepestLastOrientationSource=Window{4cb835f u0 AodScreen_1}
+  overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir sw960dp w960dp h1560dp 320dpi xlrg port ?uimode ?night -touch -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1920, 3120) mAppBounds=Rect(0, 0 - 1920, 3120) mMaxBounds=Rect(0, 0 - 1920, 3120) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOverMode=0} ?fontWeightAdjustment}
+  Display: mDisplayId=182 rootTasks=0
+    init=1920x3120 320dpi cur=1920x3120 app=1920x3120 rng=1920x1920-3120x3120
+    deferred=false mLayoutNeeded=false mTouchExcludeRegion=SkRegion()
+
+  mLayoutSeq=17
+  mCurrentFocus=null
+  mFocusedApp=null
+
+  displayId=182
+  mWallpaperTarget=null
+  mLastWallpaperX=-1.0 mLastWallpaperY=-1.0
+
+  mDeferUpdateImeTargetCount=0
+
+  Display areas in top down Z order:
+    * Leaf:17:36
+    * ImeContainer
+    * Leaf:3:14
+    * DefaultTaskDisplayArea
+    * Leaf:0:1
+
+  Task display areas in top down Z order:
+    TaskDisplayArea DefaultTaskDisplayArea
+      Application tokens in top down Z order:
+
+  no ScreenRotationAnimation 
+
+
+  PinnedTaskController
+    mIsImeShowing=false
+    mImeHeight=0
+    mAspectRatio=-1.0
+    mMinAspectRatio=0.41841003
+    mMaxAspectRatio=2.39
+    mActions=[]
+
+  DisplayFrames w=1920 h=3120 r=0
+
+  DisplayPolicy
+    mCarDockEnablesAccelerometer=true mDeskDockEnablesAccelerometer=true
+    mDockMode=EXTRA_DOCK_STATE_UNDOCKED mLidState=LID_ABSENT
+    mAwake=true mScreenOnEarly=true mScreenOnFully=true
+    mKeyguardDrawComplete=false mWindowManagerDrawComplete=false
+    mHdmiPlugged=false
+    mShowingDream=false mDreamingLockscreen=true
+    isKeyguardShowing=true
+    mTopIsFullscreen=false
+    mForceStatusBar=true mAllowLockscreenWhenOn=false
+    mRemoteInsetsControllerControlsSystemBars=false
+    Looper state:
+      Looper (android.ui, tid 20) {f9a25f7}
+        Message 0: { when=+19s735ms realwhen=978431354 isVsync=false isAsynchronous=false callback=huawei.com.android.server.policy.stylus.StylusGestureListener$2 target=android.os.Handler }
+        (Total messages: 1, polling=true, quitting=false)
+
+  DisplayRotation
+    mCurrentAppOrientation=SCREEN_ORIENTATION_PORTRAIT
+    mLastOrientation=1
+    mRotation=0 mDeferredRotationPauseCount=0
+    mLandscapeRotation=ROTATION_90 mSeascapeRotation=ROTATION_270
+    mPortraitRotation=ROTATION_0 mUpsideDownRotation=ROTATION_180
+    mSupportAutoRotation=true
+
+    mCarDockRotation=-1 mDeskDockRotation=-1
+    mUserRotationMode=USER_ROTATION_FREE mUserRotation=ROTATION_0 mCameraRotationMode=0 mAllowAllRotations=unknown
+    mDemoHdmiRotation=ROTATION_90 mDemoHdmiRotationLock=false mUndockedHdmiRotation=-1
+    mLidOpenRotation=-1
+    mFixedToUserRotation=false
+
+
+  WindowInsetsStateController
+    InsetsState
+      mDisplayFrame=Rect(0, 0 - 1920, 3120)
+      mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=0 displayHeight=0 density={0.0} cutoutSpec={} rotation={0} scale={0.0}}}}
+      mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+      mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=null rotation=0}
+        InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false
+    Control map:
+    InsetsSourceProviders:
+      ImeInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=false mImeOverrideFrame=[0,0][0,0]
+        mImeShowing=false
+  overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir sw960dp w960dp h1560dp 320dpi xlrg port ?uimode ?night -touch -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1920, 3120) mAppBounds=Rect(0, 0 - 1920, 3120) mMaxBounds=Rect(0, 0 - 1920, 3120) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOverMode=0} ?fontWeightAdjustment}
+  Display: mDisplayId=181 rootTasks=0
+    init=1920x3120 320dpi cur=1920x3120 app=1920x3120 rng=1920x1920-3120x3120
+    deferred=false mLayoutNeeded=false mTouchExcludeRegion=SkRegion()
+
+  mLayoutSeq=10
+  mCurrentFocus=null
+  mFocusedApp=null
+
+  displayId=181
+  mWallpaperTarget=null
+  mLastWallpaperX=-1.0 mLastWallpaperY=-1.0
+
+  mDeferUpdateImeTargetCount=0
+
+  Display areas in top down Z order:
+    * Leaf:17:36
+    * ImeContainer
+    * Leaf:3:14
+    * DefaultTaskDisplayArea
+    * Leaf:0:1
+
+  Task display areas in top down Z order:
+    TaskDisplayArea DefaultTaskDisplayArea
+      Application tokens in top down Z order:
+
+  no ScreenRotationAnimation 
+
+
+  PinnedTaskController
+    mIsImeShowing=false
+    mImeHeight=0
+    mAspectRatio=-1.0
+    mMinAspectRatio=0.41841003
+    mMaxAspectRatio=2.39
+    mActions=[]
+
+  DisplayFrames w=1920 h=3120 r=0
+
+  DisplayPolicy
+    mCarDockEnablesAccelerometer=true mDeskDockEnablesAccelerometer=true
+    mDockMode=EXTRA_DOCK_STATE_UNDOCKED mLidState=LID_ABSENT
+    mAwake=true mScreenOnEarly=true mScreenOnFully=true
+    mKeyguardDrawComplete=false mWindowManagerDrawComplete=false
+    mHdmiPlugged=false
+    mShowingDream=false mDreamingLockscreen=true
+    isKeyguardShowing=true
+    mTopIsFullscreen=false
+    mForceStatusBar=false mAllowLockscreenWhenOn=false
+    mRemoteInsetsControllerControlsSystemBars=false
+    Looper state:
+      Looper (android.ui, tid 20) {f9a25f7}
+        Message 0: { when=+19s735ms realwhen=978431354 isVsync=false isAsynchronous=false callback=huawei.com.android.server.policy.stylus.StylusGestureListener$2 target=android.os.Handler }
+        (Total messages: 1, polling=true, quitting=false)
+
+  DisplayRotation
+    mCurrentAppOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+    mLastOrientation=-1
+    mRotation=0 mDeferredRotationPauseCount=0
+    mLandscapeRotation=ROTATION_90 mSeascapeRotation=ROTATION_270
+    mPortraitRotation=ROTATION_0 mUpsideDownRotation=ROTATION_180
+    mSupportAutoRotation=true
+
+    mCarDockRotation=-1 mDeskDockRotation=-1
+    mUserRotationMode=USER_ROTATION_FREE mUserRotation=ROTATION_0 mCameraRotationMode=0 mAllowAllRotations=unknown
+    mDemoHdmiRotation=ROTATION_90 mDemoHdmiRotationLock=false mUndockedHdmiRotation=-1
+    mLidOpenRotation=-1
+    mFixedToUserRotation=false
+
+
+  WindowInsetsStateController
+    InsetsState
+      mDisplayFrame=Rect(0, 0 - 1920, 3120)
+      mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=0 displayHeight=0 density={0.0} cutoutSpec={} rotation={0} scale={0.0}}}}
+      mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+      mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=null rotation=0}
+        InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false
+    Control map:
+    InsetsSourceProviders:
+      ImeInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=false mImeOverrideFrame=[0,0][0,0]
+        mImeShowing=false
+  mLastOrientationSource=WindowedMagnification:0:31@151441281
+  deepestLastOrientationSource=Window{d477a66 u0 NotificationShade}
+  overrideConfig={1.0 ?mcc?mnc [zh_CN_#Hans] ldltr sw960dp w1440dp h928dp 320dpi xlrg hdr widecg land night finger qwerty/v/v dpad/v winConfig={ mBounds=Rect(0, 0 - 2880, 1920) mAppBounds=Rect(0, 0 - 2880, 1920) mMaxBounds=Rect(0, 0 - 2880, 1920) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_90 mPopOverMode=0} suim:1 extflag:8 s.19710 fontWeightAdjustment=0}
+  Display: mDisplayId=0 rootTasks=7
+    init=2880x1920 320dpi base=1920x2880 320dpi cur=2880x1920 app=2880x1920 rng=1920x1856-2880x2816
+    deferred=false mLayoutNeeded=false mTouchExcludeRegion=SkRegion((0,0,2880,1920))
+
+  mLayoutSeq=131960
+  mCurrentFocus=Window{d477a66 u0 NotificationShade}
+  mFocusedApp=ActivityRecord{173dc20 u0 com.huawei.android.launcher/.unihome.UniHomeLauncher t36}
+
+  displayId=0
+  mWallpaperTarget=null
+  mLastWallpaperX=0.5 mLastWallpaperY=0.5
+
+  mDeferUpdateImeTargetCount=0
+
+  mSystemGestureExclusion=SkRegion()
+
+  Display areas in top down Z order:
+    * Leaf:36:36
+    * HideDisplayCutout:32:35
+      * OneHanded:32:35
+        * FullscreenMagnification:33:35
+          * Leaf:33:35
+        * Leaf:32:32
+    * WindowedMagnification:0:31
+      * HideDisplayCutout:26:31
+        * OneHanded:26:31
+          * FullscreenMagnification:29:31
+            * Leaf:29:31
+          * Leaf:28:28
+          * FullscreenMagnification:26:27
+            * Leaf:26:27
+      * Leaf:24:25
+      * HideDisplayCutout:20:23
+        * OneHanded:20:23
+          * FullscreenMagnification:20:23
+            * Leaf:20:23
+      * OneHanded:19:19
+        * FullscreenMagnification:19:19
+          * Leaf:19:19
+      * HideDisplayCutout:18:18
+        * OneHanded:18:18
+          * FullscreenMagnification:18:18
+            * Leaf:18:18
+      * OneHanded:17:17
+        * FullscreenMagnification:17:17
+          * Leaf:17:17
+      * HideDisplayCutout:0:16
+        * OneHanded:2:16
+          * ImePlaceholder:15:16
+            * ImeContainer
+          * FullscreenMagnification:2:14
+            * Leaf:3:14
+            * DefaultTaskDisplayArea
+        * OneHandedBackgroundPanel:0:1
+          * OneHanded:0:1
+            * FullscreenMagnification:0:1
+              * Leaf:0:1
+
+  Task display areas in top down Z order:
+    TaskDisplayArea DefaultTaskDisplayArea
+      mPreferredTopFocusableRootTask=Task{20a9a4c #35 type=home ?? U=0 visible=true mode=fullscreen translucent=false sz=1}
+      mLastFocusedRootTask=Task{20a9a4c #35 type=home ?? U=0 visible=true mode=fullscreen translucent=false sz=1}
+      Application tokens in top down Z order:
+      * Task{20a9a4c #35 type=home ?? U=0 visible=true mode=fullscreen translucent=false sz=1}
+        bounds=[0,0][2880,1920]
+        * Task{71f17aa #36 type=home A=10106:com.huawei.android.launcher U=0 rootTaskId=35 visible=true mode=fullscreen translucent=false sz=1}
+          bounds=[0,0][2880,1920]
+          * ActivityRecord{173dc20 u0 com.huawei.android.launcher/.unihome.UniHomeLauncher t36}
+      * Task{d23b1a #3 type=undefined ?? U=0 visible=false mode=fullscreen translucent=true sz=0}
+        bounds=[0,0][2880,1920]
+      * Task{e863d17 #4 type=undefined ?? U=0 visible=false mode=multi-window translucent=true sz=0}
+        bounds=[0,0][2880,1920]
+      * Task{542c2ff #5 type=undefined ?? U=0 visible=false mode=multi-window translucent=true sz=0}
+        bounds=[0,0][2880,1920]
+      * Task{4342d13 #6 type=undefined ?? U=0 visible=false mode=split-screen-primary translucent=true sz=0}
+        bounds=[0,0][1432,1920]
+      * Task{cf43540 #7 type=undefined ?? U=0 visible=false mode=split-screen-secondary translucent=true sz=0}
+        bounds=[1448,0][2880,1920]
+      * Task{44fe5d6 #614 type=standard A=10297:com.tencent.mobileqq U=0 visible=false mode=hwMultiwindow-freeform translucent=true sz=1}
+        bounds=[404,176][1364,2185]
+        * ActivityRecord{2f8f998 u0 com.tencent.mobileqq/.activity.SplashActivity t614}
+
+  mScreenRotationAnimation:
+    mSurface=null mWidth=2880 mHeight=1920
+    mEnteringBlackFrame=null
+    mCurRotation=1 mOriginalRotation=0
+    mOriginalWidth=1920 mOriginalHeight=2880
+    mStarted=true mAnimRunning=false mFinishAnimReady=true mFinishAnimStartTime=-1
+    mRotateExitAnimation=null {alpha=1.0 matrix=[1.0, 0.0, 0.0][0.0, 1.0, 0.0][0.0, 0.0, 1.0] radius=0.0 curveType=0}
+    mRotateEnterAnimation=null {alpha=1.0 matrix=[1.0, 0.0, 0.0][0.0, 1.0, 0.0][0.0, 0.0, 1.0] radius=0.0 curveType=0}
+    mSnapshotInitialMatrix=[1.0, 0.0, 0.0][0.0, 1.0, 0.0][0.0, 0.0, 1.0]
+    mForceDefaultOrientation=false
+  rootHomeTask=Task=35
+  rootSplitScreenPrimaryTask=Task=6
+
+  PinnedTaskController
+    mIsImeShowing=false
+    mImeHeight=0
+    mAspectRatio=-1.0
+    mMinAspectRatio=0.41841003
+    mMaxAspectRatio=2.39
+    mActions=[]
+
+  DisplayFrames w=2880 h=1920 r=1
+
+  DisplayPolicy
+    mCarDockEnablesAccelerometer=true mDeskDockEnablesAccelerometer=true
+    mDockMode=EXTRA_DOCK_STATE_UNDOCKED mLidState=LID_ABSENT
+    mAwake=false mScreenOnEarly=false mScreenOnFully=false
+    mKeyguardDrawComplete=false mWindowManagerDrawComplete=false
+    mHdmiPlugged=false
+    mLastBehavior=SHOW_TRANSIENT_BARS_BY_SWIPE
+    mShowingDream=false mDreamingLockscreen=true
+    mStatusBar=Window{3eeae31 u0 StatusBar}
+    mExpandedPanel=Window{d477a66 u0 NotificationShade}
+    isKeyguardShowing=true
+    mNavigationBar=Window{f284263 u0 NavigationBar0}
+    mNavBarOpacityMode=0
+    mNavigationBarCanMove=false
+    mNavigationBarPosition=4
+    mFocusedWindow=Window{d477a66 u0 NotificationShade}
+    mTopIsFullscreen=false
+    mForceStatusBar=false mAllowLockscreenWhenOn=false
+    mRemoteInsetsControllerControlsSystemBars=false
+    Looper state:
+      Looper (android.ui, tid 20) {f9a25f7}
+        Message 0: { when=+19s733ms realwhen=978431354 isVsync=false isAsynchronous=false callback=huawei.com.android.server.policy.stylus.StylusGestureListener$2 target=android.os.Handler }
+        (Total messages: 1, polling=true, quitting=false)
+
+  DisplayRotation
+    mCurrentAppOrientation=SCREEN_ORIENTATION_USER
+    mLastOrientation=2
+    mRotation=1 mDeferredRotationPauseCount=0
+    mLandscapeRotation=ROTATION_90 mSeascapeRotation=ROTATION_270
+    mPortraitRotation=ROTATION_0 mUpsideDownRotation=ROTATION_180
+    mSupportAutoRotation=true
+    WindowOrientationListener
+      mEnabled=false
+      mCurrentRotation=ROTATION_90
+      mSensorType=null
+      mSensor=null
+      mRate=0
+
+    mCarDockRotation=-1 mDeskDockRotation=-1
+    mUserRotationMode=USER_ROTATION_FREE mUserRotation=ROTATION_180 mCameraRotationMode=0 mAllowAllRotations=true
+    mDemoHdmiRotation=ROTATION_90 mDemoHdmiRotationLock=false mUndockedHdmiRotation=-1
+    mLidOpenRotation=-1
+    mFixedToUserRotation=false
+
+  InputConsumers:
+    name=recents_animation_input_consumer pid=30148 user=UserHandle{0}
+
+  WindowInsetsStateController
+    InsetsState
+      mDisplayFrame=Rect(0, 0 - 2880, 1920)
+      mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=0 displayHeight=0 density={0.0} cutoutSpec={} rotation={0} scale={0.0}}}}
+      mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+      mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=null rotation=1}
+        InsetsSource type=ITYPE_STATUS_BAR frame=[0,0][2880,64] visible=true
+        InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,0][0,0] visible=false
+        InsetsSource type=ITYPE_LEFT_GESTURES frame=[0,0][0,0] visible=false
+        InsetsSource type=ITYPE_RIGHT_GESTURES frame=[0,0][0,0] visible=false
+        InsetsSource type=ITYPE_TOP_MANDATORY_GESTURES frame=[0,0][2880,64] visible=true
+        InsetsSource type=ITYPE_BOTTOM_MANDATORY_GESTURES frame=[0,0][0,0] visible=false
+        InsetsSource type=ITYPE_TOP_TAPPABLE_ELEMENT frame=[0,0][2880,64] visible=true
+        InsetsSource type=ITYPE_BOTTOM_TAPPABLE_ELEMENT frame=[0,0][0,0] visible=false
+        InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false
+    Control map:
+      ITYPE_STATUS_BAR -> Window{d477a66 u0 NotificationShade}
+    InsetsSourceProviders:
+      ImeInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mPendingControlTarget=Window{73c60be u0 com.huawei.android.launcher/com.huawei.android.launcher.unihome.UniHomeLauncher}
+        mImeShowing=false
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_BOTTOM_TAPPABLE_ELEMENT frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{f284263 u0 NavigationBar0}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_TOP_TAPPABLE_ELEMENT frame=[0,0][2880,64] visible=true
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{3eeae31 u0 StatusBar}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_BOTTOM_MANDATORY_GESTURES frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{f284263 u0 NavigationBar0}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_TOP_MANDATORY_GESTURES frame=[0,0][2880,64] visible=true
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{3eeae31 u0 StatusBar}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_RIGHT_GESTURES frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{f284263 u0 NavigationBar0}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_LEFT_GESTURES frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{f284263 u0 NavigationBar0}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,0][0,0] visible=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,1920][2880,1998]
+        mWin=Window{f284263 u0 NavigationBar0}
+      InsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_STATUS_BAR frame=[0,0][2880,64] visible=true
+        mControl=InsetsSourceControl type=ITYPE_STATUS_BAR mLeash=Surface(name=Surface(name=3eeae31 StatusBar)/@0xa0ad654 - animation-leash of insets_animation)/@0xf79b829 mSurfacePosition=Point(0, 0) mInsetsHint=Insets{left=0, top=64, right=0, bottom=0} mSkipAnimationOnce=false
+        mIsLeashReadyForDispatching=true mImeOverrideFrame=[0,0][0,0]
+        mWin=Window{3eeae31 u0 StatusBar}
+        mAdapter=ControlAdapter mCapturedLeash=Surface(name=Surface(name=3eeae31 StatusBar)/@0xa0ad654 - animation-leash of insets_animation)/@0xf79b829
+        mControlTarget=Window{d477a66 u0 NotificationShade}
+
+WINDOW MANAGER TOKENS (dumpsys window tokens)
+  All tokens:
+  Display #0
+  WindowToken{4fdb57e android.view.ViewRootImpl$W@638eb39}
+  WindowToken{e9f5f75 android.os.BinderProxy@f85b6ac}
+  WindowToken{ebc92c1 android.os.BinderProxy@e053cb}
+  WindowToken{f28f00c android.os.Binder@4a455e0}
+  WindowToken{9fed795 android.os.BinderProxy@ca427ed}
+  ActivityRecord{2f8f998 u0 com.tencent.mobileqq/.activity.SplashActivity t614}
+  WindowToken{266e25f android.view.ViewRootImpl$W@9832afe}
+  ActivityRecord{173dc20 u0 com.huawei.android.launcher/.unihome.UniHomeLauncher t36}
+  WindowToken{995eb02 android.os.BinderProxy@3ca344d}
+  WindowToken{fd5b892 android.os.BinderProxy@26006f4}
+  WallpaperWindowToken{bf8c1a1 token=android.os.Binder@ab3d608}
+  WindowToken{5337973 android.view.ViewRootImpl$W@85e21e2}
+  WindowToken{68fc871 android.view.ViewRootImpl$W@7da7618}
+  WindowToken{eca20fc android.os.BinderProxy@50a3ace}
+  WindowToken{dc45e5 android.view.ViewRootImpl$W@570dc}
+  WindowToken{2f25ad8 android.os.BinderProxy@da0524a}
+  WindowToken{39d3625 android.os.BinderProxy@eefa1c}
+  WindowToken{b93f280 android.os.BinderProxy@bf1d303}
+  WindowToken{b7401fb android.os.BinderProxy@770d78a}
+  Display #182
+  WindowToken{5be5414 android.os.BinderProxy@2312e67}
+  WindowToken{401affe android.os.BinderProxy@3e3fb9}
+
+WINDOW MANAGER WINDOWS (dumpsys window windows)
+  Window #0 Window{90ce256 u0 pip-dismiss-overlay}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@770d78a
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=NONE
+    mAttrs={(0,1420)(fillx500) sim={adjust=pan} layoutInDisplayCutoutMode=always ty=NAVIGATION_BAR_PANEL hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN
+      pfl=SHOW_FOR_ALL_USERS USE_BLAST FIT_INSETS_CONTROLLED
+      bhv=DEFAULT}
+    Requested w=1920 h=500 mLayoutSeq=129731
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{62d2c22 pip-dismiss-overlay}:
+      mShownAlpha=0.0 mAlpha=1.0 mLastAlpha=0.0
+      mTmpSize=[0,0][0,0]
+    mOrientationChanging=false configOrientationChanging=true mAppFreezing=false mReportOrientationChanged=true
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #1 Window{5105b61 u0 GestureNavAnim}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{d5f083d 1859:1000} mClient=android.view.ViewRootImpl$W@570dc
+    mOwnerUid=1000 showForAllUsers=true package=android appop=NONE
+    mAttrs={(0,759)(161x413) gr=TOP LEFT CENTER sim={state=unchanged adjust=nothing} ty=NAVIGATION_BAR_PANEL hwFlags=#8010000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSPARENT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE NOT_TOUCH_MODAL LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=USE_BLAST
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=161 h=413 mLayoutSeq=131874
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{8fa56b3 GestureNavAnim}:
+      mTmpSize=[0,0][161,413]
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=true(hwflag support)
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #2 Window{34184ac u0 GestureSildeOut}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{d5f083d 1859:1000} mClient=android.view.ViewRootImpl$W@9832afe
+    mOwnerUid=1000 showForAllUsers=true package=android appop=NONE
+    mAttrs={(0,0)(fillxfill) gr=BOTTOM START CENTER sim={state=unchanged adjust=nothing} ty=NAVIGATION_BAR_PANEL hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT wanim=0x1030304
+      fl=LAYOUT_IN_SCREEN ALT_FOCUSABLE_IM SPLIT_TOUCH HARDWARE_ACCELERATED
+      pfl=USE_BLAST
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=0 h=0 mLayoutSeq=2
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{a73a470 GestureSildeOut}:
+      mShownAlpha=0.0 mAlpha=1.0 mLastAlpha=0.0
+      mTmpSize=[0,0][0,0]
+    mOrientationChanging=false configOrientationChanging=true mAppFreezing=false mReportOrientationChanged=true
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #3 Window{7ddf030 u0 GestureNavBottom}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{d5f083d 1859:1000} mClient=android.view.ViewRootImpl$W@85e21e2
+    mOwnerUid=1000 showForAllUsers=true package=android appop=NONE
+    mAttrs={(0,1840)(2880x80) gr=TOP LEFT CENTER sim={state=unchanged adjust=nothing} ty=NAVIGATION_BAR_PANEL hwFlags=#230000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSPARENT alpha=0.0
+      fl=NOT_FOCUSABLE NOT_TOUCH_MODAL LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=USE_BLAST
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=2880 h=80 mLayoutSeq=131948
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{df753e9 GestureNavBottom}:
+      mShownAlpha=0.0 mAlpha=0.0 mLastAlpha=0.0
+      mTmpSize=[0,0][2880,80]
+    mLastFreezeDuration=+134ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=7
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=true(hwflag support)
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #4 Window{2b0f656 u0 GestureNavRight}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{d5f083d 1859:1000} mClient=android.view.ViewRootImpl$W@7da7618
+    mOwnerUid=1000 showForAllUsers=true package=android appop=NONE
+    mAttrs={(2848,64)(32x1856) gr=TOP LEFT CENTER sim={state=unchanged adjust=nothing} ty=NAVIGATION_BAR_PANEL hwFlags=#230000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSPARENT alpha=0.0
+      fl=NOT_FOCUSABLE NOT_TOUCH_MODAL LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=USE_BLAST
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=32 h=1856 mLayoutSeq=131947
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{239ab0f GestureNavRight}:
+      mShownAlpha=0.0 mAlpha=0.0 mLastAlpha=0.0
+      mTmpSize=[0,0][32,1856]
+    mLastFreezeDuration=+114ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=7
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=true(hwflag support)
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #5 Window{ac6dadf u0 GestureNavLeft}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{d5f083d 1859:1000} mClient=android.view.ViewRootImpl$W@638eb39
+    mOwnerUid=1000 showForAllUsers=true package=android appop=NONE
+    mAttrs={(0,64)(32x1856) gr=TOP LEFT CENTER sim={state=unchanged adjust=nothing} ty=NAVIGATION_BAR_PANEL hwFlags=#230000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSPARENT alpha=0.0
+      fl=NOT_FOCUSABLE NOT_TOUCH_MODAL LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=USE_BLAST
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=32 h=1856 mLayoutSeq=131945
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{be845a5 GestureNavLeft}:
+      mShownAlpha=0.0 mAlpha=0.0 mLastAlpha=0.0
+      mTmpSize=[0,0][32,1856]
+    mLastFreezeDuration=+82ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=7
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=true(hwflag support)
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #6 Window{f284263 u0 NavigationBar0}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@9b97e1d
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=NONE
+    mAttrs={(0,0)(fillxfill) sim={adjust=pan} ty=NAVIGATION_BAR hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE NOT_TOUCH_MODAL TOUCHABLE_WHEN_WAKING WATCH_OUTSIDE_TOUCH SPLIT_TOUCH HARDWARE_ACCELERATED FLAG_SLIPPERY
+      pfl=COLOR_SPACE_AGNOSTIC USE_BLAST INSET_PARENT_FRAME_BY_IME
+      bhv=DEFAULT
+      fitTypes=STATUS_BARS NAVIGATION_BARS CAPTION_BAR}
+    Requested w=1920 h=78 mLayoutSeq=131960
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{c6fe92b NavigationBar0}:
+      mTmpSize=[0,0][1,1]
+    mOrientationChanging=false configOrientationChanging=false mAppFreezing=false mReportOrientationChanged=true
+    mLastFreezeDuration=+662ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #7 Window{7fbdc13 u0 ScreenRecorderTimer}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@3ca344d
+    mOwnerUid=10074 showForAllUsers=false package=com.android.systemui appop=SYSTEM_ALERT_WINDOW
+    mAttrs={(24,8)(36x48) gr=TOP START CENTER sim={adjust=pan} ty=SYSTEM_OVERLAY hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE NOT_TOUCH_MODAL LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS FULLSCREEN HARDWARE_ACCELERATED
+      pfl=USE_BLAST TRUSTED_OVERLAY
+      vsysui=LAYOUT_FULLSCREEN
+      bhv=SHOW_TRANSIENT_BARS_BY_SWIPE
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=36 h=48 mLayoutSeq=46043
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{8debe90 ScreenRecorderTimer}:
+      mTmpSize=[0,0][36,48]
+    mOrientationChanging=false configOrientationChanging=false mAppFreezing=false mReportOrientationChanged=true
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #8 Window{d477a66 u0 NotificationShade}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@30db7a8
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=NONE
+    mAttrs={(0,0)(fillxfill) gr=TOP CENTER_VERTICAL sim={adjust=resize} layoutInDisplayCutoutMode=always layoutInDisplaySideMode=always ty=2040 hwFlags=#a080004 hwExtFlags=#100000 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT or=SCREEN_ORIENTATION_USER if=DISABLE_USER_ACTIVITY userActivityTimeout=10000 colorMode=COLOR_MODE_WIDE_COLOR_GAMUT
+      fl=TOUCHABLE_WHEN_WAKING ALT_FOCUSABLE_IM WATCH_OUTSIDE_TOUCH SPLIT_TOUCH HARDWARE_ACCELERATED DRAWS_SYSTEM_BAR_BACKGROUNDS
+      pfl=USE_BLAST BEHAVIOR_CONTROLLED FIT_INSETS_CONTROLLED
+      bhv=SHOW_TRANSIENT_BARS_BY_SWIPE}
+    Requested w=2880 h=1920 mLayoutSeq=131960
+    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false
+    WindowStateAnimator{6f39188 NotificationShade}:
+      Surface: shown=true layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][2880,1920]
+    mLastFreezeDuration=+5h46m52s101ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=true
+    isVisible=true
+    canReceiveKeys=true
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #9 Window{3eeae31 u0 StatusBar}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@591c5bb
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=NONE
+    mAttrs={(0,0)(fillx160) gr=TOP CENTER_VERTICAL sim={adjust=pan} layoutInDisplayCutoutMode=always ty=STATUS_BAR hwFlags=#8000000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT
+      fl=NOT_FOCUSABLE SPLIT_TOUCH HARDWARE_ACCELERATED DRAWS_SYSTEM_BAR_BACKGROUNDS
+      pfl=USE_BLAST FIT_INSETS_CONTROLLED
+      bhv=DEFAULT}
+    Requested w=2880 h=160 mLayoutSeq=131960
+    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false
+    ContainerAnimator:
+      mLeash=Surface(name=Surface(name=3eeae31 StatusBar)/@0xa0ad654 - animation-leash of insets_animation)/@0xf79b829 mAnimationType=insets_animation
+      Animation: com.android.server.wm.InsetsSourceProvider$ControlAdapter@5a617ae
+        ControlAdapter mCapturedLeash=Surface(name=Surface(name=3eeae31 StatusBar)/@0xa0ad654 - animation-leash of insets_animation)/@0xf79b829
+    WindowStateAnimator{f81ed07 StatusBar}:
+       mAnimationIsEntrance=true      Surface: shown=true layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][2880,1]
+    mLastFreezeDuration=+336ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=64200
+    isOnScreen=true
+    isVisible=true
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #10 Window{476b3b3 u0 InputMethod}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{1077282 14020:u0a10166} mClient=android.os.BinderProxy@c9cdd22
+    mOwnerUid=10166 showForAllUsers=false package=com.huawei.ohos.inputmethod appop=NONE
+    mAttrs={(0,0)(fillxfill) gr=BOTTOM CENTER_VERTICAL sim={adjust=pan} layoutInDisplaySideMode=always ty=INPUT_METHOD hwFlags=#10 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=-2147483647 statusBarColor=#ff000000 navigationBarColor=#e5000000 fmt=TRANSPARENT wanim=0x7f130142 sysuil=true receive insets ignoring z-order
+      fl=NOT_FOCUSABLE LAYOUT_IN_SCREEN WATCH_OUTSIDE_TOUCH SPLIT_TOUCH HARDWARE_ACCELERATED DRAWS_SYSTEM_BAR_BACKGROUNDS
+      pfl=USE_BLAST FIT_INSETS_CONTROLLED
+      bhv=DEFAULT
+      fitTypes=STATUS_BARS NAVIGATION_BARS
+      fitSides=LEFT TOP RIGHT}
+    Requested w=2880 h=1856 mLayoutSeq=131571
+    mIsImWindow=true mIsWallpaper=false mIsFloatingLayer=true
+    mPolicyVisibility=false mLegacyPolicyVisibilityAfterAnim=false mAppOpVisibility=true parentHidden=false mPermanentlyHidden=false mHiddenWhileSuspended=false mForceHideNonSystemOverlayWindow=false
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    ContainerAnimator:
+      mLeash=Surface(name=Surface(name=476b3b3 InputMethod)/@0xdeb78e9 - animation-leash of insets_animation)/@0x183494f mAnimationType=insets_animation
+      Animation: com.android.server.wm.InsetsSourceProvider$ControlAdapter@75678dc
+        ControlAdapter mCapturedLeash=Surface(name=Surface(name=476b3b3 InputMethod)/@0xdeb78e9 - animation-leash of insets_animation)/@0x183494f
+    WindowStateAnimator{bacaeb9 InputMethod}:
+       mAnimationIsEntrance=true      mTmpSize=[0,0][2880,1856]
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #11 Window{26f7b0a u0 FloatBallTaskViewSystemUI}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@f85b6ac
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=SYSTEM_ALERT_WINDOW
+    mAttrs={(-105,162)(204x180) gr=TOP LEFT CENTER sim={adjust=pan} ty=APPLICATION_OVERLAY hwFlags=#8000000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=RGBA_8888 colorMode=COLOR_MODE_WIDE_COLOR_GAMUT
+      fl=NOT_FOCUSABLE LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=SHOW_FOR_ALL_USERS USE_BLAST TRUSTED_OVERLAY
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=204 h=180 mLayoutSeq=131946
+    mPolicyVisibility=false mLegacyPolicyVisibilityAfterAnim=false mAppOpVisibility=true parentHidden=false mPermanentlyHidden=false mHiddenWhileSuspended=false mForceHideNonSystemOverlayWindow=false
+    mHasSurface=true isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{245b11a FloatBallTaskViewSystemUI}:
+      Surface: shown=false layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][1,1]
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #12 Window{86b8cfe u0 FullScreenLayoutParamsSystemUI}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@bf1d303
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=SYSTEM_ALERT_WINDOW
+    mAttrs={(0,0)(2920x1960) gr=TOP LEFT CENTER sim={adjust=pan} ty=APPLICATION_OVERLAY hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=RGBA_8888 colorMode=COLOR_MODE_WIDE_COLOR_GAMUT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=SHOW_FOR_ALL_USERS USE_BLAST TRUSTED_OVERLAY
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=2920 h=1960 mLayoutSeq=131946
+    mPolicyVisibility=false mLegacyPolicyVisibilityAfterAnim=false mAppOpVisibility=true parentHidden=false mPermanentlyHidden=false mHiddenWhileSuspended=false mForceHideNonSystemOverlayWindow=false
+    mHasSurface=true isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{35363c5 FullScreenLayoutParamsSystemUI}:
+      Surface: shown=false layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][2920,1960]
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #13 Window{60d83fa u0 FloatBallFastDelete}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@eefa1c
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=SYSTEM_ALERT_WINDOW
+    mAttrs={(0,1440)(2880x480) gr=TOP START CENTER sim={adjust=pan} ty=APPLICATION_OVERLAY hwFlags=#8000000 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=RGBA_8888
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS HARDWARE_ACCELERATED
+      pfl=SHOW_FOR_ALL_USERS USE_BLAST
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=2880 h=480 mLayoutSeq=131135
+    mPolicyVisibility=false mLegacyPolicyVisibilityAfterAnim=false mAppOpVisibility=true parentHidden=false mPermanentlyHidden=false mHiddenWhileSuspended=false mForceHideNonSystemOverlayWindow=false
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{dad6880 FloatBallFastDelete}:
+      mShownAlpha=0.0 mAlpha=1.0 mLastAlpha=0.0
+      mTmpSize=[0,0][0,0]
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #14 Window{26f5b02 u0 ShellDropTarget}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@4100ee1
+    mOwnerUid=10074 showForAllUsers=true package=com.android.systemui appop=SYSTEM_ALERT_WINDOW
+    mAttrs={(0,0)(fillxfill) sim={adjust=pan} layoutInDisplayCutoutMode=always ty=APPLICATION_OVERLAY hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT
+      fl=NOT_FOCUSABLE HARDWARE_ACCELERATED
+      pfl=SHOW_FOR_ALL_USERS NO_MOVE_ANIMATION USE_BLAST FIT_INSETS_CONTROLLED INTERCEPT_GLOBAL_DRAG_AND_DROP
+      bhv=DEFAULT}
+    Requested w=2880 h=1920 mLayoutSeq=40
+    mPolicyVisibility=false mLegacyPolicyVisibilityAfterAnim=false mAppOpVisibility=true parentHidden=false mPermanentlyHidden=false mHiddenWhileSuspended=false mForceHideNonSystemOverlayWindow=false
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{b83491e ShellDropTarget}:
+      mShownAlpha=0.0 mAlpha=1.0 mLastAlpha=0.0
+      mTmpSize=[0,0][0,0]
+    mOrientationChanging=false configOrientationChanging=true mAppFreezing=false mReportOrientationChanged=true
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #15 Window{1050385 u0 AssistPreviewPanel}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@c99fdef
+    mOwnerUid=10074 showForAllUsers=false package=com.android.systemui appop=NONE
+    mAttrs={(0,0)(fillx500) gr=BOTTOM START CENTER sim={state=unchanged adjust=nothing} ty=VOICE_INTERACTION_STARTING hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=TRANSLUCENT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN HARDWARE_ACCELERATED
+      pfl=USE_BLAST
+      vsysui=LAYOUT_STABLE LAYOUT_HIDE_NAVIGATION LAYOUT_FULLSCREEN
+      bhv=DEFAULT}
+    Requested w=0 h=0 mLayoutSeq=40
+    mPolicyVisibility=false mLegacyPolicyVisibilityAfterAnim=false mAppOpVisibility=true parentHidden=false mPermanentlyHidden=false mHiddenWhileSuspended=false mForceHideNonSystemOverlayWindow=false
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{26175ff AssistPreviewPanel}:
+      mShownAlpha=0.0 mAlpha=1.0 mLastAlpha=0.0
+      mTmpSize=[0,0][0,0]
+    mOrientationChanging=false configOrientationChanging=true mAppFreezing=false mReportOrientationChanged=true
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #16 Window{73c60be u0 com.huawei.android.launcher/com.huawei.android.launcher.unihome.UniHomeLauncher}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{f836fc3 30148:u0a10106} mClient=android.os.BinderProxy@1663b79
+    mOwnerUid=10106 showForAllUsers=false package=com.huawei.android.launcher appop=NONE
+    mAttrs={(0,0)(fillxfill) sim={state=always_hidden adjust=resize forwardNavigation} layoutInDisplaySideMode=always ty=BASE_APPLICATION hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=1 statusBarColor=#ffffffff navigationBarColor=#ffffffff fmt=TRANSPARENT wanim=0x10302f8 colorMode=COLOR_MODE_WIDE_COLOR_GAMUT
+      fl=LAYOUT_IN_SCREEN LAYOUT_INSET_DECOR SHOW_WALLPAPER SPLIT_TOUCH HARDWARE_ACCELERATED DRAWS_SYSTEM_BAR_BACKGROUNDS
+      pfl=NO_MOVE_ANIMATION FORCE_DRAW_STATUS_BAR_BACKGROUND USE_BLAST FIT_INSETS_CONTROLLED TRUSTED_OVERLAY
+      vsysui=LAYOUT_STABLE LAYOUT_HIDE_NAVIGATION LAYOUT_FULLSCREEN
+      bhv=DEFAULT
+      fitSides=}
+    Requested w=2880 h=1920 mLayoutSeq=131942
+    mHasSurface=false isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{958b9f4 com.huawei.android.launcher/com.huawei.android.launcher.unihome.UniHomeLauncher}:
+      mTmpSize=[0,0][2880,1920]
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=62
+    mWallpaperX=0.5 mWallpaperY=0.5
+    mWallpaperXStep=1.0 mWallpaperYStep=1.0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #17 Window{f2ca90e u0 com.android.systemui.HwImageWallpaper}:
+    mDisplayId=0 rootTaskId=35 mSession=Session{4591da 2546:u0a10074} mClient=android.os.BinderProxy@7643309
+    mOwnerUid=10074 showForAllUsers=false package=com.android.systemui appop=NONE
+    mAttrs={(0,0)(2880x1920) gr=TOP START CENTER layoutInDisplayCutoutMode=always ty=WALLPAPER hwFlags=#0 hwExtFlags=#100000 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 fmt=RGBX_8888 wanim=0x103030e
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS SCALED LAYOUT_INSET_DECOR
+      pfl=WANTS_OFFSET_NOTIFICATIONS USE_BLAST
+      bhv=DEFAULT}
+    Requested w=2739 h=1826 mLayoutSeq=131942
+    mIsImWindow=false mIsWallpaper=true mIsFloatingLayer=true
+    mHasSurface=true isReadyForDisplay()=false mWindowRemovalAllowed=false
+    WindowStateAnimator{9c5766f com.android.systemui.HwImageWallpaper}:
+      Surface: shown=false layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][2739,1826]
+    mLastFreezeDuration=+263ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    mHScale=1.0514786 mVScale=1.0514786
+    mWallpaperX=0.5 mWallpaperY=0.5
+    mWallpaperXStep=1.0 mWallpaperYStep=1.0
+    mWallpaperZoomOut=0.0
+    isOnScreen=false
+    isVisible=false
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #18 Window{4cb835f u0 AodScreen_1}:
+    mDisplayId=182 mSession=Session{f57e181 26967:u0a10162} mClient=android.os.BinderProxy@3e3fb9
+    mOwnerUid=10162 showForAllUsers=false package=com.huawei.aod appop=NONE
+    mAttrs={(0,0)(1920xfill) gr=TOP CENTER_VERTICAL sim={adjust=pan} layoutInDisplayCutoutMode=shortEdges ty=2100 hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 or=SCREEN_ORIENTATION_PORTRAIT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS FORCE_NOT_FULLSCREEN ALT_FOCUSABLE_IM HARDWARE_ACCELERATED TRANSLUCENT_STATUS
+      pfl=USE_BLAST
+      vsysui=LAYOUT_STABLE LAYOUT_FULLSCREEN
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=1920 h=1920 mLayoutSeq=17
+    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false
+    WindowStateAnimator{1dd0a5f AodScreen_1}:
+      Surface: shown=true layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][1,3120]
+    mLastFreezeDuration=+5h46m51s897ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=true
+    isVisible=true
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+  Window #19 Window{b2014bd u0 AodScreen_0}:
+    mDisplayId=182 mSession=Session{f57e181 26967:u0a10162} mClient=android.os.BinderProxy@2312e67
+    mOwnerUid=10162 showForAllUsers=false package=com.huawei.aod appop=NONE
+    mAttrs={(0,0)(1200x1064) gr=TOP CENTER_VERTICAL sim={adjust=pan} layoutInDisplayCutoutMode=shortEdges ty=2100 hwFlags=#0 hwExtFlags=#0 ohWindowId=0 isEmuiStyle=0 statusBarColor=#0 navigationBarColor=#0 or=SCREEN_ORIENTATION_PORTRAIT
+      fl=NOT_FOCUSABLE NOT_TOUCHABLE LAYOUT_IN_SCREEN LAYOUT_NO_LIMITS FORCE_NOT_FULLSCREEN ALT_FOCUSABLE_IM HARDWARE_ACCELERATED TRANSLUCENT_STATUS
+      pfl=USE_BLAST
+      vsysui=LAYOUT_STABLE LAYOUT_FULLSCREEN
+      bhv=DEFAULT
+      fitTypes=NAVIGATION_BARS CAPTION_BAR}
+    Requested w=1200 h=1064 mLayoutSeq=17
+    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false
+    WindowStateAnimator{1d8f2fe AodScreen_0}:
+      Surface: shown=true layer=0 alpha=1.0 rect=(0.0,0.0)  transform=(1.0, 0.0, 0.0, 1.0)
+      mTmpSize=[0,0][1,1]
+    mLastFreezeDuration=+5h46m51s908ms
+    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null finishedFrameNumber=0
+    isOnScreen=true
+    isVisible=true
+    canReceiveKeys=false
+    hwNotchSupport=false
+    hasCompatScale=false
+    mInvGlobalScale=1.0
+    mGlobalScale=1.0
+
+  mGlobalConfiguration={1.0 ?mcc?mnc [zh_CN_#Hans] ldltr sw960dp w1440dp h928dp 320dpi xlrg hdr widecg land night finger qwerty/v/v dpad/v winConfig={ mBounds=Rect(0, 0 - 2880, 1920) mAppBounds=Rect(0, 0 - 2880, 1920) mMaxBounds=Rect(0, 0 - 2880, 1920) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_90 mPopOverMode=0} suim:1 extflag:8 s.19710 fontWeightAdjustment=0}
+  mHasPermanentDpad=false
+  mTopFocusedDisplayId=0
+  imeInputTarget in display# 0 Window{73c60be u0 com.huawei.android.launcher/com.huawei.android.launcher.unihome.UniHomeLauncher}
+  imeControlTarget in display# 0 Window{73c60be u0 com.huawei.android.launcher/com.huawei.android.launcher.unihome.UniHomeLauncher}
+  mInTouchMode=true
+  mBlurEnabled=false
+  mLastDisplayFreezeDuration=+183ms due to Window{d477a66 u0 NotificationShade}
+  mLastWakeLockHoldingWindow=null mLastWakeLockObscuringWindow=Window{f2ca90e u0 com.android.systemui.HwImageWallpaper}
+  mHighResTaskSnapshotScale=1.0
+  SnapshotCache
+  mLruTaskIdList
+     mTaskIdMaxNum = 48
+
+  mHandler:
+    Handler (com.android.server.wm.WindowManagerService$H) {eccade5} @ 978411646
+      Looper (android.display, tid 22) {e4000ba}
+        (Total messages: 0, polling=true, quitting=false)
+WINDOW MANAGER TRACE (dumpsys window trace)
+Status: Disabled
+Log level: 1
+Buffer size: 2097152 bytes
+Buffer usage: 0 bytes
+Elements in the buffer: 0
+WINDOW MANAGER LOGGING (dumpsys window logging)
+ProtoLog status: Disabled
+Enabled log groups: 
+  Proto: TEST_GROUP WM_DEBUG_ADD_REMOVE WM_DEBUG_APP_TRANSITIONS WM_DEBUG_APP_TRANSITIONS_ANIM WM_DEBUG_BOOT WM_DEBUG_CONFIGURATION WM_DEBUG_CONTAINERS WM_DEBUG_DRAW WM_DEBUG_FOCUS WM_DEBUG_FOCUS_LIGHT WM_DEBUG_IME WM_DEBUG_IMMERSIVE WM_DEBUG_KEEP_SCREEN_ON WM_DEBUG_LOCKTASK WM_DEBUG_ORIENTATION WM_DEBUG_RECENTS_ANIMATIONS WM_DEBUG_REMOTE_ANIMATIONS WM_DEBUG_RESIZE WM_DEBUG_SCREEN_ON WM_DEBUG_STARTING_WINDOW WM_DEBUG_STATES WM_DEBUG_SWITCH WM_DEBUG_SYNC_ENGINE WM_DEBUG_TASKS WM_DEBUG_WINDOW_MOVEMENT WM_DEBUG_WINDOW_ORGANIZER WM_DEBUG_WINDOW_TRANSITIONS WM_ERROR WM_SHOW_SURFACE_ALLOC WM_SHOW_TRANSACTIONS
+  Logcat: WM_DEBUG_WINDOW_TRANSITIONS WM_ERROR
+Logging definitions loaded: 0
+WINDOW MANAGER HIGH REFRESH RATE BLACKLIST (dumpsys window refresh)
+High Refresh Rate Denylist
+  Packages:
+WINDOW MANAGER CONSTANTS (dumpsys window constants):
+  system_gesture_exclusion_log_debounce_millis=0
+  system_gesture_exclusion_limit_dp=200
+  system_gestures_excluded_by_pre_q_sticky_immersive=false
+

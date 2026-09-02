@@ -1,0 +1,13 @@
+﻿{"seq":1,"source":"APP","type":"START","eventTimeNs":2687680920226778,"payload":"sdk=31"}
+{"seq":2,"source":"audio","type":"AUDIO_START","eventTimeNs":2687707517010107,"payload":"state=1 recordingState=3"}
+{"seq":3,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687708575770003,"payload":"frames=16384 rc=0 framePosition=16638 audioNs=978803725857929 elapsedNs=2687708575649690 elapsed=1056671354"}
+{"seq":4,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687709591490836,"payload":"frames=32768 rc=0 framePosition=32958 audioNs=978804742054283 elapsedNs=2687709591450732 elapsed=2072423958"}
+{"seq":5,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687710609651773,"payload":"frames=49152 rc=0 framePosition=49278 audioNs=978805760286574 elapsedNs=2687710609620523 elapsed=3090590104"}
+{"seq":6,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687711635559586,"payload":"frames=65536 rc=0 framePosition=65598 audioNs=978806785889178 elapsedNs=2687711635430940 elapsed=4116411979"}
+{"seq":7,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687712671238752,"payload":"frames=81920 rc=0 framePosition=82238 audioNs=978807821491262 elapsedNs=2687712671207502 elapsed=5152176562"}
+{"seq":8,"source":"audio","type":"AUDIO_TIMESTAMP","eventTimeNs":2687713554968961,"payload":"frames=96256 rc=0 framePosition=96318 audioNs=978808705565741 elapsedNs=2687713554921565 elapsed=6035901041"}
+{"seq":9,"source":"audio","type":"AUDIO_STOP","eventTimeNs":2687713752980419,"payload":"timeNs=2687713752956981"}
+{"seq":10,"source":"human","type":"PAGE_CHANGE","eventTimeNs":2687713826991356,"payload":"page=2"}
+{"seq":11,"source":"agent","type":"FAKE_AGENT_ACTION","eventTimeNs":2687713959213231,"payload":"basedOnSeq=10 basedOnEventTime=2687713959189273 targetRevision=11"}
+{"seq":12,"source":"webview","type":"focus","eventTimeNs":2687714193432502,"payload":""}
+{"seq":13,"source":"webview","type":"selectionchange","eventTimeNs":2687714196243960,"payload":""}

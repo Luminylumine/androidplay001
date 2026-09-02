@@ -1,0 +1,688 @@
+﻿Current Input Method Manager state:
+  Input Methods: mMethodMapUpdateCount=7
+  InputMethod #0:
+    mId=com.iflytek.inputmethod.miui/.FlyIME mSettingsActivityName=com.iflytek.inputmethod.LauncherSettingsActivity mIsVrOnly=false mSupportsSwitchingToNextInputMethod=false mInlineSuggestionsEnabled=false mSuppressesSpellChecker=false mShowInInputMethodPicker=true
+    mIsDefaultResId=0x7f0c0009
+    Service:
+      priority=100 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+      ServiceInfo:
+        name=com.iflytek.inputmethod.miui.FlyIME
+        packageName=com.iflytek.inputmethod.miui
+        labelRes=0x0 nonLocalizedLabel=null icon=0x7f020000 banner=0x0
+        enabled=true exported=false directBootAware=false
+        permission=android.permission.BIND_INPUT_METHOD
+        flags=0x0
+        ApplicationInfo:
+          name=com.iflytek.inputmethod.FlyApp
+          packageName=com.iflytek.inputmethod.miui
+          labelRes=0x7f080000 nonLocalizedLabel=null icon=0x7f020000 banner=0x0
+          className=com.iflytek.inputmethod.FlyApp
+          processName=com.iflytek.inputmethod.miui
+          taskAffinity=com.iflytek.inputmethod.miui
+          uid=10254 flags=0x38a83e44 privateFlags=0xac000500 theme=0x7f090012
+          requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+          sourceDir=/data/app/~~QGof5Qdbb8hDVebIZIGD_A==/com.iflytek.inputmethod.miui-kZWaOF9ZYhZKyEfqKGesPA==/base.apk
+          seinfo=default:targetSdkVersion=31
+          seinfoUser=:complete
+          dataDir=/data/user/0/com.iflytek.inputmethod.miui
+          deviceProtectedDataDir=/data/user_de/0/com.iflytek.inputmethod.miui
+          credentialProtectedDataDir=/data/user/0/com.iflytek.inputmethod.miui
+          sharedLibraryFiles=[/system/framework/org.apache.http.legacy.jar]
+          enabled=true minSdkVersion=21 targetSdkVersion=33 versionCode=8168 targetSandboxVersion=1
+          supportsRtl=false
+          hwFlags=0x0
+          hw_extra_flags=0x0
+          fullBackupContent=true
+          crossProfile=false
+          HiddenApiEnforcementPolicy=2
+          usesNonSdkApi=false
+          allowsPlaybackCapture=true
+          nativeHeapZeroInitialized=0
+          forceDarkMode=2
+          hasAllowAudioPlaybackCaptureConfig=false
+  InputMethod #1:
+    mId=com.huawei.hiwrite/.ims.GlobalWritingIMS mSettingsActivityName=null mIsVrOnly=false mSupportsSwitchingToNextInputMethod=false mInlineSuggestionsEnabled=false mSuppressesSpellChecker=false mShowInInputMethodPicker=true
+    mIsDefaultResId=0x0
+    Service:
+      priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false
+      ServiceInfo:
+        name=com.huawei.hiwrite.ims.GlobalWritingIMS
+        packageName=com.huawei.hiwrite
+        enabled=true exported=true directBootAware=false
+        permission=android.permission.BIND_INPUT_METHOD
+        flags=0x0
+        ApplicationInfo:
+          name=com.huawei.hiwrite.GlobalWritingApplication
+          packageName=com.huawei.hiwrite
+          labelRes=0x7f10001e nonLocalizedLabel=null icon=0x7f0802a2 banner=0x0
+          className=com.huawei.hiwrite.GlobalWritingApplication
+          processName=com.huawei.hiwrite
+          taskAffinity=com.huawei.hiwrite
+          uid=10163 flags=0x20c83e45 privateFlags=0xac100800 theme=0x0
+          requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+          sourceDir=/hw_product/app/HiWrite/HiWrite.apk
+          resourceDirs=[]
+          overlayPaths=[]
+          seinfo=platform:targetSdkVersion=29
+          seinfoUser=:complete
+          dataDir=/data/user/0/com.huawei.hiwrite
+          deviceProtectedDataDir=/data/user_de/0/com.huawei.hiwrite
+          credentialProtectedDataDir=/data/user/0/com.huawei.hiwrite
+          sharedLibraryFiles=[/system/framework/android.test.base.jar, /hw_product/app/HwStylusFeature/base-master.apk, /hw_product/app/HwStylusFeature/PenKitRecg-master.apk]
+          enabled=true minSdkVersion=28 targetSdkVersion=29 versionCode=130000340 targetSandboxVersion=1
+          supportsRtl=true
+          hwFlags=0x0
+          hw_extra_flags=0x0
+          fullBackupContent=true
+          crossProfile=false
+          HiddenApiEnforcementPolicy=0
+          usesNonSdkApi=false
+          allowsPlaybackCapture=true
+          nativeHeapZeroInitialized=0
+          forceDarkMode=2
+          hasAllowAudioPlaybackCaptureConfig=false
+  InputMethod #2:
+    mId=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME mSettingsActivityName=com.appstore.view.activity.PrimaryActivity mIsVrOnly=false mSupportsSwitchingToNextInputMethod=false mInlineSuggestionsEnabled=false mSuppressesSpellChecker=false mShowInInputMethodPicker=true
+    mIsDefaultResId=0x7f05001d
+    Service:
+      priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false
+      ServiceInfo:
+        name=com.android.inputmethod.latin.LatinIME
+        packageName=com.huawei.ohos.inputmethod
+        labelRes=0x7f1202ab nonLocalizedLabel=null icon=0x0 banner=0x0
+        enabled=true exported=false directBootAware=true
+        permission=android.permission.BIND_INPUT_METHOD
+        flags=0x0
+        ApplicationInfo:
+          name=com.qisi.application.IMEApplication
+          packageName=com.huawei.ohos.inputmethod
+          labelRes=0x7f1202ab nonLocalizedLabel=null icon=0x7f0f0002 banner=0x0
+          className=com.qisi.application.IMEApplication
+          processName=com.huawei.ohos.inputmethod
+          taskAffinity=com.huawei.ohos.inputmethod
+          uid=10166 flags=0x30f83ec5 privateFlags=0x8c000908 theme=0x7f130017
+          requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+          sourceDir=/data/app/~~-YCZgOIFZLO7h_YOAL4Kdg==/com.huawei.ohos.inputmethod-x971UTiyY31rYELeNdNH6A==/base.apk
+          seinfo=default:privapp:targetSdkVersion=29
+          seinfoUser=:complete
+          dataDir=/data/user/0/com.huawei.ohos.inputmethod
+          deviceProtectedDataDir=/data/user_de/0/com.huawei.ohos.inputmethod
+          credentialProtectedDataDir=/data/user/0/com.huawei.ohos.inputmethod
+          sharedLibraryFiles=[/system/framework/android.test.base.jar]
+          enabled=true minSdkVersion=29 targetSdkVersion=29 versionCode=10402302 targetSandboxVersion=1
+          supportsRtl=true
+          hwFlags=0x0
+          hw_extra_flags=0x0
+          fullBackupContent=true
+          crossProfile=false
+          networkSecurityConfigRes=0x7f1500ed
+          HiddenApiEnforcementPolicy=2
+          usesNonSdkApi=false
+          allowsPlaybackCapture=true
+          nativeHeapZeroInitialized=0
+          forceDarkMode=2
+          hasAllowAudioPlaybackCaptureConfig=false
+  InputMethod #3:
+    mId=com.huawei.scanner/.previewtextscan.inputmethod.VisionInputMethodService mSettingsActivityName=null mIsVrOnly=false mSupportsSwitchingToNextInputMethod=false mInlineSuggestionsEnabled=false mSuppressesSpellChecker=false mShowInInputMethodPicker=true
+    mIsDefaultResId=0x0
+    Service:
+      priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false
+      ServiceInfo:
+        name=com.huawei.scanner.previewtextscan.inputmethod.VisionInputMethodService
+        packageName=com.huawei.scanner
+        labelRes=0x0 nonLocalizedLabel=鏅烘収瑙嗚 icon=0x0 banner=0x0
+        processName=com.huawei.scanner:inputmethod
+        enabled=true exported=true directBootAware=false
+        permission=android.permission.BIND_INPUT_METHOD
+        flags=0x0
+        ApplicationInfo:
+          name=com.huawei.scanner.application.ScannerApplication
+          packageName=com.huawei.scanner
+          labelRes=0x7f130043 nonLocalizedLabel=null icon=0x7f0f0002 banner=0x0
+          className=com.huawei.scanner.application.ScannerApplication
+          processName=com.huawei.scanner
+          taskAffinity=com.huawei.scanner
+          uid=10031 flags=0x28c83e45 privateFlags=0xa4000908 theme=0x2060008
+          requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+          sourceDir=/system/priv-app/HiVision/HiVision.apk
+          seinfo=media:privapp:targetSdkVersion=28
+          seinfoUser=:complete
+          dataDir=/data/user/0/com.huawei.scanner
+          deviceProtectedDataDir=/data/user_de/0/com.huawei.scanner
+          credentialProtectedDataDir=/data/user/0/com.huawei.scanner
+          sharedLibraryFiles=[/system/framework/android.test.base.jar, /system/framework/android.hidl.manager-V1.0-java.jar, /system/framework/android.hidl.base-V1.0-java.jar, /system/framework/org.apache.http.legacy.jar]
+          enabled=true minSdkVersion=28 targetSdkVersion=28 versionCode=940003328 targetSandboxVersion=1
+          uiOptions=0x1
+          supportsRtl=true
+          hwFlags=0x0
+          hw_extra_flags=0x0
+          fullBackupContent=true
+          crossProfile=false
+          HiddenApiEnforcementPolicy=2
+          usesNonSdkApi=false
+          allowsPlaybackCapture=false
+          nativeHeapZeroInitialized=0
+          forceDarkMode=2
+          hasAllowAudioPlaybackCaptureConfig=false
+  Clients:
+  Client ClientState{c482234 uid=10159 pid=6293 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@d5a985d
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@eed65d2
+    sessionRequested=false
+    curSession=null
+  Client ClientState{a49df05 uid=10106 pid=30148 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@bde5fd5
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@87e87bb
+    sessionRequested=false
+    curSession=null
+  Client ClientState{a767316 uid=1000 pid=25132 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@483e497
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@f988684
+    sessionRequested=false
+    curSession=null
+  Client ClientState{b05ae6d uid=1002 pid=15121 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@1deaaa2
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@f183333
+    sessionRequested=false
+    curSession=null
+  Client ClientState{95986f0 uid=1000 pid=2517 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@fdbc469
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@8a0ceee
+    sessionRequested=false
+    curSession=null
+  Client ClientState{3866c62 uid=10235 pid=20917 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@28686a3
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@55f2da0
+    sessionRequested=false
+    curSession=null
+  Client ClientState{829bf7d uid=10129 pid=10527 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@598cf8f
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@8e8221c
+    sessionRequested=false
+    curSession=null
+  Client ClientState{d4eebfa uid=10163 pid=20116 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@3dcd5ab
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@b634408
+    sessionRequested=false
+    curSession=null
+  Client ClientState{10f182e uid=1000 pid=1859 displayId=0}:
+    client=android.view.inputmethod.InputMethodManager$1@74715e7
+    inputContext=IInputConnectionWrapper{connection=android.view.inputmethod.BaseInputConnection@e2e97a1 finished=false mParentInputMethodManager.isActive()=false mServedView=null}
+    sessionRequested=false
+    curSession=null
+  Client ClientState{b6aeb7a uid=10074 pid=2546 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@f68e4f6
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@38fcdc6
+    sessionRequested=false
+    curSession=null
+  Client ClientState{fded76d uid=10339 pid=19448 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@ad082ad
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@4d4cf9e
+    sessionRequested=false
+    curSession=null
+  Client ClientState{e57f4bc uid=10067 pid=20918 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@2064a4c
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@a18fa95
+    sessionRequested=false
+    curSession=null
+  Client ClientState{8619aea uid=10360 pid=29901 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@bfb80f5
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@32d5d59
+    sessionRequested=false
+    curSession=SessionState{uid 10360 pid 29901 method 8980d1e session ff0e9ff channel ClientState{8619aea uid=10360 pid=29901 displayId=0} (server)}
+  Client ClientState{b227f9b uid=10088 pid=27597 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@d73bf38
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@bdbab11
+    sessionRequested=false
+    curSession=null
+  Client ClientState{acd3476 uid=10166 pid=14020 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@89f7a77
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@24196e4
+    sessionRequested=false
+    curSession=null
+  Client ClientState{a3ee74d uid=10003 pid=11955 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@9d02202
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@7874713
+    sessionRequested=false
+    curSession=null
+  Client ClientState{7f33d50 uid=1000 pid=2483 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@b1fab49
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@6225c4e
+    sessionRequested=false
+    curSession=null
+  Client ClientState{715416f uid=10069 pid=2903 displayId=0}:
+    client=com.android.internal.view.IInputMethodClient$Stub$Proxy@8d6de7c
+    inputContext=com.android.internal.view.IInputContext$Stub$Proxy@b2eb305
+    sessionRequested=false
+    curSession=null
+  mCurMethodId=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME
+  mCurClient=ClientState{8619aea uid=10360 pid=29901 displayId=0} mCurSeq=9344
+  mCurPerceptible=false
+  mCurFocusedWindow=android.os.BinderProxy@a152b2b softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE client=ClientState{8619aea uid=10360 pid=29901 displayId=0}
+  mCurId=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME mHaveConnection=true mBoundToMethod=true mVisibleBound=false
+  mCurToken=android.os.Binder@871f182
+  mCurTokenDisplayId=0
+  mCurHostInputToken=null
+  mCurIntent=Intent { act=android.view.InputMethod cmp=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME (has extras) }
+  mCurMethod=com.android.internal.view.IInputMethod$Stub$Proxy@8980d1e
+  mEnabledSession=SessionState{uid 10360 pid 29901 method 8980d1e session ff0e9ff channel ClientState{8619aea uid=10360 pid=29901 displayId=0} (server)}
+  mShowRequested=false mShowExplicitlyRequested=false mShowForced=false mInputShown=false
+  mInFullscreenMode=false
+  mSystemReady=true mInteractive=true
+  mSettingsObserver=SettingsObserver{mUserId=0 mRegistered=true mLastEnabled=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME:com.huawei.scanner/.previewtextscan.inputmethod.VisionInputMethodService}
+  mImeHiddenByDisplayPolicy=false
+  mSwitchingController:
+    mSwitchingAwareRotationList:
+    mSwitchingUnawareRotationList:
+      rank=0 item=ImeSubtypeListItem{mImeName=灏忚壓杈撳叆娉?mSubtypeName=null mSubtypeId=0 mIsSystemLocale=false mIsSystemLanguage=false}
+  mSettings:
+    mCurrentUserId=0
+    mCurrentProfileIds=[0]
+    mCopyOnWrite=false
+    mEnabledInputMethodsStrCache=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME:com.huawei.scanner/.previewtextscan.inputmethod.VisionInputMethodService
+  mStartInputHistory:
+   StartInput #7732:
+    time=2026-09-02 18:58:35.175 (timestamp=977377874) reason=SESSION_CREATED_BY_IME restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9311
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7733:
+    time=2026-09-02 18:58:40.466 (timestamp=977383165) reason=CHECK_FOCUS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9312
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x8001 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7734:
+    time=2026-09-02 18:58:44.979 (timestamp=977387678) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@eafe03d [com.microsoft.emmx] targetUserId=0 targetDisplayId=0 clientBindSeq=9313
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x12000000 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7735:
+    time=2026-09-02 18:59:33.495 (timestamp=977436195) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9314
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7736:
+    time=2026-09-02 18:59:34.101 (timestamp=977436800) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9315
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7737:
+    time=2026-09-02 18:59:42.735 (timestamp=977445434) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@6c1ea6 [com.microsoft.emmx] targetUserId=0 targetDisplayId=0 clientBindSeq=9316
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x12000000 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7738:
+    time=2026-09-02 18:59:45.126 (timestamp=977447825) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@6c1ea6 [com.microsoft.emmx] targetUserId=0 targetDisplayId=0 clientBindSeq=9317
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x12000000 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7739:
+    time=2026-09-02 18:59:57.776 (timestamp=977460475) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@6c1ea6 [com.microsoft.emmx] targetUserId=0 targetDisplayId=0 clientBindSeq=9318
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x12000000 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7740:
+    time=2026-09-02 19:00:03.589 (timestamp=977466288) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9319
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7741:
+    time=2026-09-02 19:00:23.782 (timestamp=977486481) reason=CHECK_FOCUS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9320
+    softInputMode=STATE_UNCHANGED|ADJUST_UNSPECIFIED
+    inputType=0x80091 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7742:
+    time=2026-09-02 19:00:30.479 (timestamp=977493178) reason=APP_CALLED_RESTART_INPUT_API restarting=true
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9321
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7743:
+    time=2026-09-02 19:00:52.194 (timestamp=977514893) reason=APP_CALLED_RESTART_INPUT_API restarting=true
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9322
+    softInputMode=STATE_UNCHANGED|ADJUST_UNSPECIFIED
+    inputType=0x80091 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7744:
+    time=2026-09-02 19:01:24.588 (timestamp=977547287) reason=DEACTIVATED_BY_IMMS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9323
+    softInputMode=STATE_UNCHANGED|ADJUST_UNSPECIFIED
+    inputType=0x80091 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7745:
+    time=2026-09-02 19:01:24.594 (timestamp=977547293) reason=ACTIVATED_BY_IMMS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9324
+    softInputMode=STATE_UNCHANGED|ADJUST_UNSPECIFIED
+    inputType=0x80091 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7746:
+    time=2026-09-02 19:04:04.327 (timestamp=977643459) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9325
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7747:
+    time=2026-09-02 19:04:25.786 (timestamp=977664918) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9326
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7748:
+    time=2026-09-02 19:04:27.381 (timestamp=977666512) reason=CHECK_FOCUS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9327
+    softInputMode=STATE_UNCHANGED|ADJUST_UNSPECIFIED
+    inputType=0x80091 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7749:
+    time=2026-09-02 19:04:35.967 (timestamp=977675099) reason=APP_CALLED_RESTART_INPUT_API restarting=true
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9328
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7750:
+    time=2026-09-02 19:04:40.091 (timestamp=977679223) reason=APP_CALLED_RESTART_INPUT_API restarting=true
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9329
+    softInputMode=STATE_UNCHANGED|ADJUST_UNSPECIFIED
+    inputType=0x80081 imeOptions=0x2000006 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7751:
+    time=2026-09-02 19:04:50.113 (timestamp=977689245) reason=APP_CALLED_RESTART_INPUT_API restarting=true
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@78bffb5 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9330
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0x1 fieldName=null actionId=0 actionLabel=null
+   StartInput #7752:
+    time=2026-09-02 19:06:54.610 (timestamp=977813742) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9331
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7753:
+    time=2026-09-02 19:06:58.254 (timestamp=977817386) reason=DEACTIVATED_BY_IMMS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9332
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7754:
+    time=2026-09-02 19:39:14.828 (timestamp=978319034) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9333
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7755:
+    time=2026-09-02 19:39:41.925 (timestamp=978346131) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@f76baa8 [com.android.systemui] targetUserId=0 targetDisplayId=0 clientBindSeq=9334
+    softInputMode=STATE_UNSPECIFIED|ADJUST_PAN
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7756:
+    time=2026-09-02 19:39:50.970 (timestamp=978355176) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9335
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7757:
+    time=2026-09-02 19:40:32.212 (timestamp=978396418) reason=DEACTIVATED_BY_IMMS restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9336
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7758:
+    time=2026-09-02 19:42:43.759 (timestamp=978527965) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9337
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7759:
+    time=2026-09-02 19:44:24.619 (timestamp=978628825) reason=WINDOW_FOCUS_GAIN restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@1663b79 [com.huawei.android.launcher] targetUserId=0 targetDisplayId=0 clientBindSeq=9338
+    softInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7760:
+    time=2026-09-02 19:44:31.676 (timestamp=978635883) reason=SESSION_CREATED_BY_IME restarting=false
+    imeToken=android.os.Binder@4a455e0 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@989b580 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9339
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7761:
+    time=2026-09-02 19:44:44.216 (timestamp=978648422) reason=SESSION_CREATED_BY_IME restarting=false
+    imeToken=android.os.Binder@d5d2822 [com.huawei.hiwrite/.ims.GlobalWritingIMS] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@989b580 [com.carriez.flutter_hbb] targetUserId=0 targetDisplayId=0 clientBindSeq=9341
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7762:
+    time=2026-09-02 19:44:58.253 (timestamp=978662459) reason=SESSION_CREATED_BY_IME restarting=false
+    imeToken=android.os.Binder@d5d2822 [com.huawei.hiwrite/.ims.GlobalWritingIMS] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@a152b2b [com.androidplay.phase0probe] targetUserId=0 targetDisplayId=0 clientBindSeq=9342
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+   StartInput #7763:
+    time=2026-09-02 19:45:08.898 (timestamp=978673104) reason=SESSION_CREATED_BY_IME restarting=false
+    imeToken=android.os.Binder@871f182 [com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME] imeUserId=0 imeDisplayId=0
+    targetWin=android.os.BinderProxy@a152b2b [com.androidplay.phase0probe] targetUserId=0 targetDisplayId=0 clientBindSeq=9344
+    softInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+    inputType=0x0 imeOptions=0x0 fieldId=0xffffffff fieldName=null actionId=0 actionLabel=null
+  mSoftInputShowHideHistory:
+   SoftInputShowHideHistory #1135:
+    time=2026-09-02 18:54:26.506 (timestamp=977129205)
+    reason=SHOW_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1136:
+    time=2026-09-02 18:54:27.466 (timestamp=977130165)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1137:
+    time=2026-09-02 18:54:27.470 (timestamp=977130169)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1138:
+    time=2026-09-02 18:54:27.473 (timestamp=977130172)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1139:
+    time=2026-09-02 18:54:27.486 (timestamp=977130185)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=0 privateImeOptions=null fieldId (viewId)=2130777059
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1140:
+    time=2026-09-02 18:54:27.625 (timestamp=977130324)
+    reason=HIDE_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=0 privateImeOptions=null fieldId (viewId)=2130777059
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1141:
+    time=2026-09-02 18:54:28.923 (timestamp=977131622)
+    reason=SHOW_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1142:
+    time=2026-09-02 18:54:28.925 (timestamp=977131624)
+    reason=SHOW_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1143:
+    time=2026-09-02 18:54:32.313 (timestamp=977135012)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1144:
+    time=2026-09-02 18:54:32.316 (timestamp=977135015)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1145:
+    time=2026-09-02 18:54:32.319 (timestamp=977135018)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=524305 privateImeOptions=restrictDirectWritingArea=true fieldId (viewId)=2130777765
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1146:
+    time=2026-09-02 18:54:32.331 (timestamp=977135030)
+    reason=ATTACH_NEW_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=0 privateImeOptions=null fieldId (viewId)=2130777625
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1147:
+    time=2026-09-02 18:54:32.475 (timestamp=977135174)
+    reason=HIDE_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=0 privateImeOptions=null fieldId (viewId)=2130777625
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE
+   SoftInputShowHideHistory #1148:
+    time=2026-09-02 18:58:40.476 (timestamp=977383175)
+    reason=SHOW_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{84e818f uid=10235 pid=20920 displayId=0}
+    focusedWindowName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    requestWindowName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    imeControlTargetName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    imeTargetNameFromWm=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    editorInfo:  inputType=32769 privateImeOptions=null fieldId (viewId)=1
+    focusedWindowSoftInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+   SoftInputShowHideHistory #1149:
+    time=2026-09-02 18:58:40.483 (timestamp=977383182)
+    reason=SHOW_SOFT_INPUT inFullscreenMode=false
+    requestClient=ClientState{84e818f uid=10235 pid=20920 displayId=0}
+    focusedWindowName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    requestWindowName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    imeControlTargetName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    imeTargetNameFromWm=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    editorInfo:  inputType=32769 privateImeOptions=null fieldId (viewId)=1
+    focusedWindowSoftInputMode=STATE_UNSPECIFIED|ADJUST_RESIZE
+   SoftInputShowHideHistory #1150:
+    time=2026-09-02 18:58:44.978 (timestamp=977387677)
+    reason=HIDE_ALWAYS_HIDDEN_STATE inFullscreenMode=false
+    requestClient=ClientState{2cd7b15 uid=10346 pid=20916 displayId=0}
+    focusedWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    requestWindowName=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    imeControlTargetName=983364a com.carriez.flutter_hbb/com.carriez.flutter_hbb.MainActivity
+    imeTargetNameFromWm=3634032 com.microsoft.emmx/com.microsoft.ruby.Main
+    editorInfo:  inputType=32769 privateImeOptions=null fieldId (viewId)=1
+    focusedWindowSoftInputMode=STATE_ALWAYS_HIDDEN|ADJUST_RESIZE|IS_FORWARD_NAVIGATION
+ 
+Input method client state for android.view.inputmethod.InputMethodManager@ac74714:
+  mService=com.android.internal.view.IInputMethodManager$Stub$Proxy@48127f3
+  mMainLooper=Looper (main, tid 1) {f0948f3}
+  mIInputContext=IInputConnectionWrapper{connection=android.view.inputmethod.BaseInputConnection@e1c3cb0 finished=false mParentInputMethodManager.isActive()=true mServedView=null}
+  mActive=true mRestartOnNextWindowFocus=true mBindSequence=9344 mCurId=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME
+  mFullscreenMode=false
+  mCurMethod=com.android.internal.view.IInputMethodSession$Stub$Proxy@ca3a729
+  mCurRootView=android.view.ViewRootImpl@33ec23
+  mServedView=DecorView@c8d3cdb[MainActivity]
+  mNextServedView=DecorView@c8d3cdb[MainActivity]
+  mServedConnecting=false
+  mCurrentTextBoxAttribute:
+    inputType=0x0 imeOptions=0x0 privateImeOptions=null
+    actionLabel=null actionId=0
+    initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0
+    hintText=null label=null
+    packageName=com.androidplay.phase0probe autofillId=0 fieldId=-1 fieldName=null
+    extras=null
+    hintLocales=null
+    contentMimeTypes=null
+  mServedInputConnectionWrapper=null
+  mCompletions=null
+  mCursorRect=Rect(0, 0 - 0, 0)
+  mCursorSelStart=0 mCursorSelEnd=0 mCursorCandStart=0 mCursorCandEnd=0
+ 
+Input method service state for com.android.inputmethod.latin.LatinIME@3b0d80b:
+  mViewsCreated=false
+  mDecorViewVisible=false mDecorViewWasVisible=false mWindowVisible=false mInShowWindow=false
+  Configuration={1.0 ?mcc?mnc [zh_CN_#Hans] ldltr sw960dp w1440dp h928dp 320dpi xlrg hdr widecg land night finger qwerty/v/v dpad/v winConfig={ mBounds=Rect(0, 0 - 2880, 1920) mAppBounds=Rect(0, 0 - 2880, 1920) mMaxBounds=Rect(0, 0 - 2880, 1920) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=off mRotation=ROTATION_90 mPopOverMode=0} suim:1 extflag:8 s.19765 fontWeightAdjustment=0}
+  mToken=android.os.BinderProxy@dc10f8a
+  mInputBinding=InputBinding{android.os.BinderProxy@f2cc78d / uid 10360 / pid 29901}
+  mInputConnection=InputConnectionWrapper{idHash=#eec1d42 mMissingMethods=}
+  mStartedInputConnection=null
+  mInputStarted=true mInputViewStarted=false mCandidatesViewStarted=false
+  mInputEditorInfo:
+    inputType=0x0 imeOptions=0x0 privateImeOptions=null
+    actionLabel=null actionId=0
+    initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0
+    hintText=null label=null
+    packageName=com.androidplay.phase0probe autofillId=0 fieldId=-1 fieldName=null
+    extras=null
+    hintLocales=null
+    contentMimeTypes=null
+  mShowInputRequested=false mLastShowInputRequested=false mShowInputFlags=0x0
+  mCandidatesVisibility=4 mFullscreenApplied=false mIsFullscreen=false mExtractViewHidden=false
+  mExtractedText: null
+  mExtractedToken=0
+  mIsInputViewShown=false mStatusIcon=0
+Last computed insets:
+  contentTopInsets=0 visibleTopInsets=0 touchableInsets=2 touchableRegion=SkRegion()
+ mSettingsObserver=SettingsObserver{mShowImeWithHardKeyboard=2}

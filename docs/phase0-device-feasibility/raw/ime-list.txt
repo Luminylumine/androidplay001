@@ -1,0 +1,81 @@
+﻿com.iflytek.inputmethod.miui/.FlyIME:
+  mId=com.iflytek.inputmethod.miui/.FlyIME mSettingsActivityName=com.iflytek.inputmethod.LauncherSettingsActivity mIsVrOnly=false mSupportsSwitchingToNextInputMethod=false mInlineSuggestionsEnabled=false mSuppressesSpellChecker=false mShowInInputMethodPicker=true
+  mIsDefaultResId=0x7f0c0009
+  Service:
+    priority=100 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+    ServiceInfo:
+      name=com.iflytek.inputmethod.miui.FlyIME
+      packageName=com.iflytek.inputmethod.miui
+      labelRes=0x0 nonLocalizedLabel=null icon=0x7f020000 banner=0x0
+      enabled=true exported=false directBootAware=false
+      permission=android.permission.BIND_INPUT_METHOD
+      flags=0x0
+      ApplicationInfo:
+        name=com.iflytek.inputmethod.FlyApp
+        packageName=com.iflytek.inputmethod.miui
+        labelRes=0x7f080000 nonLocalizedLabel=null icon=0x7f020000 banner=0x0
+        className=com.iflytek.inputmethod.FlyApp
+        processName=com.iflytek.inputmethod.miui
+        taskAffinity=com.iflytek.inputmethod.miui
+        uid=10254 flags=0x38a83e44 privateFlags=0xac000500 theme=0x7f090012
+        requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+        sourceDir=/data/app/~~QGof5Qdbb8hDVebIZIGD_A==/com.iflytek.inputmethod.miui-kZWaOF9ZYhZKyEfqKGesPA==/base.apk
+        seinfo=default:targetSdkVersion=31
+        seinfoUser=:complete
+        dataDir=/data/user/0/com.iflytek.inputmethod.miui
+        deviceProtectedDataDir=/data/user_de/0/com.iflytek.inputmethod.miui
+        credentialProtectedDataDir=/data/user/0/com.iflytek.inputmethod.miui
+        sharedLibraryFiles=[/system/framework/org.apache.http.legacy.jar]
+        enabled=true minSdkVersion=21 targetSdkVersion=33 versionCode=8168 targetSandboxVersion=1
+        supportsRtl=false
+        hwFlags=0x0
+        hw_extra_flags=0x0
+        fullBackupContent=true
+        crossProfile=false
+        HiddenApiEnforcementPolicy=2
+        usesNonSdkApi=false
+        allowsPlaybackCapture=true
+        nativeHeapZeroInitialized=0
+        forceDarkMode=2
+        hasAllowAudioPlaybackCaptureConfig=false
+com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME:
+  mId=com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME mSettingsActivityName=com.appstore.view.activity.PrimaryActivity mIsVrOnly=false mSupportsSwitchingToNextInputMethod=false mInlineSuggestionsEnabled=false mSuppressesSpellChecker=false mShowInInputMethodPicker=true
+  mIsDefaultResId=0x7f05001d
+  Service:
+    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false
+    ServiceInfo:
+      name=com.android.inputmethod.latin.LatinIME
+      packageName=com.huawei.ohos.inputmethod
+      labelRes=0x7f1202ab nonLocalizedLabel=null icon=0x0 banner=0x0
+      enabled=true exported=false directBootAware=true
+      permission=android.permission.BIND_INPUT_METHOD
+      flags=0x0
+      ApplicationInfo:
+        name=com.qisi.application.IMEApplication
+        packageName=com.huawei.ohos.inputmethod
+        labelRes=0x7f1202ab nonLocalizedLabel=null icon=0x7f0f0002 banner=0x0
+        className=com.qisi.application.IMEApplication
+        processName=com.huawei.ohos.inputmethod
+        taskAffinity=com.huawei.ohos.inputmethod
+        uid=10166 flags=0x30f83ec5 privateFlags=0x8c000908 theme=0x7f130017
+        requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+        sourceDir=/data/app/~~-YCZgOIFZLO7h_YOAL4Kdg==/com.huawei.ohos.inputmethod-x971UTiyY31rYELeNdNH6A==/base.apk
+        seinfo=default:privapp:targetSdkVersion=29
+        seinfoUser=:complete
+        dataDir=/data/user/0/com.huawei.ohos.inputmethod
+        deviceProtectedDataDir=/data/user_de/0/com.huawei.ohos.inputmethod
+        credentialProtectedDataDir=/data/user/0/com.huawei.ohos.inputmethod
+        sharedLibraryFiles=[/system/framework/android.test.base.jar]
+        enabled=true minSdkVersion=29 targetSdkVersion=29 versionCode=10402302 targetSandboxVersion=1
+        supportsRtl=true
+        hwFlags=0x0
+        hw_extra_flags=0x0
+        fullBackupContent=true
+        crossProfile=false
+        networkSecurityConfigRes=0x7f1500ed
+        HiddenApiEnforcementPolicy=2
+        usesNonSdkApi=false
+        allowsPlaybackCapture=true
+        nativeHeapZeroInitialized=0
+        forceDarkMode=2
+        hasAllowAudioPlaybackCaptureConfig=false

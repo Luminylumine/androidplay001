@@ -1,0 +1,3 @@
+﻿List of devices attached
+26H0223C22000213       device product:PCE-W30 model:PCE_W30 device:HWPCE-L transport_id:12
+

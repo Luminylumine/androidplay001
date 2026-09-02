@@ -1,0 +1,1 @@
+﻿com.huawei.ohos.inputmethod/com.android.inputmethod.latin.LatinIME

@@ -1,0 +1,502 @@
+﻿--------- beginning of main
+09-02 19:45:10.916  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.917  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+--------- beginning of system
+09-02 19:45:10.918  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.918  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.918  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.918  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.919  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.920  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.920  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.920  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.921  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.922  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.922  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.923  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.923  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.923  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.924  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.924  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.924  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.926  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.926  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.927  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.927  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.927  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.927  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.929  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.930  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.930  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.931  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.931  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.932  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.932  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.932  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.932  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.934  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.935  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.935  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.936  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.936  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.937  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.937  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.938  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.938  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.938  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.939  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.939  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.940  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.940  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.940  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.941  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.941  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.942  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.942  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.943  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.943  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.943  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.944  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.944  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.944  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.945  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.945  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.945  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.946  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.946  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.946  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.947  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.947  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.947  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.948  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.948  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.948  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.949  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.949  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.949  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.950  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.950  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.950  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.950  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.951  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.951  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.951  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.951  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.951  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.952  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.952  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.952  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.952  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.953  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.953  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.953  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.953  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.954  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.954  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.954  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.954  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.954  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.955  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.955  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.955  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.955  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.955  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.956  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.956  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.956  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.956  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.956  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.956  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.957  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.957  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.957  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.957  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.958  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.958  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.958  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.958  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.958  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.959  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.959  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.959  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.959  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.959  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.959  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.960  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.960  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.960  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.960  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.960  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.961  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.961  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.961  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.961  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.961  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.962  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.962  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.962  2483  2654 D HwCommBoosterService: reportBoosterPara enter
+09-02 19:45:10.962  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.962  2483  2654 D HwCommBoosterManager: reportBoosterPara enter
+09-02 19:45:10.962  2483  2654 D HwCommBoosterManager: pluginId: 2
+09-02 19:45:10.962  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.962  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.962  2483  2951 D HwCommBoosterManager: handleBoosterMessageSendModuleDataToPlugin enter
+09-02 19:45:10.962  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.962  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.963  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.963  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.963  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.963  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.963  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.964  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.964  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.964  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.964  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.964  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.964  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.965  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.965  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.965  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.965  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.965  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.966  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.966  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.966  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.966  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.966  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.966  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.967  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.967  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.967  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.967  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.967  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.967  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.967  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.968  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.968  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.968  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.968  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.968  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.968  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.968  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.968  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.969  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.969  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.969  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.969  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.969  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.969  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.969  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.969  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.970  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.970  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.970  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:10.970  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:10.970  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:10.970  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.029  2483  4182 I Booster_Qoe: Ada,index:8,NisPsSlow:0,NProba:312,rsrp(rssi):-44,rsrq(noise):-90,rtt(chload):364,BFH(uldelay):1,BFC(rtt):0 Real:0,0,0,0,0
+09-02 19:45:11.029  2483  4182 I Booster_Qoe: Ada,index:2,NisPsSlow:0,NProba:458,rsrp(rssi):-44,rsrq(noise):-90,rtt(chload):364,BFH(uldelay):1,BFC(rtt):375 Real:0,0,375,0,0
+09-02 19:45:11.029  2483  2951 D BoosterUtil: convertSubIdToSlotId, subId invalid: -1
+09-02 19:45:11.030  2483  2951 D BoosterUtil: getDefaultDataSlotId failed, invalid slotId:-1, subId:-1
+09-02 19:45:11.031  2483  2951 E Booster_BroadcastProxy: [isDebugModemEnabled]get package info fail.
+09-02 19:45:11.034  1859  2178 I WiFi_PRO_WifiProStateMachine: APP_SERVICE_QOE_NOTIFY Qoe info 10360,4,0,312,1,2,4,0,458,487500,573500,11,10,0,0,1,0 CID 2 mMasterWifiRssi -44 mMasterCardAmbr 1048576 mSlaveCardAmbr 1048576
+09-02 19:45:11.034  1859  2178 V HwWifiServiceFactory: get AllImpl object = com.android.server.wifi.HwWifiServiceFactoryImpl@b886b50
+09-02 19:45:11.035  1859  2178 I HwWifiProServiceProxy: ctrlHwWifiNetwork pkgName: WIFIPRO_SERVICE interfaceId: 9
+09-02 19:45:11.035  1859  2178 I WiFi_PRO_WifiProStateMachine: isWifi2WifiProcess = false, mIsNeedIgnoreQoeUpdate = false, mIsAppInBlacklist = false, mIsAppInBlacklistFullScreen = false, mIsWiFiNoInternet false, screen on = true, full screen = false, isLandscapeMode = true, mNotifyWifiLinkPoorReason = -1
+09-02 19:45:11.035  1859  2178 I WiFi_PRO_WifiProStateMachine: mChannelQoeBadCnt = 0, mAppQoeBadCnt = 0, mNetworkSlowReason = 0, mNetworkSlowChannelBadCnt = 0
+09-02 19:45:11.035  1859  2178 V HwWifiServiceFactory: get AllImpl object = com.android.server.wifi.HwWifiServiceFactoryImpl@b886b50
+09-02 19:45:11.035  1859  2178 E WiFi_PROHumanFactorRecommend: isEconomicTrafficUser, invalid slotId=-1
+09-02 19:45:11.056  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.057  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.058  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.059  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.059  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.060  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.060  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.061  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.062  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.062  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.063  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.063  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.064  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.064  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.065  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.065  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.066  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.066  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.067  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.067  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.068  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.072  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.073  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.073  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.077  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.078  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.078  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.080  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.081  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.081  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.084  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.085  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.085  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.086  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.086  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.087  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.088  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.089  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.090  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.090  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.091  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.091  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.092  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.092  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.093  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.093  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.094  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.094  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.095  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.095  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.096  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.097  1859  2186 I WifiNl80211Manager: Noise: -90, Snr: 39, Chload: 364, rssi: -44, txBitrate: 487, rxBitrate: 573, frequency: 5180, UlDelay: 1, currentTxBytes: 890244, currentTxPackets: 4843, currentTxFailed: 0, currentRxBytes: 1852888, currentRxPackets: 3924
+09-02 19:45:11.098  1859  2183 I WiFi_PRO: MSG_RETURN_AP_CURRY_RSSI rssi = -44
+09-02 19:45:11.098  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.098  1859  2183 I QosMonitor: queryRtt: rttType = 3
+09-02 19:45:11.098  1859  2183 I QosMonitor: call ctrlHwWifiNetwork
+09-02 19:45:11.098  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.099  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.099  1859  2178 I HwDualBandManager: handle2gApStrongWifiRssiChange
+09-02 19:45:11.099  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.099  1859  2183 I QosMonitor: postEventFromNative: msg=100,arg1=4,arg2=10
+09-02 19:45:11.099  1859  2178 V HwWifiServiceFactory: get AllImpl object = com.android.server.wifi.HwWifiServiceFactoryImpl@b886b50
+09-02 19:45:11.100  1859  2186 I HuaweiWifiWatchdogStateMachine: POta txb txg rxg:0, 4, 0. Lr =0% Totpkt=4
+09-02 19:45:11.100  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.100  1859  2183 I QosMonitor: call ctrlHwWifiNetwork
+09-02 19:45:11.101  1859  2183 I QosMonitor: postEventFromNative: msg=100,arg1=0,arg2=10
+09-02 19:45:11.101  1859  2183 I MQoS    : rtt=3248,tcpTxPkts=11018188,tcpRxPkts=22200333
+09-02 19:45:11.101  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.101  1859  7258 I HwConnectivityServiceEx: set 1000, metered: false, value: false
+09-02 19:45:11.102  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.102  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.103  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.104  1859  2186 I HuaweiWifiWatchdogStateMachine: PTcp RTT:3248, rtt pkt=5, tcp_rx=8, tcp_tx=4, tcp_reTran=0, rtRate=0
+09-02 19:45:11.104   893  6391 I asd_in_fwk: L = -23.889465db, R = -23.889465db
+09-02 19:45:11.104  1859  2186 I HuaweiWifiWatchdogStateMachine: rssi bad, mrssi=-44 < TargetRssi=-46
+09-02 19:45:11.105  1859  2186 I HuaweiWifiWatchdogStateMachine: start computeQosLevel tcpRtt = 3248 ,rssi = -44 ,mBestSpeedInPeriod = 128
+09-02 19:45:11.105  1859  2186 I HuaweiWifiWatchdogStateMachine: smoothConsecutiveQosResults, currentQosLevel = 2
+09-02 19:45:11.105  1859  2183 I QosMonitor: resetRtt: rttType = 3
+09-02 19:45:11.105  1859  2183 I QosMonitor: call ctrlHwWifiNetwork
+09-02 19:45:11.105  1859  7258 I MQoS    : QOS_level:0(0),wifi-link;SIM error;use level-0
+09-02 19:45:11.106  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.106  1859  7258 I MQoS    : skip-low-Level:0(0),wifi-link;SIM error;use level-0
+09-02 19:45:11.106  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.107  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.107  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.108  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.108  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.109  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.109  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.110  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.110  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.111  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.111  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.112  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.112  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.113  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.113  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.114  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.114  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.114  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.115  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.115  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.116  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.116  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.117  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.118  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.118  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.119  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.119  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.119  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.119  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.120  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.121  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.121  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.122  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.123  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.123  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.124  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.124  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.124  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.125  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.125  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.125  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.127  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.127  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.128  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.128  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.128  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.128  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.130  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.131  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.131  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.132  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.132  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.132  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.133  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.133  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.133  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.136  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.137  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.137  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.137  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.137  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.138  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.138  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.139  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.139  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.140  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.141  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.141  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.141  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.141  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.142  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.142  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.142  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.143  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.143  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.143  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.143  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.144  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.144  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.144  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.145  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.146  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.146  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.146  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.146  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.147  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.147  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.147  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.147  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.148  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.149  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.149  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.149  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.149  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.150  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.150  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.150  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.150  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.151  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.151  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.151  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.151  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.151  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.152  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.152  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.152  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.152  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.153  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.153  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.153  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.153  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.154  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.154  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.154  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.154  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.155  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.155  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.155  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.155  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.156  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.156  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.156  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.156  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.156  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.157  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.157  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.157  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.157  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.158  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.158  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.158  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.158  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.159  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.159  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.159  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.159  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.160  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.160  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.160  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.160  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.160  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.161  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.161  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.161  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.161  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.162  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.162  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.162  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.162  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.163  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.163  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.163  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.163  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.164  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.164  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.164  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.164  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.165  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.165  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.165  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.165  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.165  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.166  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.166  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.166  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.166  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.167  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.167  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.167  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.167  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.168  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.168  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.168  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.168  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.168  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.169  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.169  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.169  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.169  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.170  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.170  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.170  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.170  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.171  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.171  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.171  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.171  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.171  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.172  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.172  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.172  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.172  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.173  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.173  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.173  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.173  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.174  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.174  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.174  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.174  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.174  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.175  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.175  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.175  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.175  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.175  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.175  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.176  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.176  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
+09-02 19:45:11.176  2546 19975 I HwCtrlCtr: ContinuityServiceUtil:=>pluginInit
+09-02 19:45:11.176  1859  1945 W ActivityManager: Unable to start service Intent { cmp=com.huawei.controlcenter/.continuity.service.ContinuityService (has extras) } U=0: not found
+09-02 19:45:11.176  2546 19975 E HwCtrlCtr: ContinuityServiceUtil:=>pluginInit failed
