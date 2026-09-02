@@ -1,1 +1,0 @@
-parcelable android.location.GnssClock;
