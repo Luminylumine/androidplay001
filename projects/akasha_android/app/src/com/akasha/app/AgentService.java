@@ -127,6 +127,57 @@ public class AgentService extends Service {
 
     public static final LinkedList<ChatMsg> CHAT = new LinkedList<>();
 
+    /**
+     * Task 9 (FR-6): read-only event observation hook for the voice call
+     * bridge (TaskBridge). With zero listeners every fire* call is a no-op,
+     * so non-voice behavior is unchanged byte-for-byte.
+     */
+    public interface AgentEventListener {
+        void onSay(String text);                          // 整句（分句前）
+        void onAskUser(String question);
+        void onDone(boolean terminated, String message);
+        void onError(String code, String detail);
+    }
+
+    private static final java.util.List<AgentEventListener> AGENT_LISTENERS =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void addAgentListener(AgentEventListener l) {
+        if (l != null) AGENT_LISTENERS.add(l);
+    }
+
+    public static void removeAgentListener(AgentEventListener l) {
+        AGENT_LISTENERS.remove(l);
+    }
+
+    private static void fireAgentSay(String text) {
+        for (AgentEventListener l : AGENT_LISTENERS) {
+            try { l.onSay(text); }
+            catch (Throwable t) { CpLog.w("Akasha", "AgentEventListener.onSay: " + t); }
+        }
+    }
+
+    private static void fireAgentAskUser(String question) {
+        for (AgentEventListener l : AGENT_LISTENERS) {
+            try { l.onAskUser(question); }
+            catch (Throwable t) { CpLog.w("Akasha", "AgentEventListener.onAskUser: " + t); }
+        }
+    }
+
+    private static void fireAgentDone(boolean terminated, String message) {
+        for (AgentEventListener l : AGENT_LISTENERS) {
+            try { l.onDone(terminated, message); }
+            catch (Throwable t) { CpLog.w("Akasha", "AgentEventListener.onDone: " + t); }
+        }
+    }
+
+    private static void fireAgentError(String code, String detail) {
+        for (AgentEventListener l : AGENT_LISTENERS) {
+            try { l.onError(code, detail); }
+            catch (Throwable t) { CpLog.w("Akasha", "AgentEventListener.onError: " + t); }
+        }
+    }
+
     /** Steering note: applies to the currently running task from the next round on. */
     public static void addGuide(String text) {
         synchronized (GUIDE_NOTES) {
@@ -197,6 +248,8 @@ public class AgentService extends Service {
     private static SessionStore chatStore = null;
     /** Permission/prompt snapshot of the running task's agent (req 6/7). */
     private volatile ModelInfo runProfile = null;
+    /** Task 9 (FR-6): voice-call task — system prompt demands colloquial shorts. */
+    private volatile boolean voiceMode = false;
 
     public static void log(String s) {
         log(s, null);
@@ -289,7 +342,8 @@ public class AgentService extends Service {
             startTask(p.goal(), false, resolveBootSession(p), null);
         } else if (ACTION_RUN_GOAL.equals(act)) {
             startTask(intent.getStringExtra("text"), false,
-                    intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"));
+                    intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"),
+                    intent.getBooleanExtra("voiceMode", false));
         } else if (ACTION_INT.equals(act)) {
             startTask(intent.getStringExtra("text"), intent.getBooleanExtra("keep", false),
                     intent.getStringExtra("sessionId"), intent.getStringExtra("agentId"));
@@ -317,6 +371,12 @@ public class AgentService extends Service {
 
     /** Kill any running loop (via generation bump) and start a fresh task. */
     private void startTask(String goal, boolean keepHistory, String sessionId, String agentId) {
+        startTask(goal, keepHistory, sessionId, agentId, false);
+    }
+
+    /** startTask with voice-call mode (FR-6): prompt stays colloquial/short. */
+    private void startTask(String goal, boolean keepHistory, String sessionId, String agentId, boolean voice) {
+        voiceMode = voice;
         if (goal == null) goal = "";
         if (sessionId == null) sessionId = currentSessionId;
         if (agentId == null && sessionId != null && chatStore != null) {
@@ -677,6 +737,7 @@ public class AgentService extends Service {
             } catch (Exception e) {
                 String meta = metaJson("llm_error", null, null, "LLM 调用失败: " + e.getMessage());
                 log("LLM 调用失败: " + e.getMessage(), meta);
+                fireAgentError("LLM_ERROR", "LLM 调用失败: " + e.getMessage());
                 sleep(8000);
                 continue;
             }
@@ -723,6 +784,7 @@ public class AgentService extends Service {
                 }
                 for (String seg : splitSentences(said)) chat(ChatMsg.AGENT, seg);
                 notifyAgentMessage(said); // agent 走消息通知 (req 5)
+                fireAgentSay(said); // Task 9: 语音桥事件钩子
                 pushHistory(currentAgentId, maxRounds, content, said);
                 sleep(intervalMs);
                 continue;
@@ -744,6 +806,7 @@ public class AgentService extends Service {
                     CpLog.w("Akasha", "工具失败: " + tres.rawError());
                     log(tres.userHint() == null ? tres.llmHint() : tres.userHint(), meta);
                     if (tres.userHint() != null) chat(ChatMsg.AGENT, "⚠ " + tres.userHint());
+                    fireAgentError("TOOL_FAIL", tres.userHint() != null ? tres.userHint() : tres.rawError());
                     AutoExperienceWriter.get(this).onTaskRecovered(
                             currentAgentId, agentName(), currentSessionId,
                             "Tool error: " + tres.rawError(), "Will retry or use alternative approach");
@@ -768,6 +831,7 @@ public class AgentService extends Service {
                 }
                 log((term ? "任务终止: " : "任务完成: ") + msg);
                 updateNotif((term ? "任务终止: " : "任务完成: ") + msg, msg);
+                fireAgentDone(term, msg); // Task 9: 语音桥事件钩子
                 // 事件唤醒钩子: 任务结束/终止 (TimerWakeup「任务完成」事件)
                 try {
                     TimerEngine.onTaskDone(this, currentAgentId, currentSessionId, term, msg);
@@ -784,6 +848,7 @@ public class AgentService extends Service {
                 currentQuestion = a.question;
                 chat(ChatMsg.AGENT, "❓ 提问: " + a.question + "（请在底部输入框回答）");
                 updateNotif("Agent 提问: " + a.question, a.question);
+                fireAgentAskUser(a.question); // Task 9: 语音桥事件钩子
                 String answer = waitForAnswer(gen);
                 currentQuestion = null;
                 if (answer == null) return;
@@ -1504,6 +1569,10 @@ public class AgentService extends Service {
     private String buildSystemPrompt(String goal, String appList) {
         StringBuilder sb = new StringBuilder();
         sb.append("任务目标: ").append(goal.isEmpty() ? "（无明确目标，观察屏幕，输出 wait）" : goal).append("\n");
+        if (voiceMode) {
+            // FR-6: 语音通话模式专属约束；普通文本模式 prompt 不含此行
+            sb.append("语音通话模式: say 必须口语化短句，避免列表/markdown/超长句\n");
+        }
         synchronized (GUIDE_NOTES) {
             if (!GUIDE_NOTES.isEmpty()) {
                 sb.append("用户实时引导(必须优先遵循):\n");

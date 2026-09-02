@@ -453,6 +453,85 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="— 语音通话 —"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="#0a66c2"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="后端地址:"
+                android:textSize="13sp"/>
+
+            <EditText
+                android:id="@+id/etVoiceHost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="8dp"
+                android:hint="host:port"
+                android:inputType="textUri"
+                android:textSize="13sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="通话 Token:"
+                android:textSize="13sp"/>
+
+            <EditText
+                android:id="@+id/etVoiceToken"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="8dp"
+                android:hint="后端 config auth.token"
+                android:inputType="text"
+                android:textSize="13sp"/>
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cbVoiceTts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="通话中播报大脑语音"
+            android:textSize="13sp"/>
+
+        <Button
+            android:id="@+id/btnVoiceTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="13sp"
+            android:text="测试连接"/>
+
+        <TextView
+            android:id="@+id/tvVoiceTestResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="11sp"
+            android:textColor="#666666"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:textSize="11sp"
             android:textColor="#999999"

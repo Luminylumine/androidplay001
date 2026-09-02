@@ -36,7 +36,10 @@ public class SettingsPanel {
     private final boolean saveFinishes;
 
     private EditText etGoal, etUrl, etKey, etMax, etInterval, etHistory, etExpDays, etExpMax;
-    private Button btnKeyVis, btnTest, btnSave;
+    private EditText etVoiceHost, etVoiceToken;
+    private CheckBox cbVoiceTts;
+    private Button btnKeyVis, btnTest, btnSave, btnVoiceTest;
+    private TextView tvVoiceTestResult;
     private Spinner spModel;
     private CheckBox cbAutoStart;
     private TextView tvShellStatus, tvDhizukuStatus, tvShizukuStatus, tvShotStatus,
@@ -220,6 +223,34 @@ public class SettingsPanel {
             }
         });
 
+        // ---- 语音通话 (Task 8) ----
+        etVoiceHost = (EditText) root.findViewById(R.id.etVoiceHost);
+        etVoiceToken = (EditText) root.findViewById(R.id.etVoiceToken);
+        cbVoiceTts = (CheckBox) root.findViewById(R.id.cbVoiceTts);
+        btnVoiceTest = (Button) root.findViewById(R.id.btnVoiceTest);
+        tvVoiceTestResult = (TextView) root.findViewById(R.id.tvVoiceTestResult);
+
+        btnVoiceTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveVoiceFields();
+                final String host = prefs.voiceBackendHost();
+                tvVoiceTestResult.setText("正在测试 " + host + " ...");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String res = VoiceHealth.test(host);
+                        act.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvVoiceTestResult.setText(res);
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+
         onResume();
     }
 
@@ -284,6 +315,9 @@ public class SettingsPanel {
         etHistory.setText(String.valueOf(prefs.historyRounds()));
         etExpDays.setText(String.valueOf(prefs.expRetainDays()));
         etExpMax.setText(String.valueOf(prefs.expRetainMax()));
+        etVoiceHost.setText(prefs.voiceBackendHost());
+        etVoiceToken.setText(prefs.voiceToken());
+        cbVoiceTts.setChecked(prefs.voiceTtsOn());
     }
 
     private void saveFields() {
@@ -294,6 +328,15 @@ public class SettingsPanel {
         prefs.apiKey(etKey.getText().toString().trim());
         applyNums();
         prefs.autoStart(cbAutoStart.isChecked());
+        saveVoiceFields();
+    }
+
+    /** 语音通话字段单独保存（"测试连接"点击时也要先落盘）。 */
+    private void saveVoiceFields() {
+        String h = etVoiceHost.getText().toString().trim();
+        prefs.voiceBackendHost(h.isEmpty() ? Prefs.DEF_VOICE_HOST : h);
+        prefs.voiceToken(etVoiceToken.getText().toString().trim());
+        prefs.voiceTtsOn(cbVoiceTts.isChecked());
     }
 
     /** Apply model spinner + numeric fields to prefs (used before "test"). */

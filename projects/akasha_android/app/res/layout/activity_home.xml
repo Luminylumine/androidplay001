@@ -25,6 +25,18 @@
             android:text="Akasha"/>
 
         <TextView
+            android:id="@+id/btnVoiceCallTop"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="14dp"
+            android:paddingRight="10dp"
+            android:text="📞 通话"
+            android:textSize="14sp"
+            android:textColor="#0A66C2"
+            android:visibility="gone"/>
+
+        <TextView
             android:id="@+id/btnNewChatTop"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

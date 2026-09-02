@@ -197,6 +197,24 @@ public class Prefs {
         sp.edit().remove("timer_" + agentId).apply();
     }
 
+    // ---------------- 语音通话 (Task 8) ----------------
+
+    public static final String DEF_VOICE_HOST = "127.0.0.1:8765";
+
+    public String voiceBackendHost() { return sp.getString("voiceBackendHost", DEF_VOICE_HOST); }
+    public void voiceBackendHost(String v) { sp.edit().putString("voiceBackendHost", v).apply(); }
+
+    public String voiceToken() { return sp.getString("voiceToken", ""); }
+    public void voiceToken(String v) { sp.edit().putString("voiceToken", v).apply(); }
+
+    /** 通话中是否播报大脑语音（关=只看不听）。 */
+    public boolean voiceTtsOn() { return sp.getBoolean("voiceTtsOn", true); }
+    public void voiceTtsOn(boolean v) { sp.edit().putBoolean("voiceTtsOn", v).apply(); }
+
+    /** barge-in 预留（v1 服务端固定半双工，此值不下发）。 */
+    public boolean bargeIn() { return sp.getBoolean("bargeIn", false); }
+    public void bargeIn(boolean v) { sp.edit().putBoolean("bargeIn", v).apply(); }
+
     /** 会话级定时器配置 (per-session JSON). 与 agent 级完全独立。 */
     public TimerConfig sessionTimer(String sessionId) {
         if (sessionId == null) return TimerConfig.def();

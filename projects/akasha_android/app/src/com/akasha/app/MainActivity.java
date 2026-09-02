@@ -175,8 +175,16 @@ public class MainActivity extends Activity {
     private void updateTopBar(int idx) {
         TextView title = (TextView) findViewById(R.id.tvTitle);
         View plus = findViewById(R.id.btnNewChatTop);
+        View voice = findViewById(R.id.btnVoiceCallTop);
+        voice.setVisibility(idx == 0 ? View.VISIBLE : View.GONE);
+        if (idx == 0) {
+            voice.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) { startVoiceCall(); }
+            });
+        }
         switch (idx) {
-            case 0: // 聊天: 标题 "Akasha" + ＋ = 新增会话
+            case 0: // 聊天: 标题 "Akasha" + 通话 + ＋ = 新增会话
                 title.setText("Akasha");
                 plus.setVisibility(View.VISIBLE);
                 plus.setOnClickListener(new View.OnClickListener() {
@@ -213,6 +221,31 @@ public class MainActivity extends Activity {
         Intent i = new Intent(this, ModelSettingsActivity.class);
         i.putExtra(ModelSettingsActivity.EXTRA_NEW_AGENT, true);
         startActivity(i);
+    }
+
+    // ---------------- 语音通话 (Task 8) ----------------
+
+    private void startVoiceCall() {
+        if (com.akasha.app.voice.VoiceCallService.active()) {
+            // 通话进行中: 只回到通话界面，不重复拨入
+            startActivity(new Intent(this, com.akasha.app.voice.VoiceCallActivity.class));
+            return;
+        }
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 1002);
+            return;
+        }
+        doStartVoiceCall();
+    }
+
+    private void doStartVoiceCall() {
+        Intent i = new Intent(this, com.akasha.app.voice.VoiceCallService.class);
+        i.setAction(com.akasha.app.voice.VoiceCallService.ACTION_START);
+        i.putExtra(com.akasha.app.voice.VoiceCallService.EXTRA_HOST, prefs.voiceBackendHost());
+        i.putExtra(com.akasha.app.voice.VoiceCallService.EXTRA_TOKEN, prefs.voiceToken());
+        startService(i);
+        startActivity(new Intent(this, com.akasha.app.voice.VoiceCallActivity.class));
     }
 
     @Override
@@ -434,6 +467,15 @@ public class MainActivity extends Activity {
             boolean ok = false;
             for (int g : grantResults) ok |= g == PackageManager.PERMISSION_GRANTED;
             AgentService.log(ok ? "存储权限: 已授予" : "存储权限: 被拒绝（file_* 工具不可用）");
+        } else if (requestCode == 1002) {
+            boolean ok = false;
+            for (int g : grantResults) ok |= g == PackageManager.PERMISSION_GRANTED;
+            if (ok) {
+                doStartVoiceCall();
+            } else {
+                Toast.makeText(this, "需要麦克风权限才能语音通话（系统设置→应用→Akasha→权限）",
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 

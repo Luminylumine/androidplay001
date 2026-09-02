@@ -45,6 +45,7 @@ Log "javac — classpath uses common/sdks/shizuku & common/sdks/dhizuku"
 $srcs = @(Get-ChildItem -Recurse -Path (Join-Path $proj "src") -Filter *.java | ForEach-Object { $_.FullName })
 $srcs += (Get-ChildItem -Recurse -Path $gen -Filter *.java | ForEach-Object { $_.FullName })
 $libs = @(
+    (Join-Path $proj "libs\Java-WebSocket-1.6.0.jar"),
     (Join-Path $root "common\sdks\shizuku\shizuku-api\classes.jar"),
     (Join-Path $root "common\sdks\shizuku\shizuku-provider\classes.jar"),
     (Join-Path $root "common\sdks\shizuku\shizuku-aidl\classes.jar"),
