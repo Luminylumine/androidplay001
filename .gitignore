@@ -53,6 +53,11 @@ downloads/
 **/exploits/v10_sanity
 **/exploits/slab_rb_reclaim_uaf
 
+# ============== Reference Source (not needed for builds) ==============
+common/sdks/shizuku/sz_src/
+common/sdks/shizuku/sz_v1320.tar.gz
+common/sdks/dhizuku/dz260/
+
 # Misc OS / editor files
 Thumbs.db
 .DS_Store
