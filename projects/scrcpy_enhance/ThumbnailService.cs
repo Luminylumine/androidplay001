@@ -44,10 +44,14 @@ public sealed class ThumbnailService : IAsyncDisposable
     private HashSet<long>? _videoThumbIds;
     private bool _probeFailed;
 
-    // 去抖
+    // 去抖 + 抢占（单泵循环）：新一轮请求取消旧轮 token——旧轮停止启动新任务，
+    // 在途 pull/解码自然完成并落会话缓存（不硬取消，GPT §15：滚动中已 in-flight 的小图可完成）。
     private readonly object _gate = new();
-    private (int First, int Last, IReadOnlyList<GalleryItem> Items, Action<int, Bitmap, long> OnReady)? _pending;
-    private Task? _pendingTask;
+    // (预取范围, 视口范围, 项, 回调, 显示尺寸, 网格内存已有 key 集合)——显示尺寸请求时捕获：Paint 只做同尺寸 blit（§12）
+    private (int First, int Last, int VpFirst, int VpLast, IReadOnlyList<GalleryItem> Items,
+             Action<GalleryItem, Bitmap> OnReady, int DisplayPx, IReadOnlyCollection<GalleryKey> Skip)? _pending;
+    private Task? _pumpTask;
+    private CancellationTokenSource? _workCts;
 
     public ThumbnailService(DeviceInfo device, DeviceIoScheduler sched)
     {
@@ -78,16 +82,24 @@ public sealed class ThumbnailService : IAsyncDisposable
     // ================= 公共 API =================
 
     /// <summary>
-    /// 请求生成 [first,last] 的缩略图（100ms 去抖）。
-    /// <paramref name="onReady"/> 在**后台线程**回调 (index, bitmap, itemId)，Form 负责回 UI 线程并按 itemId 校验。
+    /// 请求生成 [first,last] 的缩略图（100ms 去抖 + 抢占：新请求使旧轮停止启动新任务）。
+    /// <paramref name="vpFirst"/>,<paramref name="vpLast"/> 真正可见范围：该区间最先拉取（停在的位置优先），
+    /// 其余按到视口距离升序（上下 2 屏缓冲依次补齐）。
+    /// <paramref name="onReady"/> 在**后台线程**回调 (item, bitmap)——身份用稳定键，Form 入队、
+    /// 由 UI 侧每帧批量 commit（§14）。<paramref name="displayPx"/> 显示位图最大边（§12）。
+    /// <paramref name="skip"/> 网格内存已持有的 key：跳过，不重复解码/回调（长期功耗）。
     /// </summary>
-    public void EnqueueRange(int first, int last, IReadOnlyList<GalleryItem> items, Action<int, Bitmap, long> onReady)
+    public void EnqueueRange(int first, int last, int vpFirst, int vpLast,
+        IReadOnlyList<GalleryItem> items, Action<GalleryItem, Bitmap> onReady, int displayPx,
+        IReadOnlyCollection<GalleryKey> skip)
     {
         if (_disposed) return;
         lock (_gate)
         {
-            _pending = (first, last, items, onReady);
-            if (_pendingTask == null) _pendingTask = RunDebouncedAsync();
+            _pending = (first, last, vpFirst, vpLast, items, onReady, Math.Clamp(displayPx, 64, 1024), skip);
+            _workCts?.Cancel(); // 抢占
+            _workCts = new CancellationTokenSource();
+            if (_pumpTask == null) _pumpTask = PumpAsync();
         }
     }
 
@@ -97,10 +109,6 @@ public sealed class ThumbnailService : IAsyncDisposable
         var p = Path.Combine(_sessionDir, CacheKey(item) + ".jpg");
         return File.Exists(p) ? p : null;
     }
-
-    /// <summary>解码已缓存的规范 JPEG（限流，返回的 Bitmap 由调用方持有）。</summary>
-    public Task<Bitmap> DecodeCachedAsync(string cachedPath, CancellationToken ct = default)
-        => DecodeSmallJpegAsync(File.ReadAllBytes(cachedPath), ct);
 
     /// <summary>删除项的会话缓存文件（增量删除时调用）。</summary>
     public void DeleteItemCaches(IEnumerable<GalleryItem> items)
@@ -127,29 +135,45 @@ public sealed class ThumbnailService : IAsyncDisposable
 
     // ================= 去抖 + 范围处理 =================
 
-    private async Task RunDebouncedAsync()
+    /// <summary>
+    /// 单泵循环：取 pending → 100ms 去抖（期间来了新请求则本 token 已取消 → 丢弃旧轮直接取新 pending）
+    /// → 按优先级处理。处理完再取下一轮 pending（无则退出，下次 EnqueueRange 重启泵）。
+    /// </summary>
+    private async Task PumpAsync()
     {
-        try { await Task.Delay(DebounceMs, _cts.Token); }
-        catch (OperationCanceledException) { return; }
-
-        (int, int, IReadOnlyList<GalleryItem>, Action<int, Bitmap, long>)? work;
-        lock (_gate)
+        try
         {
-            work = _pending;
-            _pending = null;
-            _pendingTask = null;
-        }
-        if (work == null || _disposed || _cts.IsCancellationRequested) return;
+            while (!_disposed)
+            {
+                (int, int, int, int, IReadOnlyList<GalleryItem>, Action<GalleryItem, Bitmap>, int, IReadOnlyCollection<GalleryKey>)? work;
+                CancellationToken token;
+                lock (_gate)
+                {
+                    if (_pending == null) break;
+                    work = _pending.Value;
+                    _pending = null;
+                    token = _workCts!.Token;
+                }
+                try { await Task.Delay(DebounceMs, token); }
+                catch (OperationCanceledException) { continue; } // 被抢占：取最新 pending
+                if (_disposed) break;
 
-        DiagLog.Info($"ProcessRange start: range=[{work.Value.Item1},{work.Value.Item2}] itemsCount={work.Value.Item3.Count}");
-        try { await ProcessRangeAsync(work.Value, _cts.Token); }
-        catch (OperationCanceledException) { }
-        catch (Exception ex) { DiagLog.Info($"ProcessRange EXCEPTION: {ex}"); }
+                DiagLog.Info($"ProcessRange start: range=[{work.Value.Item1},{work.Value.Item2}] vp=[{work.Value.Item3},{work.Value.Item4}] itemsCount={work.Value.Item5.Count}");
+                try { await ProcessRangeAsync(work.Value, token); }
+                catch (OperationCanceledException) { } // 处理中被新一轮抢占 → 正常
+                catch (Exception ex) { DiagLog.Info($"ProcessRange EXCEPTION: {ex}"); }
+            }
+        }
+        finally
+        {
+            lock (_gate) _pumpTask = null;
+        }
     }
 
-    private async Task ProcessRangeAsync((int First, int Last, IReadOnlyList<GalleryItem> Items, Action<int, Bitmap, long> OnReady) work, CancellationToken ct)
+    private async Task ProcessRangeAsync((int First, int Last, int VpFirst, int VpLast, IReadOnlyList<GalleryItem> Items,
+        Action<GalleryItem, Bitmap> OnReady, int DisplayPx, IReadOnlyCollection<GalleryKey> Skip) work, CancellationToken ct)
     {
-        var (first, last, items, onReady) = work;
+        var (first, last, vpFirst, vpLast, items, onReady, displayPx, skip) = work;
         if (first > last || items.Count == 0) return;
         first = Math.Max(0, first);
         last = Math.Min(last, items.Count - 1);
@@ -157,37 +181,45 @@ public sealed class ThumbnailService : IAsyncDisposable
         await EnsureThumbProbeAsync();
         DiagLog.Info($"probe: imgThumbs={_imageThumbIds?.Count} vidThumbs={_videoThumbIds?.Count} probeFailed={_probeFailed}");
 
-        var modern = new List<(int Index, GalleryItem Item, string RemotePath)>();
-        var fallback = new List<(int Index, GalleryItem Item)>();
+        // 优先级（用户要求）：停在的位置（视口，自然序）最先 → 近缓冲 → 远缓冲（到视口距离升序）。
+        // OrderBy 是稳定排序：同优先级保持范围原顺序。
+        var idxs = Enumerable.Range(first, last - first + 1)
+            .OrderBy(i => (i >= vpFirst && i <= vpLast) ? 0 : 1)
+            .ThenBy(i => (i >= vpFirst && i <= vpLast) ? 0 : Math.Min(Math.Abs(i - vpFirst), Math.Abs(vpLast + 1 - i)))
+            .ToList();
 
-        for (int i = first; i <= last; i++)
+        var modern = new List<(GalleryItem Item, string RemotePath)>();
+        var fallback = new List<GalleryItem>();
+
+        foreach (var i in idxs)
         {
             var it = items[i];
             if (ct.IsCancellationRequested) break;
+            if (skip.Contains(it.Key)) continue; // 网格内存已持有：不重复解码/回调（长期功耗）
 
             if (GetCachedPath(it) != null)
             {
-                _ = DeliverCachedAsync(it, i, onReady, ct);
+                _ = DeliverCachedAsync(it, onReady, ct, displayPx);
                 continue;
             }
             var key = CacheKey(it);
             if (_inFlight.ContainsKey(key))
             {
                 // 在途：等它落盘后再交付（不重复起 adb）
-                _ = AwaitInFlightAsync(key, it, i, onReady, ct);
+                _ = AwaitInFlightAsync(key, it, onReady, ct, displayPx);
                 continue;
             }
 
             var idset = it.Kind == MediaKind.Image ? _imageThumbIds : _videoThumbIds;
             if (idset != null && idset.Contains(it.Id))
             {
-                modern.Add((i, it, it.Kind == MediaKind.Image
+                modern.Add((it, it.Kind == MediaKind.Image
                     ? $"/storage/emulated/0/Pictures/.thumbnails/{it.Id}.jpg"
                     : $"/storage/emulated/0/Movies/.thumbnails/{it.Id}.jpg"));
             }
             else if (it.Kind == MediaKind.Image)
             {
-                fallback.Add((i, it)); // 视频无小图 → 保持占位，不拉整段视频
+                fallback.Add(it); // 视频无小图 → 保持占位，不拉整段视频
             }
         }
 
@@ -196,14 +228,14 @@ public sealed class ThumbnailService : IAsyncDisposable
         {
             if (ct.IsCancellationRequested) break;
             await _sched.ThumbBatch.WaitAsync(ct);
-            var misses = new List<(int Index, GalleryItem Item, string RemotePath)>();
+            var misses = new List<(GalleryItem Item, string RemotePath)>();
             try
             {
                 var batchDir = Path.Combine(_stagingDir, Guid.NewGuid().ToString("N"));
                 try
                 {
                     var ok = await AdbHelper.PullFilesAsync(_device.Id, batch.Select(b => b.RemotePath).ToArray(), batchDir, 60000, ct);
-                    foreach (var (idx, item, _) in batch)
+                    foreach (var (item, _) in batch)
                     {
                         var f = Path.Combine(batchDir, item.Id + ".jpg");
                         byte[] bytes = Array.Empty<byte>();
@@ -214,12 +246,12 @@ public sealed class ThumbnailService : IAsyncDisposable
                         if (bytes.Length > 0 && GalleryCache.LooksLikeImageBytes(bytes))
                         {
                             DiagLog.Info($"batch hit: id={item.Id} size={bytes.Length}");
-                            _ = DeliverPrefetchedAsync(item, idx, bytes, onReady, ct);
+                            _ = DeliverPrefetchedAsync(item, bytes, onReady, ct, displayPx);
                         }
                         else
                         {
                             DiagLog.Info($"batch miss: id={item.Id} exists={File.Exists(f)} size={bytes.Length} exit={ok}");
-                            misses.Add((idx, item, $"/storage/emulated/0/{(item.Kind == MediaKind.Image ? "Pictures" : "Movies")}/.thumbnails/{item.Id}.jpg"));
+                            misses.Add((item, $"/storage/emulated/0/{(item.Kind == MediaKind.Image ? "Pictures" : "Movies")}/.thumbnails/{item.Id}.jpg"));
                         }
                     }
                 }
@@ -231,73 +263,73 @@ public sealed class ThumbnailService : IAsyncDisposable
 
             // 单张 miss → 原图兜底（只收图片；远端小图不存在说明路径规则不适用）
             foreach (var m in misses)
-                if (m.Item.Kind == MediaKind.Image && fallback.All(f => f.Item.Id != m.Item.Id))
-                    fallback.Add((m.Index, m.Item));
+                if (m.Item.Kind == MediaKind.Image && fallback.All(f => f.Id != m.Item.Id))
+                    fallback.Add(m.Item);
         }
 
         // 2) 原图兜底：逐个拉（限流 Transfer），拉回后统一规范化
-        foreach (var (idx, item) in fallback)
+        foreach (var item in fallback)
         {
             if (ct.IsCancellationRequested) break;
-            _ = DeliverOriginalAsync(item, idx, onReady, ct);
+            _ = DeliverOriginalAsync(item, onReady, ct, displayPx);
         }
     }
 
-    // ================= 交付路径 =================
+    // ================= 交付路径（统一：稳定键 item + displayPx，后台缩到显示尺寸）=================
 
-    private async Task DeliverCachedAsync(GalleryItem item, int index, Action<int, Bitmap, long> onReady, CancellationToken ct)
+    private async Task DeliverCachedAsync(GalleryItem item, Action<GalleryItem, Bitmap> onReady, CancellationToken ct, int displayPx)
     {
         try
         {
             var p = GetCachedPath(item);
             if (p == null) return;
-            var bmp = await DecodeCachedAsync(p, ct);
+            var bmp = await DecodeToDisplayAsync(File.ReadAllBytes(p), displayPx, ct);
             if (_disposed) { bmp.Dispose(); return; }
-            onReady(index, bmp, item.Id);
+            onReady(item, bmp);
         }
-        catch (Exception ex) { DiagLog.Info($"deliverCached EXC: id={item.Id} idx={index}: {ex.Message}"); }
+        catch (Exception ex) { DiagLog.Info($"deliverCached EXC: id={item.Id}: {ex.Message}"); }
     }
 
-    private async Task AwaitInFlightAsync(string key, GalleryItem item, int index, Action<int, Bitmap, long> onReady, CancellationToken ct)
+    private async Task AwaitInFlightAsync(string key, GalleryItem item, Action<GalleryItem, Bitmap> onReady, CancellationToken ct, int displayPx)
     {
         try
         {
             if (_inFlight.TryGetValue(key, out var t)) await t;
-            await DeliverCachedAsync(item, index, onReady, ct);
+            await DeliverCachedAsync(item, onReady, ct, displayPx);
         }
         catch { }
     }
 
     /// <summary>已拿到字节（现代小图批量）→ 规范化落缓存 → 解码交付。</summary>
-    private async Task DeliverPrefetchedAsync(GalleryItem item, int index, byte[] raw, Action<int, Bitmap, long> onReady, CancellationToken ct)
+    private async Task DeliverPrefetchedAsync(GalleryItem item, byte[] raw, Action<GalleryItem, Bitmap> onReady, CancellationToken ct, int displayPx)
     {
         string? path = null;
         try
         {
             path = await EnsureCanonicalAsync(item, raw, ct);
             if (path == null) return;
-            var bmp = await DecodeSmallJpegAsync(File.ReadAllBytes(path), ct);
+            var bmp = await DecodeToDisplayAsync(File.ReadAllBytes(path), displayPx, ct);
             if (_disposed) { bmp.Dispose(); return; }
-            onReady(index, bmp, item.Id);
-            DiagLog.Info($"deliver OK(prefetched): id={item.Id} idx={index}");
+            onReady(item, bmp);
+            DiagLog.Info($"deliver OK(prefetched): id={item.Id} px={bmp.Width}x{bmp.Height}");
         }
-        catch (Exception ex) { DiagLog.Info($"deliverPrefetched EXC: id={item.Id} idx={index}: {ex}"); }
+        catch (Exception ex) { DiagLog.Info($"deliverPrefetched EXC: id={item.Id}: {ex}"); }
     }
 
-    /// <summary>原图兜底：拉取（1 次重试）→ 规范化落缓存 → 解码交付。</summary>
-    private async Task DeliverOriginalAsync(GalleryItem item, int index, Action<int, Bitmap, long> onReady, CancellationToken ct)
+    /// <summary>原图兜底：拉取（1 次重试）→ 规范化落缓存 → 缩到显示尺寸交付。</summary>
+    private async Task DeliverOriginalAsync(GalleryItem item, Action<GalleryItem, Bitmap> onReady, CancellationToken ct, int displayPx)
     {
         string? path = null;
         try
         {
             path = await EnsureCanonicalAsync(item, null, ct);
             if (path == null) return;
-            var bmp = await DecodeSmallJpegAsync(File.ReadAllBytes(path), ct);
+            var bmp = await DecodeToDisplayAsync(File.ReadAllBytes(path), displayPx, ct);
             if (_disposed) { bmp.Dispose(); return; }
-            onReady(index, bmp, item.Id);
-            DiagLog.Info($"deliver OK(original): id={item.Id} idx={index}");
+            onReady(item, bmp);
+            DiagLog.Info($"deliver OK(original): id={item.Id} px={bmp.Width}x{bmp.Height}");
         }
-        catch (Exception ex) { DiagLog.Info($"deliverOriginal EXC: id={item.Id} idx={index}: {ex}"); }
+        catch (Exception ex) { DiagLog.Info($"deliverOriginal EXC: id={item.Id}: {ex}"); }
     }
 
     // ================= 规范化核心 =================
@@ -472,18 +504,26 @@ public sealed class ThumbnailService : IAsyncDisposable
         }
     }
 
-    /// <summary>解码规范 512 JPEG（限流）。结果 Bitmap 所有权移交调用方。</summary>
-    private static async Task<Bitmap> DecodeSmallJpegAsync(byte[] bytes, CancellationToken ct)
+    /// <summary>
+    /// 解码规范 JPEG → 缩到显示尺寸（最大边 displayPx）的显示位图（限流）。
+    /// 后台一次缩到位，Paint 只做同尺寸 blit，绝不逐帧 512→208 resample（§12）。
+    /// 结果 Bitmap 所有权移交调用方。
+    /// </summary>
+    private static async Task<Bitmap> DecodeToDisplayAsync(byte[] bytes, int displayPx, CancellationToken ct)
     {
         await DecodeSem.WaitAsync(ct);
         try
         {
             using var ms = new MemoryStream(bytes);
             using var img = Image.FromStream(ms);
-            var bmp = new Bitmap(Math.Max(1, img.Width), Math.Max(1, img.Height), PixelFormat.Format32bppArgb);
+            float scale = Math.Min(1f, displayPx / (float)Math.Max(1, Math.Max(img.Width, img.Height)));
+            int dw = Math.Max(1, (int)(img.Width * scale));
+            int dh = Math.Max(1, (int)(img.Height * scale));
+            var bmp = new Bitmap(dw, dh, PixelFormat.Format32bppArgb);
             using var g = Graphics.FromImage(bmp);
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.DrawImage(img, 0, 0, bmp.Width, bmp.Height);
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            g.DrawImage(img, 0, 0, dw, dh);
             return bmp;
         }
         finally { DecodeSem.Release(); }

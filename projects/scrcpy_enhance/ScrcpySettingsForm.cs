@@ -8,7 +8,15 @@ public partial class ScrcpySettingsForm : Form
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ScreenMode ScreenMode { get; private set; } = ScreenMode.StayAwake;
+    public bool PhysicalScreenOff { get; private set; } = true;
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public PhysicalOffScheme OffScheme { get; private set; } = PhysicalOffScheme.PowerOff;
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ClickToWake { get; private set; } = true;
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -31,8 +39,10 @@ public partial class ScrcpySettingsForm : Form
     public string? MaxSize { get; private set; } = "1024";
 
     private System.Windows.Forms.GroupBox grpScreen;
-    private System.Windows.Forms.RadioButton radioStayAwake;
-    private System.Windows.Forms.RadioButton radioClickToWake;
+    private System.Windows.Forms.CheckBox chkPhysicalScreenOff;
+    private System.Windows.Forms.RadioButton radioPowerOff;
+    private System.Windows.Forms.RadioButton radioBacklightOff;
+    private System.Windows.Forms.CheckBox chkClickToWake;
     private System.Windows.Forms.GroupBox grpKeyboard;
     private System.Windows.Forms.RadioButton radioKbUhid;
     private System.Windows.Forms.RadioButton radioKbSdk;
@@ -59,8 +69,10 @@ public partial class ScrcpySettingsForm : Form
     private void InitializeComponent()
     {
         grpScreen = new System.Windows.Forms.GroupBox();
-        radioStayAwake = new System.Windows.Forms.RadioButton();
-        radioClickToWake = new System.Windows.Forms.RadioButton();
+        chkPhysicalScreenOff = new System.Windows.Forms.CheckBox();
+        radioPowerOff = new System.Windows.Forms.RadioButton();
+        radioBacklightOff = new System.Windows.Forms.RadioButton();
+        chkClickToWake = new System.Windows.Forms.CheckBox();
         grpKeyboard = new System.Windows.Forms.GroupBox();
         radioKbUhid = new System.Windows.Forms.RadioButton();
         radioKbSdk = new System.Windows.Forms.RadioButton();
@@ -82,41 +94,64 @@ public partial class ScrcpySettingsForm : Form
         SuspendLayout();
 
         // grpScreen
-        grpScreen.Controls.Add(radioStayAwake);
-        grpScreen.Controls.Add(radioClickToWake);
+        grpScreen.Controls.Add(chkPhysicalScreenOff);
+        grpScreen.Controls.Add(radioPowerOff);
+        grpScreen.Controls.Add(radioBacklightOff);
+        grpScreen.Controls.Add(chkClickToWake);
         grpScreen.Location = new System.Drawing.Point(12, 12);
         grpScreen.Name = "grpScreen";
-        grpScreen.Size = new System.Drawing.Size(336, 68);
+        grpScreen.Size = new System.Drawing.Size(336, 120);
         grpScreen.TabIndex = 0;
         grpScreen.TabStop = false;
-        grpScreen.Text = "屏幕行为";
+        grpScreen.Text = "屏幕行为（纯 ADB 息屏方案：系统状态常亮 + 物理面板熄灭）";
 
-        // radioStayAwake
-        radioStayAwake.AutoSize = true;
-        radioStayAwake.Checked = true;
-        radioStayAwake.Location = new System.Drawing.Point(12, 22);
-        radioStayAwake.Name = "radioStayAwake";
-        radioStayAwake.Size = new System.Drawing.Size(150, 19);
-        radioStayAwake.TabIndex = 0;
-        radioStayAwake.TabStop = true;
-        radioStayAwake.Text = "不黑屏（屏幕常亮，推荐）";
-        radioStayAwake.UseVisualStyleBackColor = true;
+        // chkPhysicalScreenOff
+        chkPhysicalScreenOff.AutoSize = true;
+        chkPhysicalScreenOff.Checked = true;
+        chkPhysicalScreenOff.Location = new System.Drawing.Point(12, 20);
+        chkPhysicalScreenOff.Name = "chkPhysicalScreenOff";
+        chkPhysicalScreenOff.Size = new System.Drawing.Size(250, 19);
+        chkPhysicalScreenOff.TabIndex = 0;
+        chkPhysicalScreenOff.Text = "物理息屏（手机屏幕真正变暗，投屏不受影响）";
+        chkPhysicalScreenOff.UseVisualStyleBackColor = true;
+        chkPhysicalScreenOff.CheckedChanged += chkPhysicalScreenOff_CheckedChanged;
 
-        // radioClickToWake
-        radioClickToWake.AutoSize = true;
-        radioClickToWake.Location = new System.Drawing.Point(12, 44);
-        radioClickToWake.Name = "radioClickToWake";
-        radioClickToWake.Size = new System.Drawing.Size(210, 19);
-        radioClickToWake.TabIndex = 1;
-        radioClickToWake.Text = "黑屏但可点亮（点击投屏窗口唤醒）";
-        radioClickToWake.UseVisualStyleBackColor = true;
+        // radioPowerOff
+        radioPowerOff.AutoSize = true;
+        radioPowerOff.Checked = true;
+        radioPowerOff.Location = new System.Drawing.Point(30, 44);
+        radioPowerOff.Name = "radioPowerOff";
+        radioPowerOff.Size = new System.Drawing.Size(280, 19);
+        radioPowerOff.TabIndex = 1;
+        radioPowerOff.TabStop = true;
+        radioPowerOff.Text = "完全断电（最省电；优先使用 scrcpy 原生实现）";
+        radioPowerOff.UseVisualStyleBackColor = true;
+
+        // radioBacklightOff
+        radioBacklightOff.AutoSize = true;
+        radioBacklightOff.Location = new System.Drawing.Point(30, 66);
+        radioBacklightOff.Name = "radioBacklightOff";
+        radioBacklightOff.Size = new System.Drawing.Size(220, 19);
+        radioBacklightOff.TabIndex = 2;
+        radioBacklightOff.Text = "关闭背光（兼容所有版本，亮度归零近似熄灭）";
+        radioBacklightOff.UseVisualStyleBackColor = true;
+
+        // chkClickToWake
+        chkClickToWake.AutoSize = true;
+        chkClickToWake.Checked = true;
+        chkClickToWake.Location = new System.Drawing.Point(30, 88);
+        chkClickToWake.Name = "chkClickToWake";
+        chkClickToWake.Size = new System.Drawing.Size(210, 19);
+        chkClickToWake.TabIndex = 3;
+        chkClickToWake.Text = "点击投屏窗口点亮手机屏幕";
+        chkClickToWake.UseVisualStyleBackColor = true;
 
         // grpKeyboard
         grpKeyboard.Controls.Add(radioKbUhid);
         grpKeyboard.Controls.Add(radioKbSdk);
         grpKeyboard.Controls.Add(radioKbOff);
         grpKeyboard.Controls.Add(btnKbSettings);
-        grpKeyboard.Location = new System.Drawing.Point(12, 86);
+        grpKeyboard.Location = new System.Drawing.Point(12, 136);
         grpKeyboard.Name = "grpKeyboard";
         grpKeyboard.Size = new System.Drawing.Size(336, 92);
         grpKeyboard.TabIndex = 1;
@@ -165,7 +200,7 @@ public partial class ScrcpySettingsForm : Form
         chkNoAudio.AutoSize = true;
         chkNoAudio.Checked = true;
         chkNoAudio.CheckState = System.Windows.Forms.CheckState.Checked;
-        chkNoAudio.Location = new System.Drawing.Point(12, 186);
+        chkNoAudio.Location = new System.Drawing.Point(12, 236);
         chkNoAudio.Name = "chkNoAudio";
         chkNoAudio.Size = new System.Drawing.Size(138, 19);
         chkNoAudio.TabIndex = 2;
@@ -174,14 +209,14 @@ public partial class ScrcpySettingsForm : Form
 
         // label1
         label1.AutoSize = true;
-        label1.Location = new System.Drawing.Point(12, 216);
+        label1.Location = new System.Drawing.Point(12, 266);
         label1.Name = "label1";
         label1.Size = new System.Drawing.Size(54, 15);
         label1.TabIndex = 3;
         label1.Text = "最大帧率：";
 
         // numFps
-        numFps.Location = new System.Drawing.Point(72, 213);
+        numFps.Location = new System.Drawing.Point(72, 263);
         numFps.Maximum = new decimal(new int[] { 240, 0, 0, 0 });
         numFps.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
         numFps.Name = "numFps";
@@ -191,14 +226,14 @@ public partial class ScrcpySettingsForm : Form
 
         // label2
         label2.AutoSize = true;
-        label2.Location = new System.Drawing.Point(145, 216);
+        label2.Location = new System.Drawing.Point(145, 266);
         label2.Name = "label2";
         label2.Size = new System.Drawing.Size(54, 15);
         label2.TabIndex = 5;
         label2.Text = "码率(M)：";
 
         // numBitRate
-        numBitRate.Location = new System.Drawing.Point(205, 213);
+        numBitRate.Location = new System.Drawing.Point(205, 263);
         numBitRate.Maximum = new decimal(new int[] { 100, 0, 0, 0 });
         numBitRate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         numBitRate.Name = "numBitRate";
@@ -208,7 +243,7 @@ public partial class ScrcpySettingsForm : Form
 
         // label3
         label3.AutoSize = true;
-        label3.Location = new System.Drawing.Point(12, 246);
+        label3.Location = new System.Drawing.Point(12, 296);
         label3.Name = "label3";
         label3.Size = new System.Drawing.Size(74, 15);
         label3.TabIndex = 7;
@@ -218,7 +253,7 @@ public partial class ScrcpySettingsForm : Form
         cmbMaxSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
         cmbMaxSize.FormattingEnabled = true;
         cmbMaxSize.Items.AddRange(new object[] { "720", "1024", "1280", "1920", "原始" });
-        cmbMaxSize.Location = new System.Drawing.Point(92, 243);
+        cmbMaxSize.Location = new System.Drawing.Point(92, 293);
         cmbMaxSize.Name = "cmbMaxSize";
         cmbMaxSize.Size = new System.Drawing.Size(100, 23);
         cmbMaxSize.TabIndex = 8;
@@ -227,7 +262,7 @@ public partial class ScrcpySettingsForm : Form
         // label4
         label4.AutoSize = true;
         label4.ForeColor = System.Drawing.SystemColors.GrayText;
-        label4.Location = new System.Drawing.Point(12, 276);
+        label4.Location = new System.Drawing.Point(12, 326);
         label4.Name = "label4";
         label4.Size = new System.Drawing.Size(300, 15);
         label4.TabIndex = 9;
@@ -236,15 +271,15 @@ public partial class ScrcpySettingsForm : Form
         // label5
         label5.AutoSize = true;
         label5.ForeColor = System.Drawing.SystemColors.GrayText;
-        label5.Location = new System.Drawing.Point(12, 292);
+        label5.Location = new System.Drawing.Point(12, 342);
         label5.Name = "label5";
         label5.Size = new System.Drawing.Size(300, 15);
         label5.TabIndex = 10;
-        label5.Text = "黑屏模式下：手机熄灭后，点击投屏窗口即可点亮";
+        label5.Text = "物理息屏时手机面板变暗，点击投屏窗口即可点亮";
 
         // btnStart
         btnStart.DialogResult = System.Windows.Forms.DialogResult.OK;
-        btnStart.Location = new System.Drawing.Point(100, 320);
+        btnStart.Location = new System.Drawing.Point(100, 370);
         btnStart.Name = "btnStart";
         btnStart.Size = new System.Drawing.Size(80, 30);
         btnStart.TabIndex = 11;
@@ -254,7 +289,7 @@ public partial class ScrcpySettingsForm : Form
 
         // btnCancel
         btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-        btnCancel.Location = new System.Drawing.Point(200, 320);
+        btnCancel.Location = new System.Drawing.Point(200, 370);
         btnCancel.Name = "btnCancel";
         btnCancel.Size = new System.Drawing.Size(80, 30);
         btnCancel.TabIndex = 12;
@@ -264,7 +299,7 @@ public partial class ScrcpySettingsForm : Form
         // ScrcpySettingsForm
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        ClientSize = new System.Drawing.Size(360, 362);
+        ClientSize = new System.Drawing.Size(360, 412);
         Controls.Add(label5);
         Controls.Add(label4);
         Controls.Add(btnCancel);
@@ -307,9 +342,18 @@ public partial class ScrcpySettingsForm : Form
         }
     }
 
+    private void chkPhysicalScreenOff_CheckedChanged(object? sender, EventArgs e)
+    {
+        radioPowerOff.Enabled = chkPhysicalScreenOff.Checked;
+        radioBacklightOff.Enabled = chkPhysicalScreenOff.Checked;
+        chkClickToWake.Enabled = chkPhysicalScreenOff.Checked;
+    }
+
     private void btnStart_Click(object? sender, EventArgs e)
     {
-        ScreenMode = radioClickToWake.Checked ? ScreenMode.ClickToWake : ScreenMode.StayAwake;
+        PhysicalScreenOff = chkPhysicalScreenOff.Checked;
+        OffScheme = radioBacklightOff.Checked ? PhysicalOffScheme.BacklightOff : PhysicalOffScheme.PowerOff;
+        ClickToWake = chkClickToWake.Checked;
 
         if (radioKbUhid.Checked)
             KeyboardMode = KeyboardMode.Uhid;

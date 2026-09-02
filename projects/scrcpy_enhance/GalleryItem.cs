@@ -8,6 +8,15 @@ public enum MediaKind
 }
 
 /// <summary>
+/// 相册项的稳定逻辑键（类型 + MediaStore _id）：列表重排/增量刷新时缩略图缓存不漂移
+/// （调研 AdbManager_GalleryGrid_Scroll_Overlap_RootCause_Architecture §1：index 作 key 在增量列表中脆弱）。
+/// </summary>
+public readonly record struct GalleryKey(MediaKind Kind, long Id)
+{
+    public override string ToString() => $"{(Kind == MediaKind.Image ? "I" : "V")}:{Id}";
+}
+
+/// <summary>
 /// 相册中的一项（来自 Android MediaStore）。以 content URI 为主键，不依赖 <c>_data</c> 原始路径读取；
 /// 仅在需要删除/移动等文件系统操作时，用 <see cref="RawPath"/> 做 best-effort 兜底。
 /// </summary>
@@ -15,6 +24,7 @@ public sealed class GalleryItem
 {
     public MediaKind Kind;
     public long Id;
+    public GalleryKey Key => new(Kind, Id);
     public string DisplayName = "";
     public string MimeType = "";
     public long Size;

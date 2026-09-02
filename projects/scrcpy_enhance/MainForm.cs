@@ -8,6 +8,12 @@ partial class MainForm : Form
     private DeviceInfo? _selectedDevice;
     // 支持多手机并行：按 deviceId 管理多个互不干扰的 scrcpy 会话
     private readonly Dictionary<string, ScrcpySession> _sessions = new();
+    // 每个会话对应的"物理息屏状态窗"（非阻塞，会话结束时关闭）
+    private readonly Dictionary<string, ScreenOffStatusForm> _screenOffStatusForms = new();
+    // 每台设备只保留一个相册窗口，避免窗口层叠后把主界面完全盖住
+    private readonly Dictionary<string, PhotoGalleryForm> _photoGalleryForms = new();
+    // 文件资源管理器同样按设备复用窗口，避免重复窗口争用同一设备的 ADB 通道
+    private readonly Dictionary<string, FileTransferForm> _fileTransferForms = new();
     // PC 输入法目标下拉框对应的 deviceId 列表（与 cmbPcTarget.Items 顺序对齐）
     private readonly List<string> _pcTargets = new();
 
@@ -21,6 +27,16 @@ partial class MainForm : Form
     private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
     {
         StopScrcpySession();
+        foreach (var form in _photoGalleryForms.Values.ToArray())
+        {
+            try { form.Close(); } catch { }
+        }
+        _photoGalleryForms.Clear();
+        foreach (var form in _fileTransferForms.Values.ToArray())
+        {
+            try { form.Close(); } catch { }
+        }
+        _fileTransferForms.Clear();
     }
 
     private async void MainForm_Load(object? sender, EventArgs e)
@@ -102,8 +118,36 @@ partial class MainForm : Form
     private void 传输文件ToolStripMenuItem_Click(object? sender, EventArgs e)
     {
         if (_selectedDevice == null) return;
-        using var form = new FileTransferForm(_selectedDevice);
-        form.ShowDialog(this);
+        var deviceId = _selectedDevice.Id;
+        if (_fileTransferForms.TryGetValue(deviceId, out var existing) && !existing.IsDisposed)
+        {
+            if (existing.WindowState == FormWindowState.Minimized)
+                existing.WindowState = FormWindowState.Normal;
+            existing.Activate();
+            existing.BringToFront();
+            return;
+        }
+
+        var form = new FileTransferForm(_selectedDevice)
+        {
+            StartPosition = FormStartPosition.Manual,
+            ShowInTaskbar = true
+        };
+        var workArea = Screen.FromControl(this).WorkingArea;
+        var preferredX = Right + 12;
+        var x = preferredX + form.Width <= workArea.Right
+            ? preferredX
+            : Math.Max(workArea.Left, workArea.Right - form.Width);
+        var y = Math.Max(workArea.Top, Math.Min(Top, workArea.Bottom - form.Height));
+        form.Location = new Point(x, y);
+        _fileTransferForms[deviceId] = form;
+        form.FormClosed += (_, _) =>
+        {
+            if (_fileTransferForms.TryGetValue(deviceId, out var current)
+                && ReferenceEquals(current, form))
+                _fileTransferForms.Remove(deviceId);
+        };
+        form.Show(this);
     }
 
     private async void 屏幕共享ToolStripMenuItem_Click(object? sender, EventArgs e)
@@ -121,6 +165,7 @@ partial class MainForm : Form
             try { await existing.ExitedAsync.WaitAsync(TimeSpan.FromSeconds(3)); }
             catch (TimeoutException) { }
             existing.Dispose();
+            CloseScreenOffForm(deviceId);
             RefreshPcTargets();
         }
 
@@ -130,7 +175,9 @@ partial class MainForm : Form
 
         var options = new ScrcpyOptions
         {
-            ScreenMode = dialog.ScreenMode,
+            PhysicalScreenOff = dialog.PhysicalScreenOff,
+            OffScheme = dialog.OffScheme,
+            ClickToWake = dialog.ClickToWake,
             KeyboardMode = dialog.KeyboardMode,
             NoAudio = dialog.NoAudio,
             MaxFps = dialog.MaxFps,
@@ -141,6 +188,15 @@ partial class MainForm : Form
         var session = new ScrcpySession(deviceId, options);
         session.Exited += OnScrcpySessionExited;
         _sessions[deviceId] = session;
+
+        // 物理息屏状态窗（非阻塞）：与 scrcpy 窗口同时弹出，实时显示息屏流程
+        if (options.PhysicalScreenOff)
+        {
+            var screenOffForm = new ScreenOffStatusForm($"物理息屏状态 - {_selectedDevice.DisplayName}");
+            options.ScreenOffStatus = screenOffForm.AppendLine;
+            screenOffForm.Show(this);
+            _screenOffStatusForms[deviceId] = screenOffForm;
+        }
 
         try
         {
@@ -180,14 +236,36 @@ partial class MainForm : Form
                 _sessions.Remove(deviceId);
                 session.Exited -= OnScrcpySessionExited;
                 session.Dispose();
+                CloseScreenOffForm(deviceId);
                 RefreshPcTargets();
                 UpdatePcInputState();
                 return;
             }
 
             var tip = $"scrcpy 已启动：{_selectedDevice.DisplayName}";
-            if (options.ScreenMode == ScreenMode.ClickToWake)
-                tip += "｜黑屏模式：点击投屏窗口可唤醒";
+            if (options.PhysicalScreenOff)
+            {
+                switch (session.OffPath)
+                {
+                    case PhysicalOffPath.Scrcpy:
+                        tip += "｜物理息屏：完全断电(scrcpy)";
+                        break;
+                    case PhysicalOffPath.CmdDisplayPower:
+                        tip += "｜物理息屏：完全断电";
+                        break;
+                    case PhysicalOffPath.MiniDisplay:
+                        tip += "｜物理息屏：完全断电(ADB)";
+                        break;
+                    case PhysicalOffPath.Backlight:
+                        tip += "｜物理息屏：关闭背光";
+                        break;
+                    default:
+                        tip += "｜物理息屏未生效（屏幕常亮）";
+                        break;
+                }
+                if (options.ClickToWake && session.OffPath != PhysicalOffPath.None)
+                    tip += "，点击投屏窗口可点亮";
+            }
             if (options.KeyboardMode == KeyboardMode.Sdk)
                 tip += "｜电脑键盘(兼容模式)已启用";
             statusLabel.Text = tip;
@@ -201,6 +279,7 @@ partial class MainForm : Form
             session.Exited -= OnScrcpySessionExited;
             _sessions.Remove(deviceId);
             session.Dispose();
+            CloseScreenOffForm(deviceId);
             RefreshPcTargets();
             UpdatePcInputState();
         }
@@ -211,15 +290,25 @@ partial class MainForm : Form
         if (sender is not ScrcpySession s) return;
         s.Exited -= OnScrcpySessionExited;
         _sessions.Remove(s.DeviceId);
+        CloseScreenOffForm(s.DeviceId);
         RefreshPcTargets();
         UpdatePcInputState();
         try { statusLabel.Text = $"屏幕共享已结束：{DisplayNameOf(s.DeviceId)}"; } catch { }
     }
 
+    /// <summary>关闭指定设备的物理息屏状态窗（不存在时为空操作）。</summary>
+    private void CloseScreenOffForm(string deviceId)
+    {
+        if (_screenOffStatusForms.Remove(deviceId, out var form))
+        {
+            try { form.Close(); } catch { }
+        }
+    }
+
     /// <summary>关闭全部会话（程序退出时调用）。</summary>
     private void StopScrcpySession()
     {
-        if (_sessions.Count == 0) return;
+        if (_sessions.Count == 0 && _screenOffStatusForms.Count == 0) return;
         var list = _sessions.Values.ToList();
         _sessions.Clear();
         foreach (var s in list)
@@ -227,6 +316,12 @@ partial class MainForm : Form
             s.Exited -= OnScrcpySessionExited;
             s.Stop();
             s.Dispose();
+        }
+        // 一并关闭所有息屏状态窗
+        foreach (var kv in _screenOffStatusForms.ToList())
+        {
+            _screenOffStatusForms.Remove(kv.Key);
+            try { kv.Value.Close(); } catch { }
         }
         RefreshPcTargets();
         UpdatePcInputState();
@@ -337,8 +432,36 @@ partial class MainForm : Form
     private void 访问相册ToolStripMenuItem_Click(object? sender, EventArgs e)
     {
         if (_selectedDevice == null) return;
-        using var form = new PhotoGalleryForm(_selectedDevice);
-        form.ShowDialog(this);
+        var deviceId = _selectedDevice.Id;
+        if (_photoGalleryForms.TryGetValue(deviceId, out var existing) && !existing.IsDisposed)
+        {
+            if (existing.WindowState == FormWindowState.Minimized)
+                existing.WindowState = FormWindowState.Normal;
+            existing.Activate();
+            existing.BringToFront();
+            return;
+        }
+
+        var form = new PhotoGalleryForm(_selectedDevice)
+        {
+            StartPosition = FormStartPosition.Manual,
+            ShowInTaskbar = true
+        };
+        var workArea = Screen.FromControl(this).WorkingArea;
+        var preferredX = Right + 12;
+        var x = preferredX + form.Width <= workArea.Right
+            ? preferredX
+            : Math.Max(workArea.Left, workArea.Right - form.Width);
+        var y = Math.Max(workArea.Top, Math.Min(Top, workArea.Bottom - form.Height));
+        form.Location = new Point(x, y);
+        _photoGalleryForms[deviceId] = form;
+        form.FormClosed += (_, _) =>
+        {
+            if (_photoGalleryForms.TryGetValue(deviceId, out var current)
+                && ReferenceEquals(current, form))
+                _photoGalleryForms.Remove(deviceId);
+        };
+        form.Show(this);
     }
 
     private void 扩展屏ToolStripMenuItem_Click(object? sender, EventArgs e)

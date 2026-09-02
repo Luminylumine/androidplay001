@@ -22,6 +22,9 @@ public sealed class PhotoGalleryForm : Form
     private readonly CancellationTokenSource _cts = new();
     private readonly System.Windows.Forms.Timer _pollTimer = new() { Interval = 15000 };
     private bool _pollRunning;
+    // 缩略图批量提交（§14）：后台只入队，UI 每 25ms commit 一批 + 一次 Invalidate
+    private readonly System.Collections.Concurrent.ConcurrentQueue<(GalleryItem Item, Bitmap Bmp)> _thumbQueue = new();
+    private readonly System.Windows.Forms.Timer _commitTimer = new() { Interval = 25 };
 
     private GalleryGridControl _grid = null!;
     private ComboBox _cmbAlbum = null!;
@@ -49,6 +52,8 @@ public sealed class PhotoGalleryForm : Form
         KeyPreview = true;
 
         BuildUi();
+
+        _commitTimer.Tick += OnCommitTick;
 
         Load += OnLoadAsync;
         FormClosing += OnFormClosing;
@@ -91,6 +96,8 @@ public sealed class PhotoGalleryForm : Form
         _grid.ItemRightClicked += OnItemRightClicked;
         _grid.RequestThumbnails += OnRequestThumbnails;
         _grid.SelectionChanged += () => UpdateStatus();
+        _grid.FilesDroppedToGrid += (files, dropIndex) => _ = PushLocalFilesToAlbumAsync(files, dropIndex);
+        _grid.DragSelectionRequested += OnDragSelectionRequested;
 
         // 增量轮询：15s 查一次新条目（date_added 基线），新拍的照片/视频自动出现
         _pollTimer.Tick += async (s, e) =>
@@ -102,11 +109,13 @@ public sealed class PhotoGalleryForm : Form
                 int added = await _repo.PollNewAsync(_cts.Token);
                 if (added > 0 && !_disposed)
                 {
-                    _status.Text = $"检测到 {added} 项新媒体";
-                    ApplyFilter(); // 会话缩略图缓存命中，回填很快
-                    if (_currentItems.Count > 0)
-                        _grid.ScrollTo(0, 0); // 新条目在最前（按时间倒序），回到顶部
+                    // 增量并入：保留已加载缩略图（只补新增项的）
+                    ApplyFilter(keepThumbs: true);
+                    // 用户已在顶部附近 → 滚到顶看新条目；否则只提示，不打断浏览
+                    if (-_grid.AutoScrollPosition.Y <= _grid.Height * 1.5)
+                        _grid.ScrollTo(0, 0);
                     UpdateStatus();
+                    _status.Text = $"新增 {added} 项新媒体（{_currentItems.Count} 项）";
                 }
             }
             catch { /* 轮询失败静默 */ }
@@ -169,7 +178,7 @@ public sealed class PhotoGalleryForm : Form
         }
     }
 
-    private void ApplyFilter()
+    private void ApplyFilter(bool keepThumbs = false)
     {
         var items = _repo.ItemsInAlbum(CurrentAlbumKey());
         int fi = _cmbFilter?.SelectedIndex ?? 0; // 0 全部, 1 照片, 2 视频
@@ -177,7 +186,8 @@ public sealed class PhotoGalleryForm : Form
         else if (fi == 2) items = items.Where(i => i.Kind == MediaKind.Video).ToList();
 
         _currentItems = items;
-        _grid.SetItems(_currentItems); // 内部会清内存缩略图并触发 RequestThumbnails（会话磁盘缓存快速回填）
+        // keepThumbs：增量轮询路径保留已加载缩略图；手动刷新/切图册走全量重建
+        _grid.SetItems(_currentItems, keepThumbs);
         UpdateStatus();
     }
 
@@ -191,29 +201,65 @@ public sealed class PhotoGalleryForm : Form
     private void OnRequestThumbnails()
     {
         if (_disposed) return;
-        var (first, last) = _grid.VisibleRange();
-        _thumbs.EnqueueRange(first, last, _currentItems, OnThumbReady);
+        var (first, last) = _grid.VisibleRange();   // 预取范围（视口上下各 2 屏）
+        if (first > last || _currentItems.Count == 0) return;
+        var (vf, vl) = _grid.ViewportRange();       // 真正可见：最先拉取
+        // 网格内存已持有的 key：跳过，不重复解码/回调（长期功耗）
+        var skip = new HashSet<GalleryKey>();
+        for (int i = first; i <= last; i++)
+        {
+            var it = _currentItems[i];
+            if (_grid.HasThumb(it.Key)) skip.Add(it.Key);
+        }
+        // 显示尺寸 = 当前网格 thumbPx：后台一次缩到位，Paint 只 blit（§12）
+        _thumbs.EnqueueRange(first, last, vf, vl, _currentItems, OnThumbReady, _grid.ThumbPx, skip);
     }
 
-    /// <summary>后台线程回调：回 UI 线程按 itemId 校验后交给网格（网格拥有该 Bitmap 的生命周期）。</summary>
-    private void OnThumbReady(int index, Bitmap bmp, long itemId)
+    /// <summary>
+    /// 后台线程回调：只入队，不 BeginInvoke（§14：20 张短时完成 = 20 个 UI transaction 是"一顿一顿"的根因）。
+    /// UI 线程由 <see cref="_commitTimer"/> 每 25ms 批量 commit 一批 + 一次 Invalidate。
+    /// </summary>
+    private void OnThumbReady(GalleryItem item, Bitmap bmp)
     {
         if (_disposed) { bmp.Dispose(); return; }
-        try
-        {
-            BeginInvoke(() =>
-            {
-                if (_disposed || index < 0 || index >= _currentItems.Count || _currentItems[index].Id != itemId)
-                {
-                    DiagLog.Info($"onReady DROP: idx={index} itemId={itemId} count={_currentItems.Count} disposed={_disposed}");
-                    bmp.Dispose(); // 期间发生过删除/切图册，索引已漂移
-                    return;
-                }
-                _grid.SetThumbnail(index, bmp);
-                DiagLog.Info($"onReady SET: idx={index} itemId={itemId} bmp={bmp.Width}x{bmp.Height}");
-            });
-        }
+        _thumbQueue.Enqueue((item, bmp));
+        try { BeginInvoke(new System.Windows.Forms.MethodInvoker(StartCommitTimer)); }
         catch (ObjectDisposedException) { bmp.Dispose(); }
+    }
+
+    private bool _commitTimerArmed;
+
+    private void StartCommitTimer()
+    {
+        if (_disposed || _commitTimerArmed) return;
+        _commitTimerArmed = true;
+        _commitTimer.Start();
+    }
+
+    /// <summary>UI 线程每帧最多 16 张批量提交 + 一次整窗失效（§14：每帧最多一次 thumbnail commit）。</summary>
+    private void OnCommitTick(object? s, EventArgs e)
+    {
+        _commitTimer.Stop();
+        _commitTimerArmed = false;
+        int n = 0;
+        while (n < 16 && _thumbQueue.TryDequeue(out var pair))
+        {
+            var (item, bmp) = pair;
+            n++;
+            // 身份按稳定键（类型+_id）校验：列表重排/删除/切图册后 key 不在网格 → 丢弃
+            if (!_grid.SetThumbnail(item.Key, bmp)) bmp.Dispose();
+        }
+        if (n > 0)
+        {
+            _grid.Invalidate(); // 一批一次失效，替代逐张 Invalidate
+            DiagLog.Info($"commit: n={n} queueLeft={_thumbQueue.Count}");
+        }
+        if (!_thumbQueue.IsEmpty) StartCommitTimer();
+    }
+
+    private void DrainThumbQueue()
+    {
+        while (_thumbQueue.TryDequeue(out var pair)) pair.Bmp.Dispose();
     }
 
     // ---- 选中项 ----
@@ -387,9 +433,9 @@ public sealed class PhotoGalleryForm : Form
                     // 2) 用原始路径验证是否真删掉；没删掉则 rm -f 兜底（content CLI 会吞异常，exit 0 不可全信）
                     if (it.DataPath.Length > 0)
                     {
-                        var testOut = await AdbHelper.ShellExecAsync(_device.Id,
+                        var testResult = await AdbHelper.ShellCommandResultAsync(_device.Id,
                             "ls " + AdbHelper.ShellQuote(it.DataPath), 10000);
-                        if (testOut.Contains("No such file or directory"))
+                        if (testResult.Succeeded)
                         {
                             await AdbHelper.ShellExecAsync(_device.Id,
                                 "rm -f " + AdbHelper.ShellQuote(it.DataPath), 20000);
@@ -418,6 +464,164 @@ public sealed class PhotoGalleryForm : Form
         }
     }
 
+    // ---- 拖入：Windows 本地文件 → 手机"该相册目录"（复制粘贴语义，同名覆盖）----
+
+    private async Task PushLocalFilesToAlbumAsync(IReadOnlyList<string> localFiles, int dropIndex)
+    {
+        // 目标目录：丢在图片上 = 该图所在目录；丢在空白 = 当前图册第一项所在目录（"全部"时即最新媒体的目录）
+        string dir = (dropIndex >= 0 && dropIndex < _currentItems.Count)
+            ? AlbumDirOf(_currentItems[dropIndex])
+            : CurrentAlbumDir();
+
+        if (_disposed) return;
+        try
+        {
+            _status.Text = $"正在准备传输 {localFiles.Count} 个文件到 {dir}...";
+            await AdbHelper.ShellExecAsync(_device.Id, "mkdir -p " + AdbHelper.ShellQuote(dir), 15000);
+
+            int ok = 0, fail = 0;
+            for (int i = 0; i < localFiles.Count; i++)
+            {
+                _status.Text = $"传输 {i + 1}/{localFiles.Count} → {dir}...";
+                try
+                {
+                    await _sched.Transfer.WaitAsync(_cts.Token);
+                    try
+                    {
+                        await AdbHelper.PushFileAsync(_device.Id, localFiles[i],
+                            dir + "/" + Path.GetFileName(localFiles[i]), 300000, _cts.Token);
+                    }
+                    finally { _sched.Transfer.Release(); }
+                    ok++;
+                }
+                catch { fail++; }
+            }
+
+            // 提示系统索引（content call scan_file，非所有 ROM 支持，失败静默——15s 增量轮询兜底）
+            for (int i = 0; i < localFiles.Count; i++)
+            {
+                try
+                {
+                    await AdbHelper.ShellCommandAsync(_device.Id,
+                        new[] { "content", "call", "--uri", GalleryRowParser.ImagesUri,
+                                "--method", "scan_file", "--arg", dir + "/" + Path.GetFileName(localFiles[i]) },
+                        10000, _cts.Token);
+                }
+                catch { /* best-effort */ }
+            }
+
+            int added = await _repo.PollNewAsync(_cts.Token);
+            if (added > 0 && !_disposed) ApplyFilter(keepThumbs: true);
+
+            if (!_disposed)
+                _status.Text = $"已传输 {ok}/{localFiles.Count} 到 {dir}" +
+                               (fail > 0 ? $"（{fail} 个失败）" : "") +
+                               (added > 0 ? $"，相册已更新 +{added}" : "（相册稍后自动出现）");
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            if (!_disposed)
+                MessageBox.Show(this, "传输失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    /// <summary>媒体项所在的手机文件系统目录（_data 优先，relative_path 兜底）。</summary>
+    private static string AlbumDirOf(GalleryItem it)
+    {
+        if (it.DataPath.Length > 0)
+        {
+            int slash = it.DataPath.LastIndexOf('/');
+            if (slash > 0) return it.DataPath[..slash];
+        }
+        var rp = (it.RelativePath ?? "").TrimEnd('/');
+        return rp.Length > 0 ? "/storage/emulated/0/" + rp : "/storage/emulated/0/DCIM/Camera";
+    }
+
+    private string CurrentAlbumDir()
+    {
+        var first = _currentItems.FirstOrDefault();
+        return first != null ? AlbumDirOf(first) : "/storage/emulated/0/DCIM/Camera";
+    }
+
+    // ---- 长按 2s 拖出：准备本地临时副本 → OLE 拖拽（CF_HDROP）----
+    // 丢进文件夹 = 资源管理器复制；丢进微信发送框 = 微信按文件格式自行发送
+    // （图片扩展名经魔数校验后是正确的，微信按扩展名识别图片/文件，无需我们额外处理）。
+
+    private bool _dragPrepBusy;
+
+    private async void OnDragSelectionRequested(IReadOnlyList<int> indices)
+    {
+        if (_dragPrepBusy || _disposed) return;
+        _dragPrepBusy = true;
+        var items = indices
+            .Where(i => i >= 0 && i < _currentItems.Count)
+            .Select(i => _currentItems[i])
+            .ToList();
+        try
+        {
+            if (items.Count == 0) return;
+            _status.Text = $"准备 {items.Count} 个文件用于拖拽...";
+            // 并行准备（Transfer 信号量限真实并发）；formatCorrect=true 保证扩展名与内容一致；
+            // 单项失败不拖垮整批（跳过失败项）
+            var tasks = items.Select(async it =>
+            {
+                try { return await _cache.ReadToTempFileAsync(it, formatCorrect: true, _sched, _cts.Token); }
+                catch { return ""; }
+            })
+                .ToList();
+            var results = await Task.WhenAll(tasks);
+            // 按 (item, path) 配对改名
+            var paths = new List<string>(results.Length);
+            for (int i = 0; i < items.Count && i < results.Length; i++)
+            {
+                if (string.IsNullOrEmpty(results[i])) continue;
+                paths.Add(FriendlyTempName(items[i], results[i]));
+            }
+            if (paths.Count == 0)
+            {
+                _status.Text = "拖拽准备失败：文件读取失败";
+                return;
+            }
+            _status.Text = $"拖拽 {paths.Count} 个文件（丢进文件夹=复制）";
+            int r = _grid.BeginSelectionDrag(paths);
+            _status.Text = r == 1 ? $"已释放 {paths.Count} 个文件到目标位置"
+                           : r == 0 ? "拖拽已取消"
+                           : "拖拽已取消（准备期间松手）";
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            if (!_disposed) _status.Text = "拖拽准备失败: " + ex.Message;
+        }
+        finally { _dragPrepBusy = false; }
+    }
+
+    /// <summary>临时副本改回展示文件名（GUID → 原名），让"复制粘贴/发送"落地的文件名字可读；扩展名以内容魔数探测结果为准。</summary>
+    private static string FriendlyTempName(GalleryItem item, string cachedPath)
+    {
+        try
+        {
+            var ext = Path.GetExtension(cachedPath); // 魔数校验后的真实扩展名
+            var baseName = Path.GetExtension(item.DisplayName).Length > 0
+                ? Path.GetFileNameWithoutExtension(item.DisplayName)
+                : item.DisplayName;
+            baseName = AdbHelper.SanitizeFileName(baseName);
+            if (baseName.Length == 0) return cachedPath;
+            string target = Path.Combine(GalleryCache.TempRoot, baseName + ext);
+            if (File.Exists(target))
+                target = Path.Combine(GalleryCache.TempRoot,
+                    baseName + "_" + Guid.NewGuid().ToString("N")[..6] + ext);
+            if (target != cachedPath)
+            {
+                File.Move(cachedPath, target);
+                return target;
+            }
+        }
+        catch { /* 改名失败不影响拖拽（GUID 名也能用） */ }
+        return cachedPath;
+    }
+
     // ---- 键盘：Ctrl+/- 改列数，Ctrl+A 全选 ----
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -439,8 +643,11 @@ public sealed class PhotoGalleryForm : Form
     {
         _pollTimer.Stop();
         _pollTimer.Dispose();
+        _commitTimer.Stop();
+        _commitTimer.Dispose();
         _cts.Cancel();
         _disposed = true;
+        DrainThumbQueue(); // 未提交的显示位图释放（网格自己的 _thumbMem 随控件 Dispose 释放）
         _ = _thumbs.ShutdownAsync(); // 后台清理：取消在途工作 + 删除本会话缩略图临时目录
     }
 

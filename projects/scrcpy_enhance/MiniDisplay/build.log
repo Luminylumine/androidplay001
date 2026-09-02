@@ -1,0 +1,15 @@
+﻿javac.exe : 警告: [options] 源值 8 已过时，将在未来发行版中删除
+所在位置 行:1 字符: 349
++ ... | Out-Null; & "$jbr\javac.exe" --release 8 -cp "$sdk\pl
+atforms\androi ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (警告: [options] 源 
+   值 8 已过时，将在未来发行版中删除:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+javac_exit=0
+d8_exit=0
