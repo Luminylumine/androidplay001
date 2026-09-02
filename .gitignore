@@ -42,6 +42,7 @@ downloads/
 **/*.jar
 !**/libs/**/*.jar
 !**/sdks/**/*.jar
+!**/gradle-wrapper.jar
 
 # .NET / WinForms
 **/bin/
