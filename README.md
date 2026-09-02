@@ -31,8 +31,10 @@
 tools/
 ├── jdk17/                              # JDK 17（Android 项目 javac/d8/apksigner 用）
 ├── android-sdk/
-│   ├── build-tools/30.0.3/             # aapt2 / zipalign / apksigner 等
+│   ├── build-tools/30.0.3/             # Akasha / SysMon 本地构建
+│   ├── build-tools/34.0.0/             # PhoneMirror Android Gradle Plugin 用
 │   ├── platforms/android-29/android.jar
+│   ├── platforms/android-34/android.jar
 │   └── platform-tools/adb.exe          # 仅 scrcpy-enhance 运行时用（可选）
 └── scrcpy/scrcpy.exe                   # 仅 scrcpy-enhance 运行时用（可选）
 ```
@@ -75,6 +77,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File projects/device_monitor_tool
 构建链与签名方式同上（keystore `app/sysmon.keystore`，alias `sysmon`，自动生成）。
 
 产物：`projects/device_monitor_tools/app/build/SysMon-v1.apk`
+
+### 4. feature/phone-mirror-phone（Windows）
+
+```powershell
+git checkout feature/phone-mirror-phone
+Copy-Item projects/phone-mirror-phone/local.properties.example projects/phone-mirror-phone/local.properties
+# Edit local.properties and set sdk.dir to your Android SDK.
+powershell -NoProfile -Command "$env:JAVA_HOME='tools/jdk17'; & 'projects/phone-mirror-phone/gradlew.bat' assembleDebug"
+```
+
+`local.properties` is machine-specific and must not be committed.
 
 > `AdbKey.java` 不包含任何预置测试机私钥。首次运行时使用 Android Keystore 为当前安装生成独立的 ADB 身份；构建不需要额外的本地秘密源码。
 
