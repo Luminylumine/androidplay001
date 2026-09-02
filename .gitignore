@@ -49,6 +49,9 @@ downloads/
 **/exploits/slab_rb_reclaim_uaf
 
 # Misc OS / editor files
+*.csproj.user
+*.suo
+.vs/
 Thumbs.db
 .DS_Store
 *.swp
