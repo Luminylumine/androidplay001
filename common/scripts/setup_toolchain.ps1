@@ -1,5 +1,5 @@
 # setup_toolchain.ps1
-# 用途: 下载并安装 JDK 17 (Temurin, GitHub Adoptium releases) 与 Android SDK (platform-29 + build-tools 30.0.3)
+# 用途: 下载并安装 JDK 17 (Temurin) 与 Android SDK (platform-29/34 + build-tools 30.0.3/34.0.0)
 # 仅 PC 端使用; 产物全部位于工作区 tools\ 下 (已被 .gitignore 排除, 不进入 git)
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -47,14 +47,14 @@ if (-not (Test-Path (Join-Path $cmdBase "latest\bin\sdkmanager.bat"))) {
     Remove-Item -Recurse -Force $tmp
 }
 
-# 3. sdkmanager 安装 platform-29 + build-tools 30.0.3
+# 3. sdkmanager 安装 Android 29/34 与对应构建工具
 $env:JAVA_HOME = $jdkDir
 $env:PATH = "$jdkDir\bin;" + $env:PATH
 $sdkRoot = Join-Path $tools "android-sdk"
 $sdkmgr = Join-Path $cmdBase "latest\bin\sdkmanager.bat"
-Write-Host "[4/4] sdkmanager: licenses + platform-29 + build-tools;30.0.3 ..."
+Write-Host "[4/4] sdkmanager: licenses + platforms;android-29 + platforms;android-34 + build-tools;30.0.3 + build-tools;34.0.0 ..."
 cmd /c "y | `"$sdkmgr`" --sdk_root=`"$sdkRoot`" --licenses" 2>&1 | Out-Null
-cmd /c "y | `"$sdkmgr`" --sdk_root=`"$sdkRoot`" `"platforms;android-29`" `"build-tools;30.0.3`""
+cmd /c "y | `"$sdkmgr`" --sdk_root=`"$sdkRoot`" `"platforms;android-29`" `"platforms;android-34`" `"build-tools;30.0.3`" `"build-tools;34.0.0`""
 if ($LASTEXITCODE -ne 0) { throw "sdkmanager install failed" }
 
 Write-Host "TOOLCHAIN READY"
