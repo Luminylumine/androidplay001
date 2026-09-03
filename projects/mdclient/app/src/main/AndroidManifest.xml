@@ -11,7 +11,7 @@
         android:allowBackup="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MdClientActivity"
+            android:name=".LectureWorkspaceActivity"
             android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -19,6 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MdClientActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <service
             android:name=".audio.LectureAudioService"
             android:exported="false"
