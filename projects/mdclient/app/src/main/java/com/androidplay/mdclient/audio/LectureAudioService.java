@@ -39,6 +39,8 @@ public final class LectureAudioService extends Service {
     public static final String EVENT_AUDIO_PERMISSION = "audio.permission";
     public static final String EVENT_AUDIO_TIMESTAMP = "audio.timestamp";
     public static final String EVENT_AUDIO_DROPPED = "audio.dropped";
+    public static final String EVENT_AUDIO_CAPTURE_DROP = "audio.capture_drop";
+    public static final String EVENT_ASR_CONSUMER_DROP = "audio.asr_consumer_drop";
     public static final String CHANNEL_ID = "lecture_audio";
     public static final int NOTIFICATION_ID = 2401;
     public static final int SAMPLE_RATE = 16000;
@@ -154,12 +156,12 @@ public final class LectureAudioService extends Service {
                         + ",\"offsetNs\":" + (timestamp.nanoTime - elapsed) + "}"));
             }
             if (!queue.offer(Chunk.pcm(pcm))) {
-                offer(Chunk.event(EVENT_AUDIO_DROPPED, "{\"bytes\":" + pcm.length + "}"));
+                offer(Chunk.event(EVENT_AUDIO_CAPTURE_DROP, "{\"bytes\":" + pcm.length + "}"));
             }
             short[] frame = new short[count];
             System.arraycopy(samples, 0, frame, 0, count);
             if (FRAME_BUS.publish(new AudioFrameBus.Frame(frame, frames - count, frames, timestamp.nanoTime)) > 0)
-                offer(Chunk.event(EVENT_AUDIO_DROPPED, "{\"reason\":\"consumer\",\"frames\":" + count + "}"));
+                offer(Chunk.event(EVENT_ASR_CONSUMER_DROP, "{\"frames\":" + count + "}"));
         }
         if (readFailed && reading && current == recorder) stop(false);
     }

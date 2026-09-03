@@ -20,12 +20,13 @@
 *.jks
 
 # ============== Toolchains (large non-redistributable binaries) ==============
-tools/
+tools/*
 downloads/
 .local-models/
 projects/mdclient/.local-deps/
 !tools/asr/
 !tools/asr/*.ps1
+!tools/asr/*.py
 .gradle/
 **/local.properties
 

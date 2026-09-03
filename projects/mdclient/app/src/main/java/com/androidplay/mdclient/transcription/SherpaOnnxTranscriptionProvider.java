@@ -18,6 +18,7 @@ public final class SherpaOnnxTranscriptionProvider implements TranscriptionProvi
     private final AtomicBoolean running = new AtomicBoolean();
     private long segmentStartFrame;
     private String lastText = "";
+    private AudioFrameBus.Frame lastFrame;
 
     public SherpaOnnxTranscriptionProvider(Context context, File modelDir, AudioFrameBus bus) {
         if (context == null || modelDir == null || bus == null) throw new NullPointerException("context/modelDir/bus");
@@ -58,6 +59,7 @@ public final class SherpaOnnxTranscriptionProvider implements TranscriptionProvi
 
     private void decodeFrame(AudioFrameBus.Frame frame) {
         try {
+            lastFrame = frame;
             float[] samples = new float[frame.samples.length];
             for (int i = 0; i < samples.length; i++) samples[i] = frame.samples[i] / 32768.0f;
             invoke(stream, "acceptWaveform", new Class[]{float[].class, int.class}, samples, 16000);
@@ -110,17 +112,31 @@ public final class SherpaOnnxTranscriptionProvider implements TranscriptionProvi
     @Override public synchronized void stop() {
         running.set(false);
         if (worker != null) worker.interrupt();
+        if (worker != null && worker != Thread.currentThread()) try { worker.join(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         release();
     }
 
     private synchronized void release() {
         if (subscription != null) subscription.close();
         subscription = null;
+        flushTail();
         invokeQuiet(stream, "inputFinished");
         invokeQuiet(stream, "release");
         invokeQuiet(recognizer, "release");
         stream = null;
         recognizer = null;
+    }
+
+    private void flushTail() {
+        if (recognizer == null || stream == null || lastFrame == null) return;
+        try {
+            invoke(stream, "inputFinished", new Class[0]);
+            while ((Boolean) invoke(recognizer, "isReady", new Class[]{stream.getClass()}, stream))
+                invoke(recognizer, "decode", new Class[]{stream.getClass()}, stream);
+            Object result = invoke(recognizer, "getResult", new Class[]{stream.getClass()}, stream);
+            String text = String.valueOf(invoke(result, "getText", new Class[0]));
+            if (!text.isEmpty() && !text.equals(lastText)) emit(text, lastFrame, true);
+        } catch (Exception e) { reportError("flush", e.toString()); }
     }
 
     private void reportError(String code, String detail) { if (listener != null) listener.onError(code, detail); }
