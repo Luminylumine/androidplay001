@@ -6,5 +6,6 @@ public interface TranscriptionProvider {
         void onError(String code, String detail);
     }
     void start(String sessionId, Listener listener);
+    void acceptAudio(short[] samples, long frameStart, long frameEnd, long audioTimeNs);
     void stop();
 }

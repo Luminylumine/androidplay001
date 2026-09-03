@@ -30,7 +30,7 @@ public interface MaterialContentProvider {
 
     Bitmap renderPageBitmap(int width, int height) throws IOException;
 
-    /** PdfRenderer has no text extraction API; implementations may return an empty string. */
+    /** Returns text-layer content when available; scanned pages may return empty text. */
     String extractPageText(int pageIndex) throws IOException;
 
     boolean needsOcr(int pageIndex);

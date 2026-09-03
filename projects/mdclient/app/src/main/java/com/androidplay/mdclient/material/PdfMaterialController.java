@@ -21,6 +21,7 @@ public final class PdfMaterialController implements MaterialContentProvider {
     private PdfRenderer renderer;
     private int currentPage = -1;
     private PageChangedCallback pageChangedCallback;
+    private final java.util.Map<Integer, String> pageTextCache = new java.util.HashMap<>();
 
     public PdfMaterialController(Context context) {
         if (context == null) throw new NullPointerException("context");
@@ -54,6 +55,7 @@ public final class PdfMaterialController implements MaterialContentProvider {
         close();
         fileDescriptor = descriptor;
         renderer = newRenderer;
+        pageTextCache.clear();
         currentPage = renderer.getPageCount() == 0 ? -1 : 0;
         preferences.edit().putString(URI_KEY, uri.toString()).apply();
         notifyPageChanged();
@@ -83,6 +85,7 @@ public final class PdfMaterialController implements MaterialContentProvider {
             fileDescriptor = null;
         }
         currentPage = -1;
+        pageTextCache.clear();
     }
 
     @Override public synchronized boolean isOpen() { return renderer != null; }
@@ -144,13 +147,17 @@ public final class PdfMaterialController implements MaterialContentProvider {
     @Override public synchronized String extractPageText(int pageIndex) throws IOException {
         requireOpen();
         checkPage(pageIndex);
-        return "";
+        if (pageTextCache.containsKey(pageIndex)) return pageTextCache.get(pageIndex);
+        String text = AndroidxPdfTextExtractor.extract(context, rendererUri(), pageIndex);
+        pageTextCache.put(pageIndex, text == null ? "" : text);
+        return pageTextCache.get(pageIndex);
     }
 
     @Override public synchronized boolean needsOcr(int pageIndex) {
         requireOpen();
         checkPage(pageIndex);
-        return true;
+        try { return extractPageText(pageIndex).trim().isEmpty(); }
+        catch (IOException ignored) { return true; }
     }
 
     @Override public synchronized boolean needsOcr() { return renderer != null && renderer.getPageCount() > 0; }
@@ -173,5 +180,10 @@ public final class PdfMaterialController implements MaterialContentProvider {
         if (pageChangedCallback != null && currentPage >= 0) {
             pageChangedCallback.onPageChanged(currentPage, renderer.getPageCount());
         }
+    }
+
+    private Uri rendererUri() {
+        String value = preferences.getString(URI_KEY, null);
+        return value == null ? null : Uri.parse(value);
     }
 }

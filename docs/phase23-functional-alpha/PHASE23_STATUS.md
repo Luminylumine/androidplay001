@@ -2,8 +2,8 @@
 
 Status: PARTIAL
 
-The mdclient branch now has a standard Gradle single-app project (`AGP 8.5.2`,
-Kotlin plugin `2.0.10`, compile/target 35, min 29) and a functional Java/View
+The mdclient branch now has a standard Gradle single-app project (`AGP 8.9.1`,
+Kotlin plugin `2.0.10`, compile 36/target 35, min 29) and a functional Java/View
 debug shell. The original Phase 1 handoff remains historical evidence and was
 not regenerated.
 

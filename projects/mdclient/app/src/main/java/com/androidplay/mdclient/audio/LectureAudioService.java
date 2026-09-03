@@ -43,6 +43,7 @@ public final class LectureAudioService extends Service {
     public static final int NOTIFICATION_ID = 2401;
     public static final int SAMPLE_RATE = 16000;
     public static final int CHANNELS = 1;
+    private static final AudioFrameBus FRAME_BUS = new AudioFrameBus(64);
 
     public interface EventSink {
         void onAudioEvent(String type, String json);
@@ -51,6 +52,7 @@ public final class LectureAudioService extends Service {
     private static volatile EventSink eventSink;
 
     public static void setEventSink(EventSink sink) { eventSink = sink; }
+    public static AudioFrameBus audioFrameBus() { return FRAME_BUS; }
 
     public static Intent startIntent(Context context) {
         return new Intent(context, LectureAudioService.class).setAction(ACTION_START);
@@ -154,6 +156,10 @@ public final class LectureAudioService extends Service {
             if (!queue.offer(Chunk.pcm(pcm))) {
                 offer(Chunk.event(EVENT_AUDIO_DROPPED, "{\"bytes\":" + pcm.length + "}"));
             }
+            short[] frame = new short[count];
+            System.arraycopy(samples, 0, frame, 0, count);
+            if (FRAME_BUS.publish(new AudioFrameBus.Frame(frame, frames - count, frames, timestamp.nanoTime)) > 0)
+                offer(Chunk.event(EVENT_AUDIO_DROPPED, "{\"reason\":\"consumer\",\"frames\":" + count + "}"));
         }
         if (readFailed && reading && current == recorder) stop(false);
     }

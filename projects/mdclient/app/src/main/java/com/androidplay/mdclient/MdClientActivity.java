@@ -29,6 +29,8 @@ import com.androidplay.mdclient.material.PdfMaterialController;
 import com.androidplay.mdclient.storage.DocumentService;
 import com.androidplay.mdclient.storage.EventStore;
 import com.androidplay.mdclient.storage.MdClientDatabase;
+import com.androidplay.mdclient.storage.RecoveryDiagnostics;
+import com.androidplay.mdclient.transcription.SherpaOnnxTranscriptionProvider;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -51,6 +53,7 @@ public final class MdClientActivity extends Activity {
     private PdfMaterialController pdf;
     private FastAgentController agent;
     private FreshnessValidator freshness;
+    private SherpaOnnxTranscriptionProvider realAsr;
     private String sessionId;
     private String courseId;
     private boolean sessionRunning;
@@ -71,6 +74,7 @@ public final class MdClientActivity extends Activity {
         eventStore = null;
         documents = new DocumentService(database);
         pdf = new PdfMaterialController(this);
+        realAsr = new SherpaOnnxTranscriptionProvider(this, new File(getFilesDir(), "models"), LectureAudioService.audioFrameBus());
         agent = new FastAgentController(new FakeAgentBackend("Agent: 将这段内容整理为复习要点"), 0L);
         freshness = new FreshnessValidator(null);
         sessionId = getSharedPreferences(PREFS, MODE_PRIVATE).getString(SESSION_KEY, null);
@@ -83,6 +87,7 @@ public final class MdClientActivity extends Activity {
             runOnUiThread(() -> showStatus("audio " + type));
         });
         buildUi();
+        RecoveryDiagnostics.markInterrupted(database.getWritableDatabase(), new File(getFilesDir(), "sessions"));
         restorePdf();
         if (sessionId != null) loadSession(sessionId);
     }
@@ -185,10 +190,17 @@ public final class MdClientActivity extends Activity {
     private void startAudio() {
         if (sessionId == null) startSession();
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { showStatus("microphone permission required"); return; }
+        realAsr.start(sessionId, new com.androidplay.mdclient.transcription.TranscriptionProvider.Listener() {
+            @Override public void onSegment(com.androidplay.mdclient.transcription.TranscriptSegment segment) {
+                transcript.setText("Transcript: " + segment.text + (segment.isFinal ? " (final)" : " (partial)"));
+                append("sherpa-onnx", segment.isFinal ? "TRANSCRIPT_FINAL" : "TRANSCRIPT_PARTIAL", segment.text);
+            }
+            @Override public void onError(String code, String detail) { append("sherpa-onnx", "ASR_ERROR", code + ":" + detail); }
+        });
         Intent intent = LectureAudioService.startIntent(this, sessionId);
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(intent); else startService(intent); showStatus("audio starting");
     }
-    private void stopAudio() { stopService(LectureAudioService.stopIntent(this)); }
+    private void stopAudio() { realAsr.stop(); stopService(LectureAudioService.stopIntent(this)); }
 
     private void fakeTranscript() {
         if (sessionId == null) startSession(); String partial = "今天我们建立课堂时间轴"; transcript.setText("Transcript: " + partial + " (partial)"); append("fake-asr", "TRANSCRIPT_PARTIAL", partial);

@@ -5,7 +5,8 @@ plugins {
 
 android {
     namespace = "com.androidplay.mdclient"
-    compileSdk = 35
+    compileSdk = 36
+    compileSdkExtension = 19
 
     defaultConfig {
         applicationId = "com.androidplay.mdclient"
@@ -31,5 +32,9 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.pdf:pdf-core:1.0.0-beta01")
+    implementation("androidx.pdf:pdf-document-service:1.0.0-beta01")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation(fileTree(mapOf("dir" to ".local-deps", "include" to listOf("*.aar"))))
     testImplementation("junit:junit:4.13.2")
 }

@@ -45,5 +45,7 @@ public final class ReplayTranscriptionProvider implements TranscriptionProvider 
         }
     }
 
+    @Override public void acceptAudio(short[] samples, long frameStart, long frameEnd, long audioTimeNs) { }
+
     @Override public synchronized void stop() { running = false; handler.removeCallbacksAndMessages(null); }
 }

@@ -20,5 +20,7 @@ public final class FakeTranscriptionProvider implements TranscriptionProvider {
         handler.postDelayed(() -> { Listener current = listener; if (running && current != null) current.onSegment(new TranscriptSegment(id, "fake", 0, 0, SessionClock.elapsedRealtimeNanos(), text, isFinal, replaces)); }, delay);
     }
 
+    @Override public void acceptAudio(short[] samples, long frameStart, long frameEnd, long audioTimeNs) { }
+
     @Override public synchronized void stop() { running = false; listener = null; handler.removeCallbacksAndMessages(null); }
 }
