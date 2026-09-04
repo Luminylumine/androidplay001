@@ -78,10 +78,6 @@ public final class MdClientActivity extends Activity {
         agent = new FastAgentController(new FakeAgentBackend("Agent: 将这段内容整理为复习要点"), 0L);
         freshness = new FreshnessValidator(null);
         sessionId = getSharedPreferences(PREFS, MODE_PRIVATE).getString(SESSION_KEY, null);
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION);
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, AUDIO_PERMISSION);
         LectureAudioService.setEventSink((type, json) -> {
             if (eventStore != null) eventStore.append("audio-service", type, json);
             runOnUiThread(() -> showStatus("audio " + type));
@@ -90,6 +86,7 @@ public final class MdClientActivity extends Activity {
         RecoveryDiagnostics.markInterrupted(database.getWritableDatabase(), new File(getFilesDir(), "sessions"));
         restorePdf();
         if (sessionId != null) loadSession(sessionId);
+        requestMissingPermissions();
     }
 
     private void buildUi() {
@@ -190,15 +187,40 @@ public final class MdClientActivity extends Activity {
     private void startAudio() {
         if (sessionId == null) startSession();
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { showStatus("microphone permission required"); return; }
-        realAsr.start(sessionId, new com.androidplay.mdclient.transcription.TranscriptionProvider.Listener() {
-            @Override public void onSegment(com.androidplay.mdclient.transcription.TranscriptSegment segment) {
-                transcript.setText("Transcript: " + segment.text + (segment.isFinal ? " (final)" : " (partial)"));
-                append("sherpa-onnx", segment.isFinal ? "TRANSCRIPT_FINAL" : "TRANSCRIPT_PARTIAL", segment.text);
-            }
-            @Override public void onError(String code, String detail) { append("sherpa-onnx", "ASR_ERROR", code + ":" + detail); }
-        });
-        Intent intent = LectureAudioService.startIntent(this, sessionId);
-        if (Build.VERSION.SDK_INT >= 26) startForegroundService(intent); else startService(intent); showStatus("audio starting");
+        try {
+            realAsr.start(sessionId, new com.androidplay.mdclient.transcription.TranscriptionProvider.Listener() {
+                @Override public void onSegment(com.androidplay.mdclient.transcription.TranscriptSegment segment) {
+                    transcript.setText("Transcript: " + segment.text + (segment.isFinal ? " (final)" : " (partial)"));
+                    append("sherpa-onnx", segment.isFinal ? "TRANSCRIPT_FINAL" : "TRANSCRIPT_PARTIAL", segment.text);
+                }
+                @Override public void onError(String code, String detail) { append("sherpa-onnx", "ASR_ERROR", code + ":" + detail); }
+            });
+            Intent intent = LectureAudioService.startIntent(this, sessionId);
+            if (Build.VERSION.SDK_INT >= 26) startForegroundService(intent); else startService(intent);
+            showStatus("audio starting");
+        } catch (RuntimeException e) {
+            realAsr.stop();
+            append("ui", "AUDIO_START_FAILED", e.toString());
+            showStatus("audio unavailable");
+        }
+    }
+
+    private void requestMissingPermissions() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION);
+        } else if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, AUDIO_PERMISSION);
+        }
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode == NOTIFICATION_PERMISSION) {
+            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, AUDIO_PERMISSION);
+        } else if (requestCode == AUDIO_PERMISSION && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            showStatus("microphone permission denied");
+        }
     }
     private void stopAudio() { realAsr.stop(); stopService(LectureAudioService.stopIntent(this)); }
 

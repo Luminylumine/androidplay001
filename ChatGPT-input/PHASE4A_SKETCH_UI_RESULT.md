@@ -7,7 +7,7 @@
 - APK: `projects/mdclient/app/build/outputs/apk/debug/app-debug.apk`
 - Verification: `clean assembleDebug test --offline --max-workers=1`
 - Instrumentation compile: `assembleDebugAndroidTest` PASS
-- Working tree: pending this Phase 4A commit
+- Phase 4A commit: `f43fa8d`
 
 ## Sketch mapping
 
@@ -19,10 +19,18 @@
 - TOC: PARTIAL, entry and non-focus behavior are present; detailed Notes scroll pending
 - Lecture Logic: DONE, observable tree projection
 - Agent Observable State: DONE, high-level work log only, no chain-of-thought
-- Scratchpad: DONE, native typed IME path with session-keyed debounced persistence
-- Suggestion Rail: DONE, accept and drag/drop into Scratchpad
+- Scratchpad: replaced by Human whiteboard with native touch/stylus strokes
+- Suggestion Rail: replaced by transient Agent stickers with whiteboard drag/drop
 - Resizable splits: DONE, long-press arm, clamp, haptic, persistence
 - FocusPane: DONE
+- Agent suggestion stickers: DONE, five-second expiry and whiteboard drag/drop
+- Human Attention whiteboard: DONE, finger/stylus stroke path
+- PDF paging: DONE, continuous vertical page flow with independent pinch zoom;
+  Notes TOC remains in the header
+- Whiteboard gestures: DONE, two-finger pan/zoom and single-pointer/stylus ink
+- Sticker rendering: DONE, dropped suggestions remain visible as cards
+- Sticker test trigger: DONE, Agent panel exposes `生成贴纸` and each sticker
+  expires five seconds after generation
 
 ## Core reuse
 
@@ -32,13 +40,20 @@ is isolated in `WorkspaceUiState`, `WorkspaceRatioPolicy`, and `ScratchpadState`
 
 ## Screenshots
 
-`TARGET_DEVICE_UI_PENDING`: no MatePad or emulator was available, so no fake
-screenshots are included. The required output directory and filenames are
-documented under `docs/phase4-ui/screenshots/`.
+MatePad PCE-W30 runtime evidence is available under
+`docs/phase4-ui/screenshots/`:
+
+- `phase4a-device-main.png`: 2880x1920 workspace launch state.
+- `phase4a-device-drawer.png`: opened overlay Drawer.
+
+The next device pass should verify Huawei Pen strokes, sticker drag/drop, and
+vertical PDF swipes. No `FATAL EXCEPTION` or `AndroidRuntime` crash was
+observed in the previous checked logcat window.
 
 ## Known limitations
 
-1. Target-device runtime, IME, touch, and responsive checks are pending.
+1. Long-press resize and ratio restoration were previously verified; continuous
+   PDF scrolling, pinch zoom, and Huawei Pen input need a targeted device pass.
 2. Stylus ink is deferred; typed Scratchpad is implemented.
 3. TOC and target chips have projection behavior but not complete navigation.
 4. Course tabs are a first-pass static workspace list.
